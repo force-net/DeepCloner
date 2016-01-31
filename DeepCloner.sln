@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepCloner", "DeepCloner\DeepCloner.csproj", "{6BB0A0AB-67F9-45E4-B60C-4CEED098D463}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepCloner.Tests", "DeepCloner.Tests\DeepCloner.Tests.csproj", "{3453CB0A-BE66-4770-B92E-7A5917AD56A1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6BB0A0AB-67F9-45E4-B60C-4CEED098D463}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BB0A0AB-67F9-45E4-B60C-4CEED098D463}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BB0A0AB-67F9-45E4-B60C-4CEED098D463}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BB0A0AB-67F9-45E4-B60C-4CEED098D463}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3453CB0A-BE66-4770-B92E-7A5917AD56A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3453CB0A-BE66-4770-B92E-7A5917AD56A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3453CB0A-BE66-4770-B92E-7A5917AD56A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3453CB0A-BE66-4770-B92E-7A5917AD56A1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
