@@ -39,11 +39,11 @@ namespace Force.DeepCloner.Tests
 			var sw = new Stopwatch();
 			sw.Start();
 
-			for (var i = 0; i < 100000; i++) ManualClone(c1);
+			for (var i = 0; i < 1000000; i++) ManualClone(c1);
 			Console.WriteLine("Manual: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 
-			for (var i = 0; i < 100000; i++) c1.DeepClone();
+			for (var i = 0; i < 1000000; i++) c1.DeepClone();
 			Console.WriteLine("Deep: " + sw.ElapsedMilliseconds);
 		}
 
