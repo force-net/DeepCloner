@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System;
+
+using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
@@ -55,6 +57,19 @@ namespace Force.DeepCloner.Tests
 			var cloned = t2.DeepClone();
 			Assert.That(cloned.A, Is.EqualTo(1));
 			Assert.That(cloned.B, Is.EqualTo("x"));
+		}
+
+		private class C3 : ContextBoundObject
+		{
+		}
+
+		[Test]
+		public void ContextBound_Object_Should_Be_Cloned()
+		{
+			// FormatterServices.CreateUninitializedObject cannot use context-bound objects
+			var c = new C3();
+			var cloned = c.DeepClone();
+			Assert.That(cloned, Is.Not.Null);
 		}
 	}
 }

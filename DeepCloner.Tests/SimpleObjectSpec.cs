@@ -12,7 +12,7 @@ namespace Force.DeepCloner.Tests
 		[Test]
 		public void SimpleObject_Should_Be_Cloned()
 		{
-			var obj = new TestObject1 { Int = 42, Byte = 42, Short = 42, Long = 42, DateTime = new DateTime(2001, 01, 01), Char = 'X', Decimal = 1.2m, Double = 1.3, Float = 1.4f, String = "test1", UInt = 42, ULong = 42, UShort = 42, Bool = true, IntPtr = new IntPtr(42), UIntPtr = new UIntPtr(42) };
+			var obj = new TestObject1 { Int = 42, Byte = 42, Short = 42, Long = 42, DateTime = new DateTime(2001, 01, 01), Char = 'X', Decimal = 1.2m, Double = 1.3, Float = 1.4f, String = "test1", UInt = 42, ULong = 42, UShort = 42, Bool = true, IntPtr = new IntPtr(42), UIntPtr = new UIntPtr(42), Enum = AttributeTargets.Delegate };
 
 			var cloned = obj.DeepClone();
 			Assert.That(cloned.Byte, Is.EqualTo(42));
@@ -31,6 +31,7 @@ namespace Force.DeepCloner.Tests
 			Assert.That(cloned.Bool, Is.EqualTo(true));
 			Assert.That(cloned.IntPtr, Is.EqualTo(new IntPtr(42)));
 			Assert.That(cloned.UIntPtr, Is.EqualTo(new UIntPtr(42)));
+			Assert.That(cloned.Enum, Is.EqualTo(AttributeTargets.Delegate));
 		}
 
 		public struct S1
@@ -111,6 +112,15 @@ namespace Force.DeepCloner.Tests
 			c1.C = new C2();
 			var cloned = c1.DeepClone();
 			Assert.That(cloned.C, Is.Not.Null);
+		}
+
+		[Test]
+		public void Privitive_Should_Be_Cloned()
+		{
+			Assert.That(3.DeepClone(), Is.EqualTo(3));
+			Assert.That('x'.DeepClone(), Is.EqualTo('x'));
+			Assert.That("x".DeepClone(), Is.EqualTo("x"));
+			Assert.That(DateTime.MinValue.DeepClone(), Is.EqualTo(DateTime.MinValue));
 		}
 	}
 }

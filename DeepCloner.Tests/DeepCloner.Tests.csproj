@@ -44,10 +44,13 @@
   <ItemGroup>
     <Compile Include="ArraysSpec.cs" />
     <Compile Include="ConstructorsSpec.cs" />
+    <Compile Include="InheritanceSpec.cs" />
     <Compile Include="LoopCheckSpec.cs" />
     <Compile Include="Objects\TestObject1.cs" />
+    <Compile Include="PerformanceSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleObjectSpec.cs" />
+    <Compile Include="StandardTypesSpec.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
