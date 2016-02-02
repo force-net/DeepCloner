@@ -103,15 +103,20 @@ namespace Force.DeepCloner.Tests
 		public struct S4
 		{
 			public C2 C;
+
+			public int F;
 		}
 
 		[Test]
 		public void StructWithClass_Should_Be_Cloned()
 		{
 			var c1 = new S4();
+			c1.F = 1;
 			c1.C = new C2();
 			var cloned = c1.DeepClone();
+			c1.F = 2;
 			Assert.That(cloned.C, Is.Not.Null);
+			Assert.That(cloned.F, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -121,6 +126,7 @@ namespace Force.DeepCloner.Tests
 			Assert.That('x'.DeepClone(), Is.EqualTo('x'));
 			Assert.That("x".DeepClone(), Is.EqualTo("x"));
 			Assert.That(DateTime.MinValue.DeepClone(), Is.EqualTo(DateTime.MinValue));
+			Assert.That(AttributeTargets.Delegate.DeepClone(), Is.EqualTo(AttributeTargets.Delegate));
 		}
 	}
 }

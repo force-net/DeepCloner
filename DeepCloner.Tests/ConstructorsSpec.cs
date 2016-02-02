@@ -30,6 +30,34 @@ namespace Force.DeepCloner.Tests
 			public int X { get; set; }
 		}
 
+		public class ExClass
+		{
+			public ExClass()
+			{
+				throw new Exception();
+			}
+
+			public ExClass(string x)
+			{
+				// does not throw here
+			}
+
+			public override bool Equals(object obj)
+			{
+				throw new Exception();
+			}
+
+			public override int GetHashCode()
+			{
+				throw new Exception();
+			}
+
+			public override string ToString()
+			{
+				throw new Exception();
+			}
+		}
+
 		[Test]
 		public void Object_With_Private_Constructor_Should_Be_Cloned()
 		{
@@ -70,6 +98,14 @@ namespace Force.DeepCloner.Tests
 			var c = new C3();
 			var cloned = c.DeepClone();
 			Assert.That(cloned, Is.Not.Null);
+		}
+
+		[Test]
+		public void Cloner_Should_Not_Call_Any_Method_Of_Class_Be_Cloned()
+		{
+			Assert.DoesNotThrow(() => new ExClass("x").DeepClone());
+			var exClass = new ExClass("x");
+			Assert.DoesNotThrow(() => new[] { exClass, exClass }.DeepClone());
 		}
 	}
 }

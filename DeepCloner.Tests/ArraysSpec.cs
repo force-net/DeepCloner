@@ -81,6 +81,16 @@ namespace Force.DeepCloner.Tests
 		}
 
 		[Test]
+		public void NullArray_With_Should_Be_Cloned()
+		{
+			var arr = new C1[] { null, null };
+			var cloned = arr.DeepClone();
+			Assert.That(cloned.Length, Is.EqualTo(2));
+			Assert.That(cloned[0], Is.Null);
+			Assert.That(cloned[1], Is.Null);
+		}
+
+		[Test]
 		public void IntList_Should_Be_Cloned()
 		{
 			// TODO: better performance for this type

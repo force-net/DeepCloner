@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 using NUnit.Framework;
 
@@ -8,7 +10,8 @@ namespace Force.DeepCloner.Tests
 	[TestFixture]
 	public class PerformanceSpec
 	{
-		private class C1
+		[Serializable]
+		public class C1
 		{
 			public int V1 { get; set; }
 
@@ -27,6 +30,16 @@ namespace Force.DeepCloner.Tests
 			return y;
 		}
 
+		private T CloneViaFormatter<T>(T obj)
+		{
+			var bf = new BinaryFormatter();
+			var ms = new MemoryStream();
+			bf.Serialize(ms, obj);
+			ms.Seek(0, SeekOrigin.Begin);
+			return (T)bf.Deserialize(ms);
+		}
+
+
 		[Test, Ignore("Manual")]
 		public void Test_Construct_Variants()
 		{
@@ -34,6 +47,7 @@ namespace Force.DeepCloner.Tests
 			// warm up
 			for (var i = 0; i < 1000; i++) ManualClone(c1);
 			for (var i = 0; i < 1000; i++) c1.DeepClone();
+			for (var i = 0; i < 1000; i++) CloneViaFormatter(c1);
 
 			// test
 			var sw = new Stopwatch();
@@ -45,6 +59,10 @@ namespace Force.DeepCloner.Tests
 
 			for (var i = 0; i < 1000000; i++) c1.DeepClone();
 			Console.WriteLine("Deep: " + sw.ElapsedMilliseconds);
+
+			// inaccurate variant, but test should complete in reasonable time
+			for (var i = 0; i < 100000; i++) CloneViaFormatter(c1);
+			Console.WriteLine("Binary Formatter: " + (sw.ElapsedMilliseconds * 10));
 		}
 
 		[Test, Ignore("Manual")]
@@ -66,6 +84,26 @@ namespace Force.DeepCloner.Tests
 
 			for (var i = 0; i < 100000; i++) c1.DeepClone();
 			Console.WriteLine("Parent: " + sw.ElapsedMilliseconds);
+		}
+
+		public struct S1
+		{
+			public C1 C;
+		}
+
+		[Test, Ignore("Manual")]
+		public void Test_Array_Of_Structs_With_Class()
+		{
+			var c1 = new S1[100000];
+			// warm up
+			for (var i = 0; i < 2; i++) c1.DeepClone();
+
+			// test
+			var sw = new Stopwatch();
+			sw.Start();
+
+			for (var i = 0; i < 100; i++) c1.DeepClone();
+			Console.WriteLine("Deep: " + sw.ElapsedMilliseconds);
 		}
 	}
 }

@@ -15,11 +15,6 @@ namespace Force.DeepCloner.Helpers
 
 		private static int _counter;
 
-		private static Func<T, DeepCloneState, T> GenerateCloner<T>(Type realType)
-		{
-			return (Func<T, DeepCloneState, T>)DeepClonerCache.GetOrAdd(realType, GenerateClonerInternal);
-		}
-
 		private static object GenerateClonerInternal(Type realType)
 		{
 			var type = realType;
@@ -29,7 +24,7 @@ namespace Force.DeepCloner.Helpers
 			var mb = TypeCreationHelper.GetModuleBuilder();
 			// var dt = mb.DefineType("DeepObjectCloner_" + type.Name + Interlocked.Increment(ref _counter));
 			var dt = new DynamicMethod(
-				"DeepObjectCloner_" + type.Name + Interlocked.Increment(ref _counter), type, new[] { realType, typeof(DeepCloneState) }, mb, true);
+				"DeepObjectCloner_" + type.Name + "_" + Interlocked.Increment(ref _counter), type, new[] { realType, typeof(DeepCloneState) }, mb, true);
 
 			var il = dt.GetILGenerator();
 
@@ -42,14 +37,18 @@ namespace Force.DeepCloner.Helpers
 
 		public static T CloneObject<T>(T obj)
 		{
-			return CloneObjectInternal(obj, new DeepCloneState());
+			return typeof(T).IsValueType 
+				? CloneStructInternal(obj, new DeepCloneState()) 
+				: CloneClassInternal(obj, new DeepCloneState());
 		}
 
-		private static T CloneObjectInternal<T>(T obj, DeepCloneState state)
+		private static T CloneClassInternal<T>(T obj, DeepCloneState state) // where T : class
 		{
 			// null
 			var to = typeof(T);
-			if (to.IsClass && ReferenceEquals(obj, null)) return default(T);
+// ReSharper disable CompareNonConstrainedGenericWithNull
+			if (obj == null) return default(T);
+// ReSharper restore CompareNonConstrainedGenericWithNull
 
 			// todo: think about optimization
 			var from = obj.GetType();
@@ -61,7 +60,7 @@ namespace Force.DeepCloner.Helpers
 											.Invoke(null, new object[] { obj, state });*/
 			}
 
-			var cloner = GenerateCloner<T>(from);
+			var cloner = (Func<T, DeepCloneState, T>)DeepClonerCache.GetOrAdd(from, GenerateClonerInternal);
 
 			// safe ojbect
 			if (cloner == null) return obj;
@@ -73,15 +72,16 @@ namespace Force.DeepCloner.Helpers
 			return cloner(obj, state);
 		}
 
-// ReSharper disable UnusedMember.Local
-		private static T CloneObjectInternalNoCheck<T>(T obj, DeepCloneState state)
-// ReSharper restore UnusedMember.Local
+		// TODO: check IsClass/IsInterface usage
+		private static T CloneStructInternal<T>(T obj, DeepCloneState state) // where T : struct
 		{
-			var cloner = GenerateCloner<T>(obj.GetType());
+			// no loops, no nulls, no inheritance
+			var from = obj.GetType();
 
-			// loop
-			var knownRef = state.GetKnownRef(obj);
-			if (knownRef != null) return (T)knownRef;
+			var cloner = (Func<T, DeepCloneState, T>)DeepClonerCache.GetOrAdd(from, GenerateClonerInternal);
+
+			// safe ojbect
+			if (cloner == null) return obj;
 
 			return cloner(obj, state);
 		}
@@ -90,7 +90,14 @@ namespace Force.DeepCloner.Helpers
 		{
 			if (SafeTypes.Contains(type)) return true;
 
-			if (type.IsClass || UnSafeTypes.Contains(type)) return false;
+			if (type.IsEnum)
+			{
+				SafeTypes.Add(type);
+				return true;
+			}
+
+			// non-value types should be copied always
+			if (!type.IsValueType || UnSafeTypes.Contains(type)) return false;
 
 			if (processingTypes == null)
 				processingTypes = new HashSet<Type>();
@@ -126,7 +133,7 @@ namespace Force.DeepCloner.Helpers
 			}
 			
 			var typeLocal = il.DeclareLocal(type);
-			if (type.IsClass)
+			if (!type.IsValueType)
 			{
 				// Formatter services is slightly faster variant, but cannot create ContextBoundObject realizations
 				if (typeof(ContextBoundObject).IsAssignableFrom(type))
@@ -163,7 +170,7 @@ namespace Force.DeepCloner.Helpers
 			{
 				if (CheckIsTypeSafe(fieldInfo.FieldType, null))
 				{
-					il.Emit(OpCodes.Ldloc, typeLocal);
+					il.Emit(type.IsClass ? OpCodes.Ldloc : OpCodes.Ldloca_S, typeLocal);
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Ldfld, fieldInfo);
 					il.Emit(OpCodes.Stfld, fieldInfo);
@@ -175,8 +182,7 @@ namespace Force.DeepCloner.Helpers
 					il.Emit(OpCodes.Ldfld, fieldInfo);
 					il.Emit(OpCodes.Ldarg_1);
 
-					var methodInfo = typeof(DeepClonerGenerator).GetMethod(
-						"CloneObjectInternal", BindingFlags.NonPublic | BindingFlags.Static);
+					var methodInfo = typeof(DeepClonerGenerator).GetMethod(fieldInfo.FieldType.IsValueType ? "CloneStructInternal" : "CloneClassInternal", BindingFlags.NonPublic | BindingFlags.Static);
 					il.Emit(OpCodes.Call, methodInfo.MakeGenericMethod(fieldInfo.FieldType));
 					il.Emit(OpCodes.Stfld, fieldInfo);
 				}
@@ -186,8 +192,10 @@ namespace Force.DeepCloner.Helpers
 			il.Emit(OpCodes.Ret);
 		}
 
+		//TODO: optimizie + check array as struct as interfce
 		private static void GenerateProcessArrayMethod(ILGenerator il, Type type)
 		{
+			// TODO: processing array of structs can be simplified
 			var typeLocal = il.DeclareLocal(type);
 			var lenLocal = il.DeclareLocal(typeof(int));
 			il.Emit(OpCodes.Ldarg_0);
@@ -233,7 +241,7 @@ namespace Force.DeepCloner.Helpers
 				il.Emit(OpCodes.Ldarg_1);
 
 				var methodInfo = typeof(DeepClonerGenerator).GetMethod(
-					"CloneObjectInternal", BindingFlags.NonPublic | BindingFlags.Static);
+					type.IsValueType ? "CloneStructInternal" : "CloneClassInternal", BindingFlags.NonPublic | BindingFlags.Static);
 				il.Emit(OpCodes.Call, methodInfo.MakeGenericMethod(type.GetElementType()));
 				il.Emit(OpCodes.Stelem, type.GetElementType());
 
@@ -255,15 +263,20 @@ namespace Force.DeepCloner.Helpers
 			var mb = TypeCreationHelper.GetModuleBuilder();
 
 			var dt = new DynamicMethod(
-				"DeepObjectConvertor_" + from.Name + "_" + to.Name + Interlocked.Increment(ref _counter), to, new[] { to, typeof(DeepCloneState) }, mb, true);
+				"DeepObjectConvertor_" + from.Name + "_" + to.Name + "_" + Interlocked.Increment(ref _counter), to, new[] { to, typeof(DeepCloneState) }, mb, true);
 			var il = dt.GetILGenerator();
 			il.Emit(OpCodes.Ldarg_0); // to
+			var isStruct = from.IsValueType;
+			if (isStruct)
+				il.Emit(OpCodes.Unbox_Any, from);
 			il.Emit(OpCodes.Ldarg_1); // state
 			var realMethod =
-				typeof(DeepClonerGenerator).GetMethod("CloneObjectInternalNoCheck", BindingFlags.NonPublic | BindingFlags.Static)
+				typeof(DeepClonerGenerator).GetMethod(isStruct ? "CloneStructInternal" : "CloneClassInternal", BindingFlags.NonPublic | BindingFlags.Static)
 											.MakeGenericMethod(from);
 
 			il.Emit(OpCodes.Call, realMethod);
+			if (isStruct)
+				il.Emit(OpCodes.Box, from);
 			il.Emit(OpCodes.Ret);
 			var funcType = typeof(Func<,,>).MakeGenericType(to, typeof(DeepCloneState), to);
 
