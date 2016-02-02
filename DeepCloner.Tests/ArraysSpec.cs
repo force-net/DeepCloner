@@ -81,7 +81,7 @@ namespace Force.DeepCloner.Tests
 		}
 
 		[Test]
-		public void NullArray_With_Should_Be_Cloned()
+		public void NullArray_hould_Be_Cloned()
 		{
 			var arr = new C1[] { null, null };
 			var cloned = arr.DeepClone();
