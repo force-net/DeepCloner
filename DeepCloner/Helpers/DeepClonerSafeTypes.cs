@@ -17,7 +17,9 @@ namespace Force.DeepCloner.Helpers
 		{
 			if (SafeTypes.Contains(type)) return true;
 
-			if (type.IsEnum)
+			// enums are safe
+			// pointers (e.g. int*) are unsafe, but we cannot do anything with it except blind copy
+			if (type.IsEnum || type.IsPointer)
 			{
 				SafeTypes.Add(type);
 				return true;

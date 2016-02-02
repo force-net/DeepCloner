@@ -4,8 +4,6 @@ namespace Force.DeepCloner.Helpers
 {
 	public static class DeepClonerGenerator
 	{
-		// TODO: do something with unsafe fields
-
 		public static T CloneObject<T>(T obj)
 		{
 			return typeof(T).IsValueType 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 using Force.DeepCloner.Tests.Objects;
 
@@ -127,6 +128,41 @@ namespace Force.DeepCloner.Tests
 			Assert.That("x".DeepClone(), Is.EqualTo("x"));
 			Assert.That(DateTime.MinValue.DeepClone(), Is.EqualTo(DateTime.MinValue));
 			Assert.That(AttributeTargets.Delegate.DeepClone(), Is.EqualTo(AttributeTargets.Delegate));
+			Assert.That(((object)null).DeepClone(), Is.Null);
+			var obj = new object();
+			Assert.That(obj.DeepClone(), Is.Not.Null);
+			Assert.That(obj.DeepClone().GetType(), Is.EqualTo(typeof(object)));
+			Assert.That(obj.DeepClone(), Is.Not.EqualTo(obj));
+		}
+
+		private class UnsafeObject
+		{
+			[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed. Suppression is OK here.")]
+			public unsafe void* Void;
+
+			[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed. Suppression is OK here.")]
+			public unsafe int* Int;
+		}
+
+		[Test]
+		public void Unsafe_Should_Be_Cloned()
+		{
+			var u = new UnsafeObject();
+			var i = 1;
+			var j = 2;
+			unsafe
+			{
+				u.Int = &i;
+				u.Void = &i;
+			}
+			
+			var cloned = u.DeepClone();
+			unsafe
+			{
+				u.Int = &j;
+				Assert.That(cloned.Int == &i, Is.True);
+				Assert.That(cloned.Void == &i, Is.True);
+			}
 		}
 	}
 }

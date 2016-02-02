@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Force.DeepCloner</RootNamespace>
-    <AssemblyName>Force.DeepCloner</AssemblyName>
+    <AssemblyName>DeepCloner</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -29,6 +29,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>true</DelaySign>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -45,6 +51,7 @@
     <Compile Include="Helpers\DeepClonerMsilGenerator.cs" />
     <Compile Include="Helpers\DeepClonerSafeTypes.cs" />
     <Compile Include="Helpers\DeepCloneState.cs" />
+    <Compile Include="Helpers\ShallowClonerGenerator.cs" />
     <Compile Include="Helpers\TypeCreationHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

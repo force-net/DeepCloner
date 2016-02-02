@@ -40,7 +40,7 @@ namespace Force.DeepCloner.Helpers
 			if (!type.IsValueType)
 			{
 				// Formatter services is slightly faster variant, but cannot create ContextBoundObject realizations
-				if (typeof(ContextBoundObject).IsAssignableFrom(type))
+				if (type.IsContextful)
 				{
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Call, typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic));
@@ -199,6 +199,20 @@ namespace Force.DeepCloner.Helpers
 			var funcType = typeof(Func<,,>).MakeGenericType(to, typeof(DeepCloneState), to);
 
 			return dt.CreateDelegate(funcType);
+		}
+
+		internal static Func<object, object> GenerateMemberwiseCloner()
+		{
+			// only non-null classes. it is ok such simple implementation
+			var dt = new DynamicMethod(
+				"ShallowObjectCloner_" + Interlocked.Increment(ref _methodCounter), typeof(object), new[] { typeof(object) }, TypeCreationHelper.GetModuleBuilder(), true);
+
+			var il = dt.GetILGenerator();
+			il.Emit(OpCodes.Ldarg_0);
+			il.Emit(OpCodes.Call, typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic));
+			il.Emit(OpCodes.Ret);
+
+			return (Func<object, object>)dt.CreateDelegate(typeof(Func<object, object>));
 		}
 	}
 }

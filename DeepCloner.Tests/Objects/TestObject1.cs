@@ -36,6 +36,6 @@ namespace Force.DeepCloner.Tests.Objects
 
 		public UIntPtr UIntPtr { get; set; }
 
-		public AttributeTargets Enum { get; set; } 
+		public AttributeTargets Enum { get; set; }
 	}
 }
