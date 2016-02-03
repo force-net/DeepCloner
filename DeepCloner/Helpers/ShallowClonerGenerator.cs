@@ -2,21 +2,23 @@
 
 namespace Force.DeepCloner.Helpers
 {
-	internal static class ShallowClonerGenerator
+	public static class ShallowClonerGenerator
 	{
-		public static T CloneObject<T>(T obj)
+		internal static T CloneObject<T>(T obj)
 		{
-			return typeof(T).IsValueType
-						? CloneStructInternal(obj)
-						: CloneClassInternal(obj);
+			// this is faster than typeof(T).IsValueType
+			if (obj is ValueType)
+				if (typeof(T) == obj.GetType()) return obj;
+
+			return (T)ShallowSafeObjectCloner.GetInstance().DoCloneObject(obj);
 		}
 
-		private static T CloneStructInternal<T>(T obj) // where T : struct
+		/*private static T CloneStructInternal<T>(T obj) // where T : struct
 		{
 			return obj; // will be cloned by struct behaviour
-		}
+		}*/
 
-		private static Func<object, object> _cloner = DeepClonerMsilGenerator.GenerateMemberwiseCloner();
+		/*private static Func<object, object> _cloner = DeepClonerMsilGenerator.GenerateMemberwiseCloner();
 
 		private static T CloneClassInternal<T>(T obj) // where T : class
 		{
@@ -25,6 +27,6 @@ namespace Force.DeepCloner.Helpers
 // ReSharper restore CompareNonConstrainedGenericWithNull
 
 			return (T)_cloner(obj);
-		}
+		}*/
 	}
 }

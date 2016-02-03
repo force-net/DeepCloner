@@ -78,6 +78,17 @@ namespace Force.DeepCloner.Tests
 		}
 
 		[Test]
+		public void Struct_As_Interface_Should_Be_Cloned()
+		{
+			var c1 = new DoableStruct1() as IDoable;
+			Assert.That(c1.Do(), Is.EqualTo(1));
+			Assert.That(c1.Do(), Is.EqualTo(2));
+			var clone = c1.ShallowClone();
+			Assert.That(c1.Do(), Is.EqualTo(3));
+			Assert.That(clone.Do(), Is.EqualTo(3));
+		}
+
+		[Test]
 		public void Primitive_Should_Be_Cloned()
 		{
 			Assert.That(((object)null).ShallowClone(), Is.Null);

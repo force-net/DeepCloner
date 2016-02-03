@@ -21,6 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
@@ -47,6 +49,8 @@
     <Compile Include="ConstructorsSpec.cs" />
     <Compile Include="InheritanceSpec.cs" />
     <Compile Include="LoopCheckSpec.cs" />
+    <Compile Include="Objects\DoableStruct1.cs" />
+    <Compile Include="Objects\IDoable.cs" />
     <Compile Include="Objects\TestObject1.cs" />
     <Compile Include="PerformanceSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

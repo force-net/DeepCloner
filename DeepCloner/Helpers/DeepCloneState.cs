@@ -7,7 +7,7 @@ namespace Force.DeepCloner.Helpers
 	{
 		private class CustomEqualityComparer : IEqualityComparer<object>
 		{
-			public bool Equals(object x, object y)
+			bool IEqualityComparer<object>.Equals(object x, object y)
 			{
 				return ReferenceEquals(x, y);
 			}

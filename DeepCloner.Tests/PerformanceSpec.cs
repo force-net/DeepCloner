@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
+using Force.DeepCloner.Helpers;
+
 using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
@@ -16,6 +18,11 @@ namespace Force.DeepCloner.Tests
 			public int V1 { get; set; }
 
 			public string V2 { get; set; }
+
+			public C1 Clone()
+			{
+				return (C1)MemberwiseClone();
+			}
 		}
 
 		private class C2 : C1
@@ -59,6 +66,7 @@ namespace Force.DeepCloner.Tests
 
 			for (var i = 0; i < 1000000; i++) c1.DeepClone();
 			Console.WriteLine("Deep: " + sw.ElapsedMilliseconds);
+			sw.Restart();
 
 			// inaccurate variant, but test should complete in reasonable time
 			for (var i = 0; i < 100000; i++) CloneViaFormatter(c1);
@@ -104,6 +112,31 @@ namespace Force.DeepCloner.Tests
 
 			for (var i = 0; i < 100; i++) c1.DeepClone();
 			Console.WriteLine("Deep: " + sw.ElapsedMilliseconds);
+		}
+
+		[Test, Ignore("Manual")]
+		public void Test_Shallow_Variants()
+		{
+			var c1 = new C1();
+			// warm up
+			for (var i = 0; i < 1000; i++) ManualClone(c1);
+			for (var i = 0; i < 1000; i++) c1.Clone();
+			for (var i = 0; i < 1000; i++) c1.ShallowClone();
+
+			// test
+			var sw = new Stopwatch();
+			sw.Start();
+
+			for (var i = 0; i < 1000000; i++) ManualClone(c1);
+			Console.WriteLine("Manual External: " + sw.ElapsedMilliseconds);
+			sw.Restart();
+
+			for (var i = 0; i < 1000000; i++) c1.Clone();
+			Console.WriteLine("Auto Internal: " + sw.ElapsedMilliseconds);
+			sw.Restart();
+
+			for (var i = 0; i < 1000000; i++) c1.ShallowClone();
+			Console.WriteLine("Shallow: " + sw.ElapsedMilliseconds);
 		}
 	}
 }
