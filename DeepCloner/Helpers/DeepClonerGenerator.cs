@@ -6,7 +6,7 @@ namespace Force.DeepCloner.Helpers
 	{
 		public static T CloneObject<T>(T obj)
 		{
-			return obj is ValueType && typeof(T).IsValueType 
+			return obj is ValueType && typeof(T) == obj.GetType()
 						? CloneStructInternal(obj, new DeepCloneState()) 
 						: (T)CloneClassInternal(obj, new DeepCloneState());
 		}
@@ -15,7 +15,7 @@ namespace Force.DeepCloner.Helpers
 		{
 			if (obj == null) return null;
 
-			var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAdd(obj.GetType(), t => DeepClonerMsilGenerator.GenerateClonerInternal(t, true));
+			var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddStructAsObject(obj.GetType(), t => DeepClonerMsilGenerator.GenerateClonerInternal(t, true));
 
 			// safe ojbect
 			if (cloner == null) return obj;

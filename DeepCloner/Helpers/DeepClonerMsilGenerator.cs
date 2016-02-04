@@ -38,10 +38,12 @@ namespace Force.DeepCloner.Helpers
 			}
 
 			var typeLocal = il.DeclareLocal(type);
+			LocalBuilder structLoc = null;
+
 			if (!type.IsValueType)
 			{
 				// Formatter services is slightly faster variant, but cannot create ContextBoundObject realizations
-				if (type.IsContextful)
+				if (type.IsContextful || 1.Equals(1))
 				{
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Call, typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic));
@@ -57,18 +59,23 @@ namespace Force.DeepCloner.Helpers
 			}
 			else
 			{
-				il.Emit(OpCodes.Ldloca_S, typeLocal);
-				il.Emit(OpCodes.Initobj, type);
-			}
+				if (unboxStruct)
+				{
+					il.Emit(OpCodes.Ldarg_0);
+					il.Emit(OpCodes.Unbox_Any, type);
+					structLoc = il.DeclareLocal(type);
+					il.Emit(OpCodes.Dup);
+					il.Emit(OpCodes.Stloc, structLoc);
+					il.Emit(OpCodes.Stloc, typeLocal);
+				}
+				else
+				{
+					il.Emit(OpCodes.Ldarg_0);
+					il.Emit(OpCodes.Stloc, typeLocal);
+				}
 
-			LocalBuilder structLoc = null;
-
-			if (unboxStruct)
-			{
-				il.Emit(OpCodes.Ldarg_0);
-				il.Emit(OpCodes.Unbox_Any, type);
-				structLoc = il.DeclareLocal(type);
-				il.Emit(OpCodes.Stloc, structLoc);
+				// il.Emit(OpCodes.Ldloca_S, typeLocal);
+				// il.Emit(OpCodes.Initobj, type);
 			}
 
 			// added from -> to binding to ensure reference loop handling
@@ -85,11 +92,13 @@ namespace Force.DeepCloner.Helpers
 			{
 				if (DeepClonerSafeTypes.IsTypeSafe(fieldInfo.FieldType, null))
 				{
+/*
 					il.Emit(type.IsClass ? OpCodes.Ldloc : OpCodes.Ldloca_S, typeLocal);
 					if (structLoc == null) il.Emit(OpCodes.Ldarg_0);
 					else il.Emit(OpCodes.Ldloc, structLoc);
 					il.Emit(OpCodes.Ldfld, fieldInfo);
 					il.Emit(OpCodes.Stfld, fieldInfo);
+*/
 				}
 				else
 				{
@@ -192,7 +201,7 @@ namespace Force.DeepCloner.Helpers
 			}
 
 			il.Emit(OpCodes.Ldloc, typeLocal);
-			// il.Emit(OpCodes.Ret);
+			il.Emit(OpCodes.Ret);
 		}
 
 		internal static object GenerateConvertor(Type from, Type to)
