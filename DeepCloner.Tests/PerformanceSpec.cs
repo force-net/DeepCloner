@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
+using CloneExtensions;
+
 using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
@@ -29,7 +31,16 @@ namespace Force.DeepCloner.Tests
 		{
 		}
 
-		private C1 ManualClone(C1 x)
+		private C1 ManualDeepClone(C1 x)
+		{
+			var y = new C1();
+			y.V1 = x.V1;
+			y.V2 = x.V2;
+			y.O = new object();
+			return y;
+		}
+
+		private C1 ManualShallowClone(C1 x)
 		{
 			var y = new C1();
 			y.V1 = x.V1;
@@ -52,7 +63,8 @@ namespace Force.DeepCloner.Tests
 		{
 			var c1 = new C1 { V1 = 1 };
 			// warm up
-			for (var i = 0; i < 1000; i++) ManualClone(c1);
+			for (var i = 0; i < 1000; i++) ManualDeepClone(c1);
+			for (var i = 0; i < 1000; i++) c1.GetClone();
 			for (var i = 0; i < 1000; i++) c1.DeepClone();
 			for (var i = 0; i < 1000; i++) CloneViaFormatter(c1);
 
@@ -60,12 +72,16 @@ namespace Force.DeepCloner.Tests
 			var sw = new Stopwatch();
 			sw.Start();
 
-			for (var i = 0; i < 1000000; i++) ManualClone(c1);
+			for (var i = 0; i < 1000000; i++) ManualDeepClone(c1);
 			Console.WriteLine("Manual: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 
 			for (var i = 0; i < 1000000; i++) c1.DeepClone();
 			Console.WriteLine("Deep: " + sw.ElapsedMilliseconds);
+			sw.Restart();
+
+			for (var i = 0; i < 1000000; i++) c1.GetClone();
+			Console.WriteLine("Clone Extensions: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 
 			// inaccurate variant, but test should complete in reasonable time
@@ -119,15 +135,16 @@ namespace Force.DeepCloner.Tests
 		{
 			var c1 = new C1();
 			// warm up
-			for (var i = 0; i < 1000; i++) ManualClone(c1);
+			for (var i = 0; i < 1000; i++) ManualShallowClone(c1);
 			for (var i = 0; i < 1000; i++) c1.Clone();
 			for (var i = 0; i < 1000; i++) c1.ShallowClone();
+			for (var i = 0; i < 1000; i++) c1.GetClone();
 
 			// test
 			var sw = new Stopwatch();
 			sw.Start();
 
-			for (var i = 0; i < 1000000; i++) ManualClone(c1);
+			for (var i = 0; i < 1000000; i++) ManualShallowClone(c1);
 			Console.WriteLine("Manual External: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 
@@ -137,6 +154,11 @@ namespace Force.DeepCloner.Tests
 
 			for (var i = 0; i < 1000000; i++) c1.ShallowClone();
 			Console.WriteLine("Shallow: " + sw.ElapsedMilliseconds);
+			sw.Restart();
+
+			for (var i = 0; i < 1000000; i++) c1.GetClone(CloningFlags.Shallow);
+			Console.WriteLine("Clone Extensions: " + sw.ElapsedMilliseconds);
+			sw.Restart();
 		}
 	}
 }

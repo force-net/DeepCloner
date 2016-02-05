@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>DeepCloner</id>
+    <title>DeepCloner</title>
+    <version>0.8.0</version>
+    <authors>force</authors>
+    <owners>force</owners>
+    <licenseUrl>https://github.com/force-net/DeepCloner/blob/develop/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/force-net/DeepCloner</projectUrl>
+    <!--iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Small Library for deep cloning .NET objects</description>
+    <releaseNotes>Initial Public Release.</releaseNotes>
+    <copyright>Copyright by Force 2016</copyright>
+    <tags>.NET shallow deep clone</tags>
+  </metadata>
+  <files><file src="DeepCloner\bin\Release\DeepCloner.*" target="lib\net40" /></files>
+</package>

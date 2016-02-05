@@ -33,6 +33,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CloneExtensions">
+      <HintPath>..\packages\CloneExtensions.1.2\lib\portable-net40+sl50+win+wp80\CloneExtensions.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.3.0.1\lib\net40\nunit.framework.dll</HintPath>
     </Reference>
@@ -46,7 +49,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArraysSpec.cs" />
+    <Compile Include="CloneExtensionsSpec.cs" />
     <Compile Include="ConstructorsSpec.cs" />
+    <Compile Include="GenericsSpec.cs" />
     <Compile Include="InheritanceSpec.cs" />
     <Compile Include="LoopCheckSpec.cs" />
     <Compile Include="Objects\DoableStruct1.cs" />
