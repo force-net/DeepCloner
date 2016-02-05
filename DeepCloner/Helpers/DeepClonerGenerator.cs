@@ -2,46 +2,47 @@
 
 namespace Force.DeepCloner.Helpers
 {
-	public static class DeepClonerGenerator
+	internal static class DeepClonerGenerator
 	{
 		public static T CloneObject<T>(T obj)
 		{
-			return typeof(T).IsValueType 
+			return obj is ValueType && typeof(T) == obj.GetType()
 						? CloneStructInternal(obj, new DeepCloneState()) 
-						: CloneClassInternal(obj, new DeepCloneState());
+						: CloneClassRoot<T>(obj);
 		}
 
-		private static T CloneClassInternal<T>(T obj, DeepCloneState state) // where T : class
+		private static T CloneClassRoot<T>(object obj)
 		{
-			// null
-			var to = typeof(T);
-// ReSharper disable CompareNonConstrainedGenericWithNull
 			if (obj == null) return default(T);
-// ReSharper restore CompareNonConstrainedGenericWithNull
 
-			// todo: think about optimization
-			var from = obj.GetType();
-			if (from != to)
-			{
-				return ((Func<T, DeepCloneState, T>)DeepClonerCache.GetOrAddConvertor(from, to, DeepClonerMsilGenerator.GenerateConvertor))(obj, state);
-				/*return (T)typeof(DeepClonerGenerator).GetMethod("CloneObjectInternal", BindingFlags.Static | BindingFlags.NonPublic)
-											.MakeGenericMethod(from)
-											.Invoke(null, new object[] { obj, state });*/
-			}
+			// we can receive an poco objects which is faster to copy in shallow way if possible
+			if (DeepClonerSafeTypes.IsClassSafe(obj.GetType())) 
+				return (T)ShallowSafeObjectCloner.CloneObject(obj);
 
-			var cloner = GetCloner<T>();
+			return (T)CloneClassInternal(obj, new DeepCloneState());
+		}
+
+		public static T CloneStruct<T>(T obj) where T : struct 
+		{
+			return CloneStructInternal(obj, new DeepCloneState());
+		}
+
+		private static object CloneClassInternal(object obj, DeepCloneState state)
+		{
+			if (obj == null) return null;
+
+			var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddClass(obj.GetType(), t => DeepClonerMsilGenerator.GenerateClonerInternal(t, true));
 
 			// safe ojbect
 			if (cloner == null) return obj;
 
 			// loop
 			var knownRef = state.GetKnownRef(obj);
-			if (knownRef != null) return (T)knownRef;
+			if (knownRef != null) return knownRef;
 
 			return cloner(obj, state);
 		}
 
-		// TODO: check IsClass/IsInterface usage
 		private static T CloneStructInternal<T>(T obj, DeepCloneState state) // where T : struct
 		{
 			// no loops, no nulls, no inheritance
@@ -55,7 +56,7 @@ namespace Force.DeepCloner.Helpers
 
 		private static Func<T, DeepCloneState, T> GetCloner<T>()
 		{
-			return (Func<T, DeepCloneState, T>)DeepClonerCache.GetOrAdd(typeof(T), DeepClonerMsilGenerator.GenerateClonerInternal);
+			return (Func<T, DeepCloneState, T>)DeepClonerCache.GetOrAddStructAsObject(typeof(T), t => DeepClonerMsilGenerator.GenerateClonerInternal(t, false));
 		}
 	}
 }

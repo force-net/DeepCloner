@@ -91,11 +91,24 @@ namespace Force.DeepCloner.Tests
 		{
 		}
 
+		private class C4 : MarshalByRefObject
+		{
+		}
+
 		[Test]
 		public void ContextBound_Object_Should_Be_Cloned()
 		{
 			// FormatterServices.CreateUninitializedObject cannot use context-bound objects
 			var c = new C3();
+			var cloned = c.DeepClone();
+			Assert.That(cloned, Is.Not.Null);
+		}
+
+		[Test]
+		public void MarshalByRef_Object_Should_Be_Cloned()
+		{
+			// FormatterServices.CreateUninitializedObject cannot use context-bound objects
+			var c = new C4();
 			var cloned = c.DeepClone();
 			Assert.That(cloned, Is.Not.Null);
 		}

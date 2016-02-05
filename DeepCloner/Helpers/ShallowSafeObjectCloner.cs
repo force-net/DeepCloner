@@ -20,9 +20,9 @@ namespace Force.DeepCloner.Helpers
 
 		private static readonly ShallowSafeObjectCloner _instance;
 
-		public static ShallowSafeObjectCloner GetInstance()
+		public static object CloneObject(object obj)
 		{
-			return _instance;
+			return _instance.DoCloneObject(obj);
 		}
 
 		static ShallowSafeObjectCloner()

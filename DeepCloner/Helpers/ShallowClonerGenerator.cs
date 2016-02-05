@@ -10,7 +10,7 @@ namespace Force.DeepCloner.Helpers
 			if (obj is ValueType)
 				if (typeof(T) == obj.GetType()) return obj;
 
-			return (T)ShallowSafeObjectCloner.GetInstance().DoCloneObject(obj);
+			return (T)ShallowSafeObjectCloner.CloneObject(obj);
 		}
 
 		/*private static T CloneStructInternal<T>(T obj) // where T : struct

@@ -3,8 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using Force.DeepCloner.Helpers;
-
 using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
@@ -18,6 +16,8 @@ namespace Force.DeepCloner.Tests
 			public int V1 { get; set; }
 
 			public string V2 { get; set; }
+
+			public object O { get; set; }
 
 			public C1 Clone()
 			{
@@ -34,6 +34,7 @@ namespace Force.DeepCloner.Tests
 			var y = new C1();
 			y.V1 = x.V1;
 			y.V2 = x.V2;
+			y.O = x.O;
 			return y;
 		}
 
@@ -46,11 +47,10 @@ namespace Force.DeepCloner.Tests
 			return (T)bf.Deserialize(ms);
 		}
 
-
 		[Test, Ignore("Manual")]
 		public void Test_Construct_Variants()
 		{
-			var c1 = new C1();
+			var c1 = new C1 { V1 = 1 };
 			// warm up
 			for (var i = 0; i < 1000; i++) ManualClone(c1);
 			for (var i = 0; i < 1000; i++) c1.DeepClone();

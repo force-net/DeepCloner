@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using NUnit.Framework;
@@ -24,7 +26,7 @@ namespace Force.DeepCloner.Tests
 			Assert.That(enumCloned.Current, Is.EqualTo(1));
 		}
 
-		[Test(Description = "Just for fun, not clone such object in real situation")]
+		[Test(Description = "Just for fun, do not clone such object in real situation")]
 		public void Type_With_Native_Resource_Should_Be_Cloned()
 		{
 			var fileName = Path.GetTempFileName();
@@ -36,8 +38,14 @@ namespace Force.DeepCloner.Tests
 				var cloned = writer.DeepClone();
 				writer.Write("2");
 				cloned.Write(3);
+				var f = typeof(FileStream).GetField("_handle", BindingFlags.NonPublic | BindingFlags.Instance);
+				var f2 = typeof(SafeHandle).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
+				Console.WriteLine(f2.GetValue(f.GetValue(writer.BaseStream)));
+				Console.WriteLine(f2.GetValue(f.GetValue(cloned.BaseStream)));
 				writer.Close();
-				Assert.Throws<ObjectDisposedException>(cloned.Close);
+				cloned.Close();
+				// this was a bug, we should not throw there
+				// Assert.Throws<ObjectDisposedException>(cloned.Close);
 				var res = File.ReadAllText(fileName);
 				Assert.That(res, Is.EqualTo("123"));
 			}
