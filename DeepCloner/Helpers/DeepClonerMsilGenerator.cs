@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
@@ -88,17 +89,29 @@ namespace Force.DeepCloner.Helpers
 				il.Emit(OpCodes.Call, typeof(DeepCloneState).GetMethod("AddKnownRef"));
 			}
 
-			foreach (var fieldInfo in type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
+			List<FieldInfo> fi = new List<FieldInfo>();
+			var tp = type;
+			do
 			{
+				fi.AddRange(tp.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public));
+				tp = tp.BaseType;
+				break;
+			}
+			while (tp != null);
+			
+
+
+			foreach (var fieldInfo in fi)
+			{
+				Console.WriteLine(type.Name + " " + fieldInfo.Name);
 				if (DeepClonerSafeTypes.IsTypeSafe(fieldInfo.FieldType, null))
 				{
-/*
 					il.Emit(type.IsClass ? OpCodes.Ldloc : OpCodes.Ldloca_S, typeLocal);
 					if (structLoc == null) il.Emit(OpCodes.Ldarg_0);
 					else il.Emit(OpCodes.Ldloc, structLoc);
 					il.Emit(OpCodes.Ldfld, fieldInfo);
 					il.Emit(OpCodes.Stfld, fieldInfo);
-*/
+
 				}
 				else
 				{
