@@ -11,7 +11,7 @@ namespace Force.DeepCloner.Helpers
 
 		private static readonly ConcurrentDictionary<Tuple<Type, Type>, object> _typeConvertCache = new ConcurrentDictionary<Tuple<Type, Type>, object>();
 
-		public static object GetOrAdd<T>(Type type, Func<Type, T> adder)
+		public static object GetOrAddClass<T>(Type type, Func<Type, T> adder)
 		{
 			// return _typeCache.GetOrAdd(type, x => adder(x));
 			

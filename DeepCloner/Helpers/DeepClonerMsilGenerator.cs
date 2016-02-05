@@ -43,20 +43,9 @@ namespace Force.DeepCloner.Helpers
 
 			if (!type.IsValueType)
 			{
-				// Formatter services is slightly faster variant, but cannot create ContextBoundObject realizations
-				if (type.IsContextful || 1.Equals(1))
-				{
-					il.Emit(OpCodes.Ldarg_0);
-					il.Emit(OpCodes.Call, typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic));
-					il.Emit(OpCodes.Stloc, typeLocal);
-				}
-				else
-				{
-					il.Emit(OpCodes.Ldarg_0);
-					il.Emit(OpCodes.Call, typeof(object).GetMethod("GetType"));
-					il.Emit(OpCodes.Call, typeof(System.Runtime.Serialization.FormatterServices).GetMethod("GetUninitializedObject"));
-					il.Emit(OpCodes.Stloc, typeLocal);
-				}
+				il.Emit(OpCodes.Ldarg_0);
+				il.Emit(OpCodes.Call, typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic));
+				il.Emit(OpCodes.Stloc, typeLocal);
 			}
 			else
 			{
@@ -74,9 +63,6 @@ namespace Force.DeepCloner.Helpers
 					il.Emit(OpCodes.Ldarg_0);
 					il.Emit(OpCodes.Stloc, typeLocal);
 				}
-
-				// il.Emit(OpCodes.Ldloca_S, typeLocal);
-				// il.Emit(OpCodes.Initobj, type);
 			}
 
 			// added from -> to binding to ensure reference loop handling
@@ -93,27 +79,16 @@ namespace Force.DeepCloner.Helpers
 			var tp = type;
 			do
 			{
+				// don't do anything with this dark magic!
+				if (tp == typeof(ContextBoundObject)) break;
 				fi.AddRange(tp.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public));
 				tp = tp.BaseType;
-				break;
 			}
 			while (tp != null);
-			
-
 
 			foreach (var fieldInfo in fi)
 			{
-				Console.WriteLine(type.Name + " " + fieldInfo.Name);
-				if (DeepClonerSafeTypes.IsTypeSafe(fieldInfo.FieldType, null))
-				{
-					il.Emit(type.IsClass ? OpCodes.Ldloc : OpCodes.Ldloca_S, typeLocal);
-					if (structLoc == null) il.Emit(OpCodes.Ldarg_0);
-					else il.Emit(OpCodes.Ldloc, structLoc);
-					il.Emit(OpCodes.Ldfld, fieldInfo);
-					il.Emit(OpCodes.Stfld, fieldInfo);
-
-				}
-				else
+				if (!DeepClonerSafeTypes.IsTypeSafe(fieldInfo.FieldType, null))
 				{
 					il.Emit(type.IsClass ? OpCodes.Ldloc : OpCodes.Ldloca_S, typeLocal);
 					if (structLoc == null) il.Emit(OpCodes.Ldarg_0);

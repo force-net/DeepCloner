@@ -190,6 +190,7 @@ namespace Force.DeepCloner.Tests
 			Assert.That(cloned, Is.TypeOf<C3>());
 			Assert.That(c3, Is.Not.EqualTo(cloned));
 			Assert.That(((C3)cloned).X, Is.Not.Null);
+			Assert.That(((C3)cloned).X, Is.Not.EqualTo(c3.X));
 		}
 
 		[Test]
