@@ -91,6 +91,11 @@ namespace Force.DeepCloner.Tests
 		{
 		}
 
+		public class C3
+		{
+			public string X { get; set; }
+		}
+
 		[Test]
 		public void Class_Should_Be_Cloned()
 		{
@@ -125,7 +130,9 @@ namespace Force.DeepCloner.Tests
 		{
 			Assert.That(3.DeepClone(), Is.EqualTo(3));
 			Assert.That('x'.DeepClone(), Is.EqualTo('x'));
-			Assert.That("x".DeepClone(), Is.EqualTo("x"));
+			Assert.That("xxxxxxxxxx yyyyyyyyyyyyyy".DeepClone(), Is.EqualTo("xxxxxxxxxx yyyyyyyyyyyyyy"));
+			Assert.That(string.Empty.DeepClone(), Is.EqualTo(string.Empty));
+			Assert.True(ReferenceEquals("y".DeepClone(), "y"));
 			Assert.That(DateTime.MinValue.DeepClone(), Is.EqualTo(DateTime.MinValue));
 			Assert.That(AttributeTargets.Delegate.DeepClone(), Is.EqualTo(AttributeTargets.Delegate));
 			Assert.That(((object)null).DeepClone(), Is.Null);
@@ -163,6 +170,15 @@ namespace Force.DeepCloner.Tests
 				Assert.That(cloned.Int == &i, Is.True);
 				Assert.That(cloned.Void == &i, Is.True);
 			}
+		}
+
+		[Test]
+		public void String_In_Class_Should_Not_Be_Cloned()
+		{
+			var c = new C3 { X = "aaa" };
+			var cloned = c.DeepClone();
+			Assert.That(cloned.X, Is.EqualTo(c.X));
+			Assert.True(ReferenceEquals(cloned.X, c.X));
 		}
 	}
 }

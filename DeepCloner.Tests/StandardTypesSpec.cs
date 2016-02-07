@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -54,6 +55,20 @@ namespace Force.DeepCloner.Tests
 				if (File.Exists(fileName))
 					File.Delete(fileName);
 			}
+		}
+
+		[Test]
+		public void Funcs_Should_Be_Cloned()
+		{
+			var closure = new[] { "123" };
+			Func<int, string> f = x => closure[0] + x.ToString(CultureInfo.InvariantCulture);
+			var df = f.DeepClone();
+			var cf = f.ShallowClone();
+			closure[0] = "xxx";
+			Assert.That(f(3), Is.EqualTo("xxx3"));
+			// we clone delegate together with a closure
+			Assert.That(df(3), Is.EqualTo("1233"));
+			Assert.That(cf(3), Is.EqualTo("xxx3"));
 		}
 	}
 }

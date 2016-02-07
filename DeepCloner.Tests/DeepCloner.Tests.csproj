@@ -58,6 +58,7 @@
     <Compile Include="Objects\IDoable.cs" />
     <Compile Include="Objects\TestObject1.cs" />
     <Compile Include="PerformanceSpec.cs" />
+    <Compile Include="PermissionSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShallowClonerSpec.cs" />
     <Compile Include="SimpleObjectSpec.cs" />

@@ -58,6 +58,16 @@ namespace Force.DeepCloner.Tests
 			}
 		}
 
+		public class ClonableClass : ICloneable
+		{
+			public object X { get; set; }
+
+			public object Clone()
+			{
+				throw new NotImplementedException();
+			}
+		}
+
 		[Test]
 		public void Object_With_Private_Constructor_Should_Be_Cloned()
 		{
@@ -119,6 +129,14 @@ namespace Force.DeepCloner.Tests
 			Assert.DoesNotThrow(() => new ExClass("x").DeepClone());
 			var exClass = new ExClass("x");
 			Assert.DoesNotThrow(() => new[] { exClass, exClass }.DeepClone());
+		}
+
+		[Test]
+		public void Cloner_Should_Not_Call_Any_Method_Of_Clonable_Class()
+		{
+			// just for check, ensure no hidden behaviour in MemberwiseClone
+			Assert.DoesNotThrow(() => new ClonableClass().DeepClone());
+			Assert.DoesNotThrow(() => new { X = new ClonableClass() }.DeepClone());
 		}
 	}
 }
