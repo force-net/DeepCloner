@@ -3,15 +3,18 @@
   <metadata>
     <id>DeepCloner</id>
     <title>DeepCloner</title>
-    <version>0.8.0</version>
+    <version>0.8.1</version>
     <authors>force</authors>
     <owners>force</owners>
     <licenseUrl>https://github.com/force-net/DeepCloner/blob/develop/LICENSE</licenseUrl>
     <projectUrl>https://github.com/force-net/DeepCloner</projectUrl>
     <!--iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl-->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Small Library for deep cloning .NET objects</description>
-    <releaseNotes>Initial Public Release.</releaseNotes>
+    <description>Small Library for fast deep or shallow cloning .NET objects</description>
+    <releaseNotes>
+    Fixed an issue with cloning strings (strings are forbidden for cloning)
+    Added check for permissions to show correct error. 
+    </releaseNotes>
     <copyright>Copyright by Force 2016</copyright>
     <tags>.NET shallow deep clone</tags>
   </metadata>
