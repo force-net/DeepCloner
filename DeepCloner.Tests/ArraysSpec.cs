@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using NUnit.Framework;
 
@@ -59,7 +60,7 @@ namespace Force.DeepCloner.Tests
 
 		public struct S2
 		{
-			 public C1 C;
+			public C1 C;
 		}
 
 		[Test]
@@ -95,6 +96,16 @@ namespace Force.DeepCloner.Tests
 		}
 
 		[Test]
+		public void NullAsArray_hould_Be_Cloned()
+		{
+			var arr = (int[])null;
+// ReSharper disable ExpressionIsAlwaysNull
+			var cloned = arr.DeepClone();
+// ReSharper restore ExpressionIsAlwaysNull
+			Assert.That(cloned, Is.Null);
+		}
+
+		[Test]
 		public void IntList_Should_Be_Cloned()
 		{
 			// TODO: better performance for this type
@@ -117,6 +128,111 @@ namespace Force.DeepCloner.Tests
 			Assert.That(cloned.Count, Is.EqualTo(2));
 			Assert.That(cloned["a"], Is.EqualTo(1));
 			Assert.That(cloned["b"], Is.EqualTo(2));
+		}
+
+		[Test]
+		public void Array_Of_Same_Arrays_Should_Be_Cloned()
+		{
+			var c1 = new[] { 1, 2, 3 };
+			var arr = new[] { c1, c1, c1 };
+			var cloned = arr.DeepClone();
+
+			Assert.That(cloned.Length, Is.EqualTo(3));
+			Assert.That(ReferenceEquals(arr[0], cloned[0]), Is.False);
+			Assert.That(ReferenceEquals(cloned[0], cloned[1]), Is.True);
+			Assert.That(ReferenceEquals(cloned[1], cloned[2]), Is.True);
+		}
+
+		public class AC
+		{
+			public int[] A { get; set; }
+
+			public int[] B { get; set; }
+		}
+
+		[Test]
+		public void Class_With_Same_Arrays_Should_Be_Cloned()
+		{
+			var ac = new AC();
+			ac.A = ac.B = new int[3];
+			var clone = ac.DeepClone();
+			Assert.That(ReferenceEquals(ac.A, clone.A), Is.False);
+			Assert.That(ReferenceEquals(clone.A, clone.B), Is.True);
+		}
+
+		[Test]
+		public void Class_With_Null_Array_hould_Be_Cloned()
+		{
+			var ac = new AC();
+			var cloned = ac.DeepClone();
+			Assert.That(cloned.A, Is.Null);
+			Assert.That(cloned.B, Is.Null);
+		}
+
+		[Test]
+		public void MultiDim_Array_Should_Be_Cloned()
+		{
+			var arr = new int[2, 2];
+			arr[0, 0] = 1;
+			arr[0, 1] = 2;
+			arr[1, 0] = 3;
+			arr[1, 1] = 4;
+			var clone = arr.DeepClone();
+			Assert.That(clone[0, 0], Is.EqualTo(1));
+			Assert.That(clone[0, 1], Is.EqualTo(2));
+			Assert.That(clone[1, 0], Is.EqualTo(3));
+			Assert.That(clone[1, 1], Is.EqualTo(4));
+		}
+
+		[Test]
+		public void MultiDim_Array_Should_Be_Cloned2()
+		{
+			var arr = new int[2, 2, 1];
+			arr[0, 0, 0] = 1;
+			arr[0, 1, 0] = 2;
+			arr[1, 0, 0] = 3;
+			arr[1, 1, 0] = 4;
+			var clone = arr.DeepClone();
+			Assert.That(clone[0, 0, 0], Is.EqualTo(1));
+			Assert.That(clone[0, 1, 0], Is.EqualTo(2));
+			Assert.That(clone[1, 0, 0], Is.EqualTo(3));
+			Assert.That(clone[1, 1, 0], Is.EqualTo(4));
+		}
+
+		[Test]
+		public void MultiDim_Array_Of_Classes_Should_Be_Cloned()
+		{
+			var arr = new AC[2, 2];
+			arr[0, 0] = arr[1, 1] = new AC();
+			var clone = arr.DeepClone();
+			Assert.That(clone[0, 0], Is.Not.Null);
+			Assert.That(clone[1, 1], Is.Not.Null);
+			Assert.That(clone[1, 1], Is.EqualTo(clone[0, 0]));
+			Assert.That(clone[1, 1], Is.Not.EqualTo(arr[0, 0]));
+		}
+
+		[Test]
+		public void NonZero_Based_Array_Should_Be_Cloned()
+		{
+			var arr = Array.CreateInstance(typeof(int), new[] { 2 }, new[] { 1 });
+			
+			arr.SetValue(1, 1);
+			arr.SetValue(2, 2);
+			var clone = arr.DeepClone();
+			Assert.That(clone.GetValue(1), Is.EqualTo(1));
+			Assert.That(clone.GetValue(2), Is.EqualTo(2));
+		}
+
+		[Test]
+		public void NonZero_Based_MultiDim_Array_Should_Be_Cloned()
+		{
+			var arr = Array.CreateInstance(typeof(int), new[] { 2, 2 }, new[] { 1, 1 });
+
+			arr.SetValue(1, 1, 1);
+			arr.SetValue(2, 2, 2);
+			var clone = arr.DeepClone();
+			Assert.That(clone.GetValue(1, 1), Is.EqualTo(1));
+			Assert.That(clone.GetValue(2, 2), Is.EqualTo(2));
 		}
 	}
 }

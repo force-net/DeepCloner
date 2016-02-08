@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
@@ -112,16 +113,48 @@ namespace Force.DeepCloner.Helpers
 
 		private static void GenerateProcessArrayMethod(ILGenerator il, Type type)
 		{
+			var elementType = type.GetElementType();
+			var rank = type.GetArrayRank();
+			// multidim or not zero-based arrays
+			if (rank != 1 || type != elementType.MakeArrayType())
+			{
+				MethodInfo methodInfo;
+				if (rank == 2)
+				{
+					// small optimization for 2 dim arrays
+					methodInfo = typeof(DeepClonerGenerator).GetMethod("Clone2DimArrayInternal", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(elementType);
+				}
+				else
+				{
+					methodInfo = typeof(DeepClonerGenerator).GetMethod("CloneAbstractArrayInternal", BindingFlags.NonPublic | BindingFlags.Static);
+				}
+
+				il.Emit(OpCodes.Ldarg_0);
+				il.Emit(OpCodes.Ldarg_1);
+				il.Emit(OpCodes.Call, methodInfo);
+				il.Emit(OpCodes.Ret);
+				return;
+			}
+
+
 			// TODO: processing array of structs can be simplified
 			var typeLocal = il.DeclareLocal(type);
 			var lenLocal = il.DeclareLocal(typeof(int));
+
 			il.Emit(OpCodes.Ldarg_0);
+			// msil uses native unsigned ints for array length, but C# does not have such types, so, we use usual int length
+			// il.Emit(OpCodes.Ldlen);
 			il.Emit(OpCodes.Call, type.GetProperty("Length").GetGetMethod());
 			il.Emit(OpCodes.Dup);
 			il.Emit(OpCodes.Stloc, lenLocal);
-			var elementType = type.GetElementType();
 			il.Emit(OpCodes.Newarr, elementType);
 			il.Emit(OpCodes.Stloc, typeLocal);
+
+			// add ref
+			il.Emit(OpCodes.Ldarg_1);
+			il.Emit(OpCodes.Ldarg_0);
+			il.Emit(OpCodes.Ldloc, typeLocal);
+			il.Emit(OpCodes.Call, typeof(DeepCloneState).GetMethod("AddKnownRef"));
 
 			if (DeepClonerSafeTypes.IsTypeSafe(elementType, null))
 			{
