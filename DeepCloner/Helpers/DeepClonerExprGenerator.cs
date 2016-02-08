@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Threading;
 
 namespace Force.DeepCloner.Helpers
 {
@@ -27,37 +25,38 @@ namespace Force.DeepCloner.Helpers
 
 			ParameterExpression from = Expression.Parameter(methodType);
 			var fromLocal = from;
-			var toLocal = Expression.Variable(type, "toLocal");
-			var to = toLocal;
+			var toLocal = Expression.Variable(type);
 			var state = Expression.Parameter(typeof(DeepCloneState));
 
 			if (!type.IsValueType)
 			{
 				var methodInfo = typeof(object).GetMethod("MemberwiseClone", BindingFlags.NonPublic | BindingFlags.Instance);
 				
-				var mce = Expression.Call(from, methodInfo);
-				var ass = Expression.Assign(toLocal, Expression.Convert(mce, type));
-				expressionList.Add(ass);
+				// to = (T)from.MemberwiseClone()
+				expressionList.Add(Expression.Assign(toLocal, Expression.Convert(Expression.Call(from, methodInfo), type)));
 				
 				fromLocal = Expression.Variable(type);
+				// fromLocal = (T)from
 				expressionList.Add(Expression.Assign(fromLocal, Expression.Convert(from, type)));
 
 				// added from -> to binding to ensure reference loop handling
 				// structs cannot loop here
-
-				expressionList.Add(Expression.Call(state, typeof(DeepCloneState).GetMethod("AddKnownRef"), from, to));
+				// state.AddKnownRef(from, to)
+				expressionList.Add(Expression.Call(state, typeof(DeepCloneState).GetMethod("AddKnownRef"), from, toLocal));
 			}
 			else
 			{
 				if (unboxStruct)
 				{
-					to = Expression.Variable(methodType, "to");
+					// toLocal = (T)from;
 					expressionList.Add(Expression.Assign(toLocal, Expression.Unbox(from, type)));
 					fromLocal = Expression.Variable(type);
+					// fromLocal = toLocal; // structs, it is ok to copy
 					expressionList.Add(Expression.Assign(fromLocal, toLocal));
 				}
 				else
 				{
+					// toLocal = from
 					expressionList.Add(Expression.Assign(toLocal, from));
 				}
 			}
@@ -84,6 +83,7 @@ namespace Force.DeepCloner.Helpers
 
 					var get = Expression.Field(fromLocal, fieldInfo);
 
+					// toLocal.Field = Clone...Internal(fromLocal.Field)
 					var call = (Expression)Expression.Call(methodInfo, get, state);
 					if (!fieldInfo.FieldType.IsValueType)
 						call = Expression.Convert(call, fieldInfo.FieldType);
@@ -101,21 +101,13 @@ namespace Force.DeepCloner.Helpers
 				}
 			}
 
-			if (unboxStruct)
-			{
-				expressionList.Add(Expression.Assign(to, Expression.Convert(toLocal, typeof(object))));
-			}
-			else
-			{
-				 expressionList.Add(Expression.Assign(to, to));
-			}
+			expressionList.Add(Expression.Convert(toLocal, methodType));
 
 			var funcType = typeof(Func<,,>).MakeGenericType(methodType, typeof(DeepCloneState), methodType);
 
 			var blockParams = new List<ParameterExpression>();
 			if (from != fromLocal) blockParams.Add(fromLocal);
-			blockParams.Add(to);
-			if (to != toLocal) blockParams.Add(toLocal);
+			blockParams.Add(toLocal);
 
 			return Expression.Lambda(funcType, Expression.Block(blockParams, expressionList), from, state).Compile();
 		}
@@ -123,38 +115,38 @@ namespace Force.DeepCloner.Helpers
 		private static object GenerateProcessArrayMethod(Type type)
 		{
 			var elementType = type.GetElementType();
-			ParameterExpression from = Expression.Parameter(typeof(object));
-			var fromLocal = Expression.Variable(type, "fromLocal");
-			var toLocal = Expression.Variable(type, "toLocal");
-			var state = Expression.Parameter(typeof(DeepCloneState));
+			var rank = type.GetArrayRank();
 
-			var expressionList = new List<Expression>();
+			MethodInfo methodInfo;
 
-			var arr = new int[333];
-			var obj = arr as object;
-			var arr2 = (int[])obj;
-			Console.WriteLine(arr2);
-
-			expressionList.Add(Expression.Assign(fromLocal, Expression.TypeAs(from, type)));
-
-			// expressionList.Add(Expression.Assign(toLocal, Expression.NewArrayBounds(elementType, Expression.ArrayLength(fromLocal))));
-			expressionList.Add(Expression.Assign(toLocal, Expression.NewArrayBounds(elementType, Expression.Constant(3))));
-			expressionList.Add(Expression.Assign(fromLocal, Expression.TypeAs(from, type)));
-			if (DeepClonerSafeTypes.IsTypeSafe(elementType, null))
+			// multidim or not zero-based arrays
+			if (rank != 1 || type != elementType.MakeArrayType())
 			{
-				var copyMethod = typeof(Array).GetMethod("Copy", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Array), typeof(Array), typeof(int) }, null);
-				expressionList.Add(Expression.Call(copyMethod, Expression.TypeAs(from, typeof(int[])), toLocal, Expression.Constant(3)));
+				if (rank == 2)
+				{
+					// small optimization for 2 dim arrays
+					methodInfo = typeof(DeepClonerGenerator).GetMethod("Clone2DimArrayInternal", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(elementType);
+				}
+				else
+				{
+					methodInfo = typeof(DeepClonerGenerator).GetMethod("CloneAbstractArrayInternal", BindingFlags.NonPublic | BindingFlags.Static);
+				}
 			}
 			else
 			{
-				var methodInfo = elementType.IsValueType
-						? typeof(DeepClonerGenerator).GetMethod("CloneStructInternal", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(elementType)
-						: typeof(DeepClonerGenerator).GetMethod("CloneClassInternal", BindingFlags.NonPublic | BindingFlags.Static);
+				var methodName = "Clone1DimArrayClassInternal";
+				if (DeepClonerSafeTypes.IsTypeSafe(elementType, null)) methodName = "Clone1DimArraySafeInternal";
+				else if (elementType.IsValueType) methodName = "Clone1DimArrayStructInternal";
+				methodInfo = typeof(DeepClonerGenerator).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(elementType);
 			}
 
-			expressionList.Add(Expression.Assign(toLocal, toLocal));
+			ParameterExpression from = Expression.Parameter(typeof(object));
+			var state = Expression.Parameter(typeof(DeepCloneState));
+			var call = Expression.Call(methodInfo, Expression.Convert(from, type), state);
 
-			return Expression.Lambda(typeof(Func<object, DeepCloneState, object>), Expression.Block(new[] { from, fromLocal, toLocal }, expressionList), from, state).Compile();
+			var funcType = typeof(Func<,,>).MakeGenericType(typeof(object), typeof(DeepCloneState), typeof(object));
+
+			return Expression.Lambda(funcType, call, from, state).Compile();
 		}
 	}
 }

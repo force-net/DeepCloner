@@ -4,9 +4,15 @@ using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
-	[TestFixture]
-	public class GenericsSpec
+	[TestFixture(false)]
+	[TestFixture(true)]
+	public class GenericsSpec : BaseTest
 	{
+		public GenericsSpec(bool isSafeInit)
+			: base(isSafeInit)
+		{
+		}
+
 		[Test]
 		public void Tuple_Should_Be_Cloned()
 		{

@@ -5,9 +5,15 @@ using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
-	[TestFixture]
-	public class InheritanceSpec
+	[TestFixture(false)]
+	[TestFixture(true)]
+	public class InheritanceSpec : BaseTest
 	{
+		public InheritanceSpec(bool isSafeInit)
+			: base(isSafeInit)
+		{
+		}
+
 		public class C1 : IDisposable
 		{
 			[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed. Suppression is OK here.")]

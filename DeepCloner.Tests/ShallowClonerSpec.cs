@@ -6,9 +6,15 @@ using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
-	[TestFixture]
-	public class ShallowClonerSpec
+	[TestFixture(false)]
+	[TestFixture(true)]
+	public class ShallowClonerSpec : BaseTest
 	{
+		public ShallowClonerSpec(bool isSafeInit)
+			: base(isSafeInit)
+		{
+		}
+
 		[Test]
 		public void SimpleObject_Should_Be_Cloned()
 		{

@@ -12,7 +12,9 @@ namespace Force.DeepCloner.Helpers
 	{
 		protected abstract object DoCloneObject(object obj);
 
-		private static readonly ShallowObjectCloner _instance;
+		private static readonly ShallowObjectCloner _unsafeInstance;
+
+		private static ShallowObjectCloner _instance;
 
 		/// <summary>
 		/// Performs real shallow object clone
@@ -24,29 +26,37 @@ namespace Force.DeepCloner.Helpers
 			return _instance.DoCloneObject(obj);
 		}
 
-		private class ShallowSafeObjectCloner : ShallowObjectCloner
+		internal static bool IsSafeVariant()
 		{
-			private readonly Func<object, object> _cloneFunc;
-
-			public ShallowSafeObjectCloner()
-			{
-				var methodInfo = typeof(object).GetMethod("MemberwiseClone", BindingFlags.NonPublic | BindingFlags.Instance);
-				ParameterExpression parameterExpression1 = Expression.Parameter(typeof(object));
-				var mce = Expression.Call(parameterExpression1, methodInfo);
-				_cloneFunc = Expression.Lambda<Func<object, object>>(mce, parameterExpression1).Compile();
-			}
-
-			protected override object DoCloneObject(object obj)
-			{
-				return _cloneFunc(obj);
-			}
+			return _instance is ShallowSafeObjectCloner;
 		}
 
 		static ShallowObjectCloner()
 		{
-			_instance = new ShallowSafeObjectCloner();
-			return;
+			_unsafeInstance = GenerateUnsafeCloner();
+			_instance = _unsafeInstance;
+			try
+			{
+				_instance.DoCloneObject(new object());
+			}
+			catch (Exception)
+			{
+				// switching to safe
+				_instance = new ShallowSafeObjectCloner();
+			}
+		}
 
+		/// <summary>
+		/// Purpose of this method is testing variants
+		/// </summary>
+		internal static void SwitchTo(bool isSafe)
+		{
+			if (isSafe) _instance = new ShallowSafeObjectCloner();
+			else _instance = _unsafeInstance;
+		}
+
+		private static ShallowObjectCloner GenerateUnsafeCloner()
+		{
 			var mb = TypeCreationHelper.GetModuleBuilder();
 
 			var builder = mb.DefineType("ShallowSafeObjectClonerImpl", TypeAttributes.Public, typeof(ShallowObjectCloner));
@@ -54,9 +64,9 @@ namespace Force.DeepCloner.Helpers
 
 			var cil = ctorBuilder.GetILGenerator();
 			cil.Emit(OpCodes.Ldarg_0);
-// ReSharper disable AssignNullToNotNullAttribute
+			// ReSharper disable AssignNullToNotNullAttribute
 			cil.Emit(OpCodes.Call, typeof(ShallowObjectCloner).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance)[0]);
-// ReSharper restore AssignNullToNotNullAttribute
+			// ReSharper restore AssignNullToNotNullAttribute
 			cil.Emit(OpCodes.Ret);
 
 			var methodBuilder = builder.DefineMethod(
@@ -71,7 +81,25 @@ namespace Force.DeepCloner.Helpers
 			il.Emit(OpCodes.Call, typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic));
 			il.Emit(OpCodes.Ret);
 			var type = builder.CreateType();
-			_instance = (ShallowObjectCloner)Activator.CreateInstance(type);
+			return (ShallowObjectCloner)Activator.CreateInstance(type);
+		}
+
+		private class ShallowSafeObjectCloner : ShallowObjectCloner
+		{
+			private static readonly Func<object, object> _cloneFunc;
+
+			static ShallowSafeObjectCloner()
+			{
+				var methodInfo = typeof(object).GetMethod("MemberwiseClone", BindingFlags.NonPublic | BindingFlags.Instance);
+				var p = Expression.Parameter(typeof(object));
+				var mce = Expression.Call(p, methodInfo);
+				_cloneFunc = Expression.Lambda<Func<object, object>>(mce, p).Compile();
+			}
+
+			protected override object DoCloneObject(object obj)
+			{
+				return _cloneFunc(obj);
+			}
 		}
 	}
 }

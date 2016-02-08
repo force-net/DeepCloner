@@ -33,9 +33,7 @@ namespace Force.DeepCloner.Helpers
 		{
 			if (obj == null) return null;
 
-			// var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddClass(obj.GetType(), t => DeepClonerMsilGenerator.GenerateClonerInternal(t, true));
-
-			var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddClass(obj.GetType(), t => DeepClonerExprGenerator.GenerateClonerInternal(t, true));
+			var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddClass(obj.GetType(), t => GenerateCloner(t, true));
 
 			// safe ojbect
 			if (cloner == null) return obj;
@@ -50,12 +48,49 @@ namespace Force.DeepCloner.Helpers
 		private static T CloneStructInternal<T>(T obj, DeepCloneState state) // where T : struct
 		{
 			// no loops, no nulls, no inheritance
-			var cloner = GetCloner<T>();
+			var cloner = GetClonerForValueType<T>();
 
 			// safe ojbect
 			if (cloner == null) return obj;
 
 			return cloner(obj, state);
+		}
+
+		// when we can't use code generation, we can use these methods
+		internal static T[] Clone1DimArraySafeInternal<T>(T[] obj, DeepCloneState state)
+		{
+			var l = obj.Length;
+			var outArray = new T[l];
+			state.AddKnownRef(obj, outArray);
+			Array.Copy(obj, outArray, obj.Length);
+			return outArray;
+		}
+
+		internal static T[] Clone1DimArrayStructInternal<T>(T[] obj, DeepCloneState state)
+		{
+			// not null from called method, but will check it anyway
+			if (obj == null) return null;
+			var l = obj.Length;
+			var outArray = new T[l];
+			state.AddKnownRef(obj, outArray);
+			var cloner = GetClonerForValueType<T>();
+			for (var i = 0; i < l; i++)
+				outArray[i] = cloner(obj[i], state);
+
+			return outArray;
+		}
+
+		internal static T[] Clone1DimArrayClassInternal<T>(T[] obj, DeepCloneState state)
+		{
+			// not null from called method, but will check it anyway
+			if (obj == null) return null;
+			var l = obj.Length;
+			var outArray = new T[l];
+			state.AddKnownRef(obj, outArray);
+			for (var i = 0; i < l; i++)
+				outArray[i] = (T)CloneClassInternal(obj[i], state);
+
+			return outArray;
 		}
 
 		// relatively frequent case. specially handled
@@ -66,6 +101,7 @@ namespace Force.DeepCloner.Helpers
 			var l1 = obj.GetLength(0);
 			var l2 = obj.GetLength(1);
 			var outArray = new T[l1, l2];
+			state.AddKnownRef(obj, outArray);
 			if (DeepClonerSafeTypes.IsTypeSafe(typeof(T), null))
 			{
 				Array.Copy(obj, outArray, obj.Length);
@@ -74,7 +110,7 @@ namespace Force.DeepCloner.Helpers
 
 			if (typeof(T).IsValueType)
 			{
-				var cloner = GetCloner<T>();
+				var cloner = GetClonerForValueType<T>();
 				for (var i = 0; i < l1; i++)
 					for (var k = 0; k < l2; k++)
 						outArray[i, k] = cloner(obj[i, k], state);
@@ -100,7 +136,7 @@ namespace Force.DeepCloner.Helpers
 			var idxes = Enumerable.Range(0, rank).Select(obj.GetLowerBound).ToArray();
 
 			var outArray = Array.CreateInstance(obj.GetType().GetElementType(), lengths, lowerBounds);
-
+			state.AddKnownRef(obj, outArray);
 			while (true)
 			{
 				outArray.SetValue(CloneClassInternal(obj.GetValue(idxes), state), idxes);
@@ -120,9 +156,15 @@ namespace Force.DeepCloner.Helpers
 			}
 		}
 
-		private static Func<T, DeepCloneState, T> GetCloner<T>()
+		private static Func<T, DeepCloneState, T> GetClonerForValueType<T>()
 		{
-			return (Func<T, DeepCloneState, T>)DeepClonerCache.GetOrAddStructAsObject(typeof(T), t => DeepClonerExprGenerator.GenerateClonerInternal(t, false));
+			return (Func<T, DeepCloneState, T>)DeepClonerCache.GetOrAddStructAsObject(typeof(T), t => GenerateCloner(t, false));
+		}
+
+		private static object GenerateCloner(Type t, bool asObject)
+		{
+			if (ShallowObjectCloner.IsSafeVariant()) return DeepClonerExprGenerator.GenerateClonerInternal(t, asObject);
+			else return DeepClonerMsilGenerator.GenerateClonerInternal(t, asObject);
 		}
 	}
 }
