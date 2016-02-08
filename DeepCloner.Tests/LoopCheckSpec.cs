@@ -2,9 +2,15 @@
 
 namespace Force.DeepCloner.Tests
 {
-	[TestFixture]
-	public class LoopCheckSpec
+	[TestFixture(false)]
+	[TestFixture(true)]
+	public class LoopCheckSpec : BaseTest
 	{
+		public LoopCheckSpec(bool isSafeInit)
+			: base(isSafeInit)
+		{
+		}
+
 		public class C1
 		{
 			public int F { get; set; }

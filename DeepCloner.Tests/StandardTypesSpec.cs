@@ -9,9 +9,15 @@ using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
-	[TestFixture]
-	public class StandardTypesSpec
+	[TestFixture(false)]
+	[TestFixture(true)]
+	public class StandardTypesSpec : BaseTest
 	{
+		public StandardTypesSpec(bool isSafeInit)
+			: base(isSafeInit)
+		{
+		}
+
 		[Test]
 		public void StandardTypes_Should_Be_Cloned()
 		{

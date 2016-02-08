@@ -59,8 +59,12 @@ namespace Force.DeepCloner.Tests
 		}
 
 		[Test, Ignore("Manual")]
-		public void Test_Construct_Variants()
+		[TestCase(false)]
+		[TestCase(true)]
+		public void Test_Construct_Variants(bool isSafe)
 		{
+			// we cache cloners for type, so, this only variant with separate run
+			BaseTest.SwitchTo(isSafe);
 			var c1 = new C1 { V1 = 1 };
 			// warm up
 			for (var i = 0; i < 1000; i++) ManualDeepClone(c1);
@@ -137,6 +141,9 @@ namespace Force.DeepCloner.Tests
 			// warm up
 			for (var i = 0; i < 1000; i++) ManualShallowClone(c1);
 			for (var i = 0; i < 1000; i++) c1.Clone();
+			BaseTest.SwitchTo(false);
+			for (var i = 0; i < 1000; i++) c1.ShallowClone();
+			BaseTest.SwitchTo(true);
 			for (var i = 0; i < 1000; i++) c1.ShallowClone();
 			for (var i = 0; i < 1000; i++) c1.GetClone();
 
@@ -150,10 +157,17 @@ namespace Force.DeepCloner.Tests
 
 			for (var i = 0; i < 1000000; i++) c1.Clone();
 			Console.WriteLine("Auto Internal: " + sw.ElapsedMilliseconds);
-			sw.Restart();
-
+			sw.Reset();
+			BaseTest.SwitchTo(false);
+			sw.Start();
 			for (var i = 0; i < 1000000; i++) c1.ShallowClone();
-			Console.WriteLine("Shallow: " + sw.ElapsedMilliseconds);
+			Console.WriteLine("Shallow Unsafe: " + sw.ElapsedMilliseconds);
+			sw.Reset();
+
+			BaseTest.SwitchTo(true);
+			sw.Start();
+			for (var i = 0; i < 1000000; i++) c1.ShallowClone();
+			Console.WriteLine("Shallow Safe: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 
 			for (var i = 0; i < 1000000; i++) c1.GetClone(CloningFlags.Shallow);

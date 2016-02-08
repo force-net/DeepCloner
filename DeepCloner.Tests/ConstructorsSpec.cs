@@ -4,9 +4,15 @@ using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
-	[TestFixture]
-	public class ConstructorsSpec
+	[TestFixture(false)]
+	[TestFixture(true)]
+	public class ConstructorsSpec : BaseTest
 	{
+		public ConstructorsSpec(bool isSafeInit)
+			: base(isSafeInit)
+		{
+		}
+
 		public class T1
 		{
 			private T1()

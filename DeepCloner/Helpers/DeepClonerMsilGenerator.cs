@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
@@ -136,12 +135,13 @@ namespace Force.DeepCloner.Helpers
 				return;
 			}
 
-
 			// TODO: processing array of structs can be simplified
 			var typeLocal = il.DeclareLocal(type);
 			var lenLocal = il.DeclareLocal(typeof(int));
 
 			il.Emit(OpCodes.Ldarg_0);
+			// msil uses native unsigned ints for array length, but C# does not have such types, so, we use usual int length
+			// il.Emit(OpCodes.Ldlen);
 			il.Emit(OpCodes.Call, type.GetProperty("Length").GetGetMethod());
 			il.Emit(OpCodes.Dup);
 			il.Emit(OpCodes.Stloc, lenLocal);
@@ -177,7 +177,7 @@ namespace Force.DeepCloner.Helpers
 					var funcType = typeof(Func<,,>).MakeGenericType(elementType, typeof(DeepCloneState), elementType);
 					methodInfo = funcType.GetMethod("Invoke");
 					clonerLocal = il.DeclareLocal(funcType);
-					il.Emit(OpCodes.Call, typeof(DeepClonerGenerator).GetMethod("GetCloner", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(elementType));
+					il.Emit(OpCodes.Call, typeof(DeepClonerGenerator).GetMethod("GetClonerForValueType", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(elementType));
 					il.Emit(OpCodes.Stloc, clonerLocal);
 				}
 

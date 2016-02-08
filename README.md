@@ -8,7 +8,11 @@ You don't need to mark objects somehow, like Serializable-attribute, or restrict
 
 ## Limitation
 
-**Library requires full trust permission set!** Usually, it is not a problem, but in case of such restriction, you should use another library, e.g. [CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions). It clones only public properties of objects, so, result can differ, but it works anywhere.
+Library requires Full Trust permission set or Reflection permission (RestrictedMemberAccess + MemberAccess). It prefers Full Trust, but if code lacks of this variant, library seamlessly switchs to slighlty slower but safer variant.
+
+If your code is on very limited permission set, you can try to use another library, e.g. [CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions). It clones only public properties of objects, so, result can differ, but it works anywhere.
+
+
 
 ## Usage
 
@@ -81,9 +85,10 @@ Tables below, just for information. Simple object with some fields ara cloned mu
 
   Method   |  Time (in ms)  | Comments
 ---|---|---
-Manual | 11 |  You should manually realize cloning. It requires a lot of work and can cause copy-paste errors, but it is fastest variant
-DeepClone | 200 | This variant is 20 times slower than manual, but clones any object without preparation
-[CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 400ms | Implementation of cloning objects on expression trees.
+Manual | 12 |  You should manually realize cloning. It requires a lot of work and can cause copy-paste errors, but it is fastest variant
+DeepClone / Unsafe | 196 | This variant is 20 times slower than manual, but clones any object without preparation
+DeepClone / Safe | 217 | Safe variant based on on expressions
+[CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 407ms | Implementation of cloning objects on expression trees.
 BinaryFormatter | 10000 | Another way of deep object cloning through serializing/deserializing object. Instead of Json serializers - it maintains full graph of serializing objects and also do not call any method for cloning object. But due serious overhead, this variant is very slow
 
 **Shallow cloning** 
@@ -93,8 +98,9 @@ Shallow cloning is usually faster, because we no need to calculate references an
 ---|---|---
 Manual | 11 | You should manually realize clone, property by property, field by field. Fastest variant
 Manual / MemberwiseClone | 37 | Fast variant to clone: call MemberwiseClone inside your class. Should be done manually, but does not require a lot of work.
-ShallowClone | 48 | Slightly slower than MemberwiseClone due checks for nulls and object types
-[CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 120 | Implementation of cloning objects on expression trees.
+ShallowClone / Unsafe | 46 | Slightly slower than MemberwiseClone due checks for nulls and object types
+ShallowClone / Safe | 48 | Safe variant based on expressions
+[CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 123 | Implementation of cloning objects on expression trees.
 
 ## License
 

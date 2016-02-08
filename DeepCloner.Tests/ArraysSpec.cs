@@ -5,9 +5,15 @@ using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
-	[TestFixture]
-	public class ArraysSpec
+	[TestFixture(false)]
+	[TestFixture(true)]
+	public class ArraysSpec : BaseTest
 	{
+		public ArraysSpec(object isSafeInit)
+			: base((bool)isSafeInit)
+		{
+		}
+
 		[Test]
 		public void IntArray_Should_Be_Cloned()
 		{

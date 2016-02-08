@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArraysSpec.cs" />
+    <Compile Include="BaseTest.cs" />
     <Compile Include="CloneExtensionsSpec.cs" />
     <Compile Include="ConstructorsSpec.cs" />
     <Compile Include="GenericsSpec.cs" />

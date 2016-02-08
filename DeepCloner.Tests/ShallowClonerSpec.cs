@@ -6,9 +6,15 @@ using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
-	[TestFixture]
-	public class ShallowClonerSpec
+	[TestFixture(false)]
+	[TestFixture(true)]
+	public class ShallowClonerSpec : BaseTest
 	{
+		public ShallowClonerSpec(bool isSafeInit)
+			: base(isSafeInit)
+		{
+		}
+
 		[Test]
 		public void SimpleObject_Should_Be_Cloned()
 		{
@@ -93,6 +99,16 @@ namespace Force.DeepCloner.Tests
 		{
 			Assert.That(((object)null).ShallowClone(), Is.Null);
 			Assert.That(3.ShallowClone(), Is.EqualTo(3));
+		}
+
+		[Test]
+		public void Array_Should_Be_Cloned()
+		{
+			var a = new[] { 3, 4 };
+			var clone = a.ShallowClone();
+			Assert.That(clone.Length, Is.EqualTo(2));
+			Assert.That(clone[0], Is.EqualTo(3));
+			Assert.That(clone[1], Is.EqualTo(4));
 		}
 	}
 }

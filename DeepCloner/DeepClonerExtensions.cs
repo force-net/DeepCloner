@@ -1,4 +1,5 @@
-﻿using System.Security;
+﻿using System;
+using System.Security;
 
 using Force.DeepCloner.Helpers;
 
@@ -12,7 +13,6 @@ namespace Force.DeepCloner
 		/// <summary>
 		/// Performs deep (full) copy of object and related graph
 		/// </summary>
-		// [PermissionSetAttribute(SecurityAction.Demand, Name = "FullTrust")] // <-- this attribute slowers execution
 		public static T DeepClone<T>(this T obj)
 		{
 			return DeepClonerGenerator.CloneObject(obj);
@@ -21,7 +21,6 @@ namespace Force.DeepCloner
 		/// <summary>
 		/// Performs shallow (only new object returned, without cloning of dependencies) copy of object
 		/// </summary>
-		// [PermissionSet(SecurityAction.Demand, Name = "FullTrust")] // <-- this attribute slowers execution
 		public static T ShallowClone<T>(this T obj)
 		{
 			return ShallowClonerGenerator.CloneObject(obj);
@@ -31,7 +30,7 @@ namespace Force.DeepCloner
 		{
 			if (!PermissionCheck())
 			{
-				throw new SecurityException("DeepCloner should have enough permissions to run. FullTrust set is enough to run.");
+				throw new SecurityException("DeepCloner should have enough permissions to run. Grant FullTrust or Reflection permission.");
 			}
 		}
 
@@ -44,6 +43,10 @@ namespace Force.DeepCloner
 				new object().ShallowClone();
 			}
 			catch (VerificationException)
+			{
+				return false;
+			}
+			catch (MemberAccessException)
 			{
 				return false;
 			}
