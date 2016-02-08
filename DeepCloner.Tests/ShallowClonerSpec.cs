@@ -94,5 +94,15 @@ namespace Force.DeepCloner.Tests
 			Assert.That(((object)null).ShallowClone(), Is.Null);
 			Assert.That(3.ShallowClone(), Is.EqualTo(3));
 		}
+
+		[Test]
+		public void Array_Should_Be_Cloned()
+		{
+			var a = new[] { 3, 4 };
+			var clone = a.ShallowClone();
+			Assert.That(clone.Length, Is.EqualTo(2));
+			Assert.That(clone[0], Is.EqualTo(3));
+			Assert.That(clone[1], Is.EqualTo(4));
+		}
 	}
 }

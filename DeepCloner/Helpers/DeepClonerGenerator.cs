@@ -17,7 +17,7 @@ namespace Force.DeepCloner.Helpers
 
 			// we can receive an poco objects which is faster to copy in shallow way if possible
 			if (DeepClonerSafeTypes.IsClassSafe(obj.GetType())) 
-				return (T)ShallowSafeObjectCloner.CloneObject(obj);
+				return (T)ShallowObjectCloner.CloneObject(obj);
 
 			return (T)CloneClassInternal(obj, new DeepCloneState());
 		}
@@ -31,7 +31,9 @@ namespace Force.DeepCloner.Helpers
 		{
 			if (obj == null) return null;
 
-			var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddClass(obj.GetType(), t => DeepClonerMsilGenerator.GenerateClonerInternal(t, true));
+			// var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddClass(obj.GetType(), t => DeepClonerMsilGenerator.GenerateClonerInternal(t, true));
+
+			var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddClass(obj.GetType(), t => DeepClonerExprGenerator.GenerateClonerInternal(t, true));
 
 			// safe ojbect
 			if (cloner == null) return obj;
@@ -56,7 +58,7 @@ namespace Force.DeepCloner.Helpers
 
 		private static Func<T, DeepCloneState, T> GetCloner<T>()
 		{
-			return (Func<T, DeepCloneState, T>)DeepClonerCache.GetOrAddStructAsObject(typeof(T), t => DeepClonerMsilGenerator.GenerateClonerInternal(t, false));
+			return (Func<T, DeepCloneState, T>)DeepClonerCache.GetOrAddStructAsObject(typeof(T), t => DeepClonerExprGenerator.GenerateClonerInternal(t, false));
 		}
 	}
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
 
@@ -25,14 +27,19 @@ namespace Force.DeepCloner.Tests
 			// assembly execute
 			permissions.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
 
-			permissions.AddPermission(new ReflectionPermission(PermissionState.Unrestricted));
+			permissions.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.RestrictedMemberAccess | ReflectionPermissionFlag.MemberAccess));
 
-			permissions.AddPermission(new SecurityPermission(PermissionState.Unrestricted));
+			// permissions.AddPermission(new SecurityPermission(PermissionState.Unrestricted));
 
 			var test = AppDomain.CreateDomain("sandbox", null, setup, permissions);
 
 			var instance = (Executor)test.CreateInstanceFromAndUnwrap(this.GetType().Assembly.Location, typeof(Executor).FullName);
-			instance.DoShallowClone();
+			instance.DoDeepClone();
+		}
+
+		public class Test
+		{
+			public int X { get; set; }
 		}
 
 		public class Executor : MarshalByRefObject
@@ -44,7 +51,7 @@ namespace Force.DeepCloner.Tests
 
 			 public void DoShallowClone()
 			 {
-				 new List<int> { 1, 2, 3 }.ShallowClone();
+				new List<int> { 1, 2, 3 }.ShallowClone();
 			 }
 		}
 	}

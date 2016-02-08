@@ -43,6 +43,8 @@ namespace Force.DeepCloner.Tests
 			Assert.That(cloned.Length, Is.EqualTo(2));
 			Assert.That(cloned[0].X, Is.EqualTo(1));
 			Assert.That(cloned[1].X, Is.EqualTo(2));
+			Assert.That(cloned[0], Is.Not.EqualTo(arr[0]));
+			Assert.That(cloned[1], Is.Not.EqualTo(arr[1]));
 		}
 
 		public struct S1
@@ -78,6 +80,8 @@ namespace Force.DeepCloner.Tests
 			Assert.That(cloned.Length, Is.EqualTo(2));
 			Assert.That(cloned[0].C.X, Is.EqualTo(1));
 			Assert.That(cloned[1].C.X, Is.EqualTo(2));
+			Assert.That(cloned[0].C, Is.Not.EqualTo(arr[0].C));
+			Assert.That(cloned[1].C, Is.Not.EqualTo(arr[1].C));
 		}
 
 		[Test]
