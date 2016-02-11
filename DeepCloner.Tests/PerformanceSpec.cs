@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using CloneExtensions;
@@ -65,7 +66,7 @@ namespace Force.DeepCloner.Tests
 		{
 			// we cache cloners for type, so, this only variant with separate run
 			BaseTest.SwitchTo(isSafe);
-			var c1 = new C1 { V1 = 1 };
+			var c1 = new C1 { V1 = 1, O = new object(), V2 = "xxx" };
 			// warm up
 			for (var i = 0; i < 1000; i++) ManualDeepClone(c1);
 			for (var i = 0; i < 1000; i++) c1.GetClone();
@@ -76,15 +77,15 @@ namespace Force.DeepCloner.Tests
 			var sw = new Stopwatch();
 			sw.Start();
 
-			for (var i = 0; i < 1000000; i++) ManualDeepClone(c1);
+			for (var i = 0; i < 10000000; i++) ManualDeepClone(c1);
 			Console.WriteLine("Manual: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 
-			for (var i = 0; i < 1000000; i++) c1.DeepClone();
+			for (var i = 0; i < 10000000; i++) c1.DeepClone();
 			Console.WriteLine("Deep: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 
-			for (var i = 0; i < 1000000; i++) c1.GetClone();
+			for (var i = 0; i < 10000000; i++) c1.GetClone();
 			Console.WriteLine("Clone Extensions: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 
@@ -137,7 +138,7 @@ namespace Force.DeepCloner.Tests
 		[Test, Ignore("Manual")]
 		public void Test_Shallow_Variants()
 		{
-			var c1 = new C1();
+			var c1 = new C1 { V1 = 1, O = new object(), V2 = "xxx" };
 			// warm up
 			for (var i = 0; i < 1000; i++) ManualShallowClone(c1);
 			for (var i = 0; i < 1000; i++) c1.Clone();

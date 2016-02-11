@@ -44,7 +44,7 @@ Shallow cloning (clone only same object, not objects that object relate to)
 
 ## Installation
 
-Trought nuget: 
+Through nuget: 
 ```
   Install-Package DeepCloner
 ```
@@ -54,7 +54,7 @@ Trought nuget:
 You can use deep clone of objects for a lot of situations, e.g.:
 * Emulation of external service or _deserialization elimination_ (e.g. in Unit Testing). When code has received object from external source, code can change it (because object for code is *own*).
 * ReadOnly object replace. Instead of wrapping your object to readonly object, you can clone object and target code can do anything with it without any restriction.
-* Caching. You can cache data locally and want to ensurce that cached object hadntt been changed by other code
+* Caching. You can cache data locally and want to ensurce that cached object hadn't been changed by other code
  
 You can use shallow clone as fast, light version of deep clone (if your situation allows that). Main difference between deep and shallow clone in code below:
 ```
@@ -85,11 +85,11 @@ Tables below, just for information. Simple object with some fields ara cloned mu
 
   Method   |  Time (in ms)  | Comments
 ---|---|---
-Manual | 12 |  You should manually realize cloning. It requires a lot of work and can cause copy-paste errors, but it is fastest variant
-DeepClone / Unsafe | 196 | This variant is 20 times slower than manual, but clones any object without preparation
-DeepClone / Safe | 217 | Safe variant based on on expressions
-[CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 407ms | Implementation of cloning objects on expression trees.
-BinaryFormatter | 10000 | Another way of deep object cloning through serializing/deserializing object. Instead of Json serializers - it maintains full graph of serializing objects and also do not call any method for cloning object. But due serious overhead, this variant is very slow
+Manual | 13 |  You should manually realize cloning. It requires a lot of work and can cause copy-paste errors, but it is fastest variant
+DeepClone / Unsafe | 331 | This variant is really slower than manual, but clones any object without preparation
+DeepClone / Safe | 411 | Safe variant based on on expressions
+[CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 560 | Implementation of cloning objects on expression trees.
+BinaryFormatter | 15000 | Another way of deep object cloning through serializing/deserializing object. Instead of Json serializers - it maintains full graph of serializing objects and also do not call any method for cloning object. But due serious overhead, this variant is very slow
 
 **Shallow cloning** 
 Shallow cloning is usually faster, because we no need to calculate references and clone additional objects.
