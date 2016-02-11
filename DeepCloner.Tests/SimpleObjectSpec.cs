@@ -186,5 +186,65 @@ namespace Force.DeepCloner.Tests
 			Assert.That(cloned.X, Is.EqualTo(c.X));
 			Assert.True(ReferenceEquals(cloned.X, c.X));
 		}
+
+		public sealed class C6
+		{
+			public readonly int X = 1;
+
+			private readonly object y = new object();
+
+			private readonly StructWithObject z;
+
+			public object GetY()
+			{
+				return y;
+			}
+		}
+
+		public struct StructWithObject
+		{
+			public readonly object Z;
+		}
+
+		[Test]
+		public void Object_With_Readonly_Fields_Should_Be_Cloned()
+		{
+			var c = new C6();
+			var clone = c.DeepClone();
+			Assert.That(clone, Is.Not.EqualTo(c));
+			Assert.That(clone.X, Is.EqualTo(1));
+			Assert.That(clone.GetY(), Is.Not.Null);
+			Assert.That(clone.GetY(), Is.Not.EqualTo(c.GetY()));
+		}
+
+		public class VirtualClass1
+		{
+			public virtual int A { get; set; }
+
+			public virtual int B { get; set; }
+
+			// not safe
+			public object X { get; set; }
+		}
+
+		public class VirtualClass2 : VirtualClass1
+		{
+			public override int B { get; set; }
+		}
+
+		[Test(Description = "Nothings special, just for checking")]
+		public void Class_With_Virtual_Methods_Should_Be_Cloned()
+		{
+			var v2 = new VirtualClass2();
+			v2.A = 1;
+			v2.B = 2;
+			var v1 = v2 as VirtualClass1;
+			v1.A = 3;
+			var clone = v1.DeepClone() as VirtualClass2;
+			v2.B = 0;
+			v2.A = 0;
+			Assert.That(clone.B, Is.EqualTo(2));
+			Assert.That(clone.A, Is.EqualTo(3));
+		}
 	}
 }

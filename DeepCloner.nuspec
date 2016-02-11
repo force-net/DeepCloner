@@ -12,10 +12,9 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Small Library for fast deep or shallow cloning .NET objects. It allows to copy everything and has a lot of performance tricks for fast copying.</description>
     <releaseNotes>
-Fixed an issue with handling references to arrays
-Added support for multidimensional arrays and non-zero-based arrays
-Added fallback for non-fulltrust code through expressions
-Due build issue, release 0.9.0 was invalid, this is fixed variant
+Seriously improved cloning of simple object (constructor analyzing + reference counting)
+Fixed small issue with possible multiple copying of same fields in object
+Safe variant now correctly clones readonly fields
     </releaseNotes>
     <copyright>Copyright by Force 2016</copyright>
     <tags>.NET shallow deep clone DeepClone fast</tags>

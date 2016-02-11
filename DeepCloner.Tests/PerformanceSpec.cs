@@ -4,9 +4,15 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 
+using CloneBehave;
+
 using CloneExtensions;
 
+using NClone;
+
 using NUnit.Framework;
+
+using Nuclex.Cloning;
 
 namespace Force.DeepCloner.Tests
 {
@@ -80,6 +86,11 @@ namespace Force.DeepCloner.Tests
 			for (var i = 0; i < 1000; i++) c1.GetClone();
 			for (var i = 0; i < 1000; i++) c1.DeepClone();
 			for (var i = 0; i < 1000; i++) CloneViaFormatter(c1);
+			for (var i = 0; i < 1000; i++) Clone.ObjectGraph(c1);
+			for (var i = 0; i < 1000; i++) new CloneEngine().Clone(c1);
+			// null reference
+			// for (var i = 0; i < 1000; i++) ReflectionCloner.DeepFieldClone(c1);
+			for (var i = 0; i < 1000; i++) GeorgeCloney.CloneExtension.DeepCloneWithoutSerialization(c1);
 
 			// test
 			var sw = new Stopwatch();
@@ -94,7 +105,24 @@ namespace Force.DeepCloner.Tests
 			sw.Restart();
 
 			for (var i = 0; i < 1000000; i++) c1.GetClone();
-			Console.WriteLine("Clone Extensions: " + sw.ElapsedMilliseconds);
+			Console.WriteLine("CloneExtensions: " + sw.ElapsedMilliseconds);
+			sw.Restart();
+
+			for (var i = 0; i < 1000000; i++) Clone.ObjectGraph(c1);
+			Console.WriteLine("NClone: " + sw.ElapsedMilliseconds);
+			sw.Restart();
+
+			for (var i = 0; i < 1000000; i++) new CloneEngine().Clone(c1);
+			Console.WriteLine("Clone.Behave: " + sw.ElapsedMilliseconds);
+			sw.Restart();
+
+			// null reference
+			/*for (var i = 0; i < 1000000; i++) ReflectionCloner.DeepFieldClone(c1);
+			Console.WriteLine("Nuclex.Cloning: " + sw.ElapsedMilliseconds);
+			sw.Restart();*/
+
+			for (var i = 0; i < 1000000; i++) GeorgeCloney.CloneExtension.DeepCloneWithoutSerialization(c1);
+			Console.WriteLine("GeorgeCloney: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 
 			// inaccurate variant, but test should complete in reasonable time
@@ -179,6 +207,7 @@ namespace Force.DeepCloner.Tests
 			BaseTest.SwitchTo(true);
 			for (var i = 0; i < 1000; i++) c1.ShallowClone();
 			for (var i = 0; i < 1000; i++) c1.GetClone();
+			for (var i = 0; i < 1000; i++) ReflectionCloner.ShallowFieldClone(c1);
 
 			// test
 			var sw = new Stopwatch();
@@ -201,6 +230,10 @@ namespace Force.DeepCloner.Tests
 			sw.Start();
 			for (var i = 0; i < 1000000; i++) c1.ShallowClone();
 			Console.WriteLine("Shallow Safe: " + sw.ElapsedMilliseconds);
+			sw.Restart();
+
+			for (var i = 0; i < 1000000; i++) ReflectionCloner.ShallowFieldClone(c1);
+			Console.WriteLine("Nuclex.Cloning: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 
 			for (var i = 0; i < 1000000; i++) c1.GetClone(CloningFlags.Shallow);

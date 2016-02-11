@@ -1,18 +1,19 @@
 # DeepCloner
 ===============
 
-Library with extenstion to clone objects for .NET. It can deep or shallow copy object. In deep cloning all object graph is maintained. Library using code-generation in runtime as result object cloning is really fast.
+Library with extenstion to clone objects for .NET. It can deep or shallow copy objects. In deep cloning all object graph is maintained. Library actively uses code-generation in runtime as result object cloning is blazingly fast.
+Also, there are some performance tricks to increase cloning speed (see tests below).
 Objects are copied by its' internal structure, **no** methods or constructuctors are called for cloning objects. As result, you can copy **any** object, but we don't recommend to copy objects which are binded to native resources or pointers. It can cause unpredictable results (but object will be cloned).
 
-You don't need to mark objects somehow, like Serializable-attribute, or restrict to specific interface. Absolutely any object can be cloned by this library. And this object doesn't have any ability to determine that he is clone (except very specific methods).
+You don't need to mark objects somehow, like Serializable-attribute, or restrict to specific interface. Absolutely any object can be cloned by this library. And this object doesn't have any ability to determine that he is clone (except with very specific methods).
+
+Also, there is no requirement to specify object type for cloning. Object can be casted to inteface or as an abstract object, you can clone array of ints as abstract Array or IEnumerable, even null can be cloned without any errors.
 
 ## Limitation
 
-Library requires Full Trust permission set or Reflection permission (RestrictedMemberAccess + MemberAccess). It prefers Full Trust, but if code lacks of this variant, library seamlessly switchs to slighlty slower but safer variant.
+Library requires Full Trust permission set or Reflection permission (MemberAccess). It prefers Full Trust, but if code lacks of this variant, library seamlessly switchs to slighlty slower but safer variant.
 
-If your code is on very limited permission set, you can try to use another library, e.g. [CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions). It clones only public properties of objects, so, result can differ, but it works anywhere.
-
-
+If your code is on very limited permission set, you can try to use another library, e.g. [CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions). It clones only public properties of objects, so, result can differ, but should work better (it requires only RestrictedMemberAccess permission).
 
 ## Usage
 
@@ -79,16 +80,20 @@ Extension methods in library are generic, but it is not require to specifify typ
 ### Performance 
 Cloning Speed can vary on many factors. This library contains some optimizations, e.g. structs are just copied, arrays also can be copied through Array.Copy if possible. So, real performance will depend on structure of your object.
 
-Tables below, just for information. Simple object with some fields ara cloned multiple times. Preparation time (only affect first execution) excluded from tests.
+Tables below, just for information. Simple object with some fields is cloned multiple times. Preparation time (only affect first execution) excluded from tests.
 
 **Deep cloning** 
 
   Method   |  Time (in ms)  | Comments
 ---|---|---
 Manual | 13 |  You should manually realize cloning. It requires a lot of work and can cause copy-paste errors, but it is fastest variant
-DeepClone / Unsafe | 331 | This variant is really slower than manual, but clones any object without preparation
-DeepClone / Safe | 411 | Safe variant based on on expressions
+DeepClone / Unsafe | 167 | This variant is really slower than manual, but clones any object without preparation
+DeepClone / Safe | 267 | Safe variant based on on expressions
 [CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 560 | Implementation of cloning objects on expression trees.
+[NClone](https://github.com/mijay/NClone) | 901 | Not analyzed carefully, but author says that lib has a problem with a cyclic dependencies
+[Clone.Behave!](https://github.com/kalisohn/CloneBehave) | 8551 | Very slow, also has a dependency to fasterflect
+[GeorgeCloney](https://github.com/laazyj/GeorgeCloney) | 1996 | Has a lot limitations and prefers to clone through BinaryFormatter
+[Nuclex.Cloning](https://github.com/junweilee/Nuclex.Cloning/) | n/a | Crashed with a null reference exception
 BinaryFormatter | 15000 | Another way of deep object cloning through serializing/deserializing object. Instead of Json serializers - it maintains full graph of serializing objects and also do not call any method for cloning object. But due serious overhead, this variant is very slow
 
 **Shallow cloning** 
@@ -101,6 +106,22 @@ Manual / MemberwiseClone | 37 | Fast variant to clone: call MemberwiseClone insi
 ShallowClone / Unsafe | 46 | Slightly slower than MemberwiseClone due checks for nulls and object types
 ShallowClone / Safe | 48 | Safe variant based on expressions
 [CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 123 | Implementation of cloning objects on expression trees.
+[Nuclex.Cloning](https://github.com/junweilee/Nuclex.Cloning/) | 1107 | Looks like interesting expression-based implementation with a some caching, but unexpectedly vers slow
+
+## Performance tricks
+
+We perform a lot of performance tricks to ensure cloning is really fast. Here is some of them:
+
+* Using a shallow cloning instead of deep cloning if object is safe for this operation
+* Copying an whole object and updating only required fields
+* Special handling for structs (can be copied without any cloning code, if possible)
+* Cloners caching
+* Optimizations for copying simple objects (reduced number of checks to ensure good performance)
+* Special handling of reference count for simple objects, that is faster than default dictionary
+* Constructors analyzing to select best variant of object construction
+* Direct copying of arrays if possible
+* Custom handling of one-dimensional and two-dimensional zero-based arrays (most of arrays in usual code)
+
 
 ## License
 

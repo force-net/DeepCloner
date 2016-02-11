@@ -12,6 +12,25 @@ namespace Force.DeepCloner.Helpers
 			return GenerateProcessMethod(realType, asObject && realType.IsValueType);
 		}
 
+		// slow, but hardcore method to set readonly field
+		internal static void ForceSetField(FieldInfo field, object obj, object value)
+		{
+			var fieldInfo = field.GetType().GetField("m_fieldAttributes", BindingFlags.NonPublic | BindingFlags.Instance);
+
+			// TODO: think about it
+			// nothing to do :( we should a throw an exception, but it is no good for user
+			if (fieldInfo == null)
+				return;
+			var ov = fieldInfo.GetValue(field);
+			if (!(ov is FieldAttributes))
+				return;
+			var v = (FieldAttributes)ov;
+
+			fieldInfo.SetValue(field, v & ~FieldAttributes.InitOnly);
+			field.SetValue(obj, value);
+			fieldInfo.SetValue(field, v);
+		}
+
 		private static object GenerateProcessMethod(Type type, bool unboxStruct)
 		{
 			if (type.IsArray)
@@ -67,7 +86,7 @@ namespace Force.DeepCloner.Helpers
 			{
 				// don't do anything with this dark magic!
 				if (tp == typeof(ContextBoundObject)) break;
-				fi.AddRange(tp.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public));
+				fi.AddRange(tp.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly));
 				tp = tp.BaseType;
 			}
 			while (tp != null);
@@ -89,10 +108,13 @@ namespace Force.DeepCloner.Helpers
 						call = Expression.Convert(call, fieldInfo.FieldType);
 
 					// should handle specially
+					// todo: think about optimization, but it rare case
 					if (fieldInfo.IsInitOnly)
 					{
-						var setMethod = fieldInfo.GetType().GetMethod("SetValue", new[] { typeof(object), typeof(object) });
-						expressionList.Add(Expression.Call(Expression.Constant(fieldInfo), setMethod, toLocal, call));
+						// var setMethod = fieldInfo.GetType().GetMethod("SetValue", new[] { typeof(object), typeof(object) });
+						// expressionList.Add(Expression.Call(Expression.Constant(fieldInfo), setMethod, toLocal, call));
+						var setMethod = typeof(DeepClonerExprGenerator).GetMethod("ForceSetField", BindingFlags.NonPublic | BindingFlags.Static);
+						expressionList.Add(Expression.Call(setMethod, Expression.Constant(fieldInfo), Expression.Convert(toLocal, typeof(object)), Expression.Convert(call, typeof(object))));
 					}
 					else
 					{

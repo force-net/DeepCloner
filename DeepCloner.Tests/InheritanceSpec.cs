@@ -22,6 +22,9 @@ namespace Force.DeepCloner.Tests
 			[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed. Suppression is OK here.")]
 			public int Y;
 
+			[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed. Suppression is OK here.")]
+			public object O; // make it not safe
+
 			public void Dispose()
 			{
 			}
@@ -42,6 +45,9 @@ namespace Force.DeepCloner.Tests
 
 			[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed. Suppression is OK here.")]
 			public int Y { get; set; }
+
+			[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed. Suppression is OK here.")]
+			public object O; // make it not safe
 
 			public void Dispose()
 			{

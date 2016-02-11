@@ -33,8 +33,23 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CloneBehave">
+      <HintPath>..\packages\Clone.Behave.1.0.1\lib\CloneBehave.dll</HintPath>
+    </Reference>
     <Reference Include="CloneExtensions">
       <HintPath>..\packages\CloneExtensions.1.2\lib\portable-net40+sl50+win+wp80\CloneExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Fasterflect">
+      <HintPath>..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
+    </Reference>
+    <Reference Include="GeorgeCloney">
+      <HintPath>..\packages\GeorgeCloney.1.1.1.17\lib\net40\GeorgeCloney.dll</HintPath>
+    </Reference>
+    <Reference Include="NClone">
+      <HintPath>..\packages\NClone.1.1.1\lib\net40\NClone.dll</HintPath>
+    </Reference>
+    <Reference Include="Nuclex.Cloning">
+      <HintPath>..\packages\Nuclex.Cloning.1.0.0.0\lib\net40\Nuclex.Cloning.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.3.0.1\lib\net40\nunit.framework.dll</HintPath>

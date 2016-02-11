@@ -243,5 +243,31 @@ namespace Force.DeepCloner.Tests
 			Assert.That(clone.GetValue(1, 1), Is.EqualTo(1));
 			Assert.That(clone.GetValue(2, 2), Is.EqualTo(2));
 		}
+
+		[Test]
+		public void Array_As_Generic_Array_Should_Be_Cloned()
+		{
+			var arr = new[] { 1, 2, 3 };
+			var genArr = (Array)arr;
+			var clone = (int[])genArr.DeepClone();
+			Assert.That(clone.Length, Is.EqualTo(3));
+			Assert.That(clone[0], Is.EqualTo(1));
+			Assert.That(clone[1], Is.EqualTo(2));
+			Assert.That(clone[2], Is.EqualTo(3));
+		}
+
+		[Test]
+		public void Array_As_IEnumerable_Should_Be_Cloned()
+		{
+			var arr = new[] { 1, 2, 3 };
+			var genArr = (IEnumerable<int>)arr;
+			var clone = (int[])genArr.DeepClone();
+// ReSharper disable PossibleMultipleEnumeration
+			Assert.That(clone.Length, Is.EqualTo(3));
+			Assert.That(clone[0], Is.EqualTo(1));
+			Assert.That(clone[1], Is.EqualTo(2));
+			Assert.That(clone[2], Is.EqualTo(3));
+			// ReSharper restore PossibleMultipleEnumeration
+		}
 	}
 }

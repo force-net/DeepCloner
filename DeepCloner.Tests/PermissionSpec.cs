@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security;
 using System.Security.Permissions;
+
+using CloneExtensions;
 
 using NUnit.Framework;
 
@@ -25,12 +26,13 @@ namespace Force.DeepCloner.Tests
 			// assembly execute
 			permissions.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
 
-			permissions.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.RestrictedMemberAccess | ReflectionPermissionFlag.MemberAccess));
-			// permissions.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.RestrictedMemberAccess));
+			// permissions.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.RestrictedMemberAccess | ReflectionPermissionFlag.MemberAccess));
+			permissions.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
 
 			var test = AppDomain.CreateDomain("sandbox", null, setup, permissions);
 
 			var instance = (Executor)test.CreateInstanceFromAndUnwrap(this.GetType().Assembly.Location, typeof(Executor).FullName);
+			instance.CloneExtensionsClone();
 			instance.DoShallowClone();
 			instance.DoDeepClone();
 		}
@@ -38,19 +40,41 @@ namespace Force.DeepCloner.Tests
 		public class Test
 		{
 			public int X { get; set; }
+
+			private readonly object y = new object();
+
+			private readonly UnsafeStructTest z;
+
+			public object GetY()
+			{
+				return y;
+			}
+		}
+
+		public struct UnsafeStructTest
+		{
+			public object Y { get; set; }
 		}
 
 		public class Executor : MarshalByRefObject
 		{
 			 public void DoDeepClone()
 			 {
-				 new List<int> { 1, 2, 3 }.DeepClone();
+				 var test = new Test();
+				 var clone = test.DeepClone();
+				 if (clone.GetY() == test.GetY())
+					 throw new Exception("Deep Clone fail");
 			 }
 
-			 public void DoShallowClone()
+			public void DoShallowClone()
 			 {
-				new List<int> { 1, 2, 3 }.ShallowClone();
+				 new Test().ShallowClone();
 			 }
+
+			public void CloneExtensionsClone()
+			{
+				new Test().GetClone();
+			}
 		}
 	}
 }

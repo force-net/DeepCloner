@@ -102,7 +102,7 @@ namespace Force.DeepCloner.Helpers
 			{
 				// don't do anything with this dark magic!
 				if (tp == typeof(ContextBoundObject)) break;
-				fi.AddRange(tp.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public));
+				fi.AddRange(tp.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly));
 				tp = tp.BaseType;
 			}
 			while (tp != null);
