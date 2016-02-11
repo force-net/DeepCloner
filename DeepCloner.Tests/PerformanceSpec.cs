@@ -32,6 +32,14 @@ namespace Force.DeepCloner.Tests
 		{
 		}
 
+		// safe class
+		public class C3
+		{
+			public int V1 { get; set; }
+
+			public string V2 { get; set; }
+		}
+
 		private C1 ManualDeepClone(C1 x)
 		{
 			var y = new C1();
@@ -77,9 +85,37 @@ namespace Force.DeepCloner.Tests
 			var sw = new Stopwatch();
 			sw.Start();
 
-			for (var i = 0; i < 10000000; i++) ManualDeepClone(c1);
+			for (var i = 0; i < 1000000; i++) ManualDeepClone(c1);
 			Console.WriteLine("Manual: " + sw.ElapsedMilliseconds);
 			sw.Restart();
+
+			for (var i = 0; i < 1000000; i++) c1.DeepClone();
+			Console.WriteLine("Deep: " + sw.ElapsedMilliseconds);
+			sw.Restart();
+
+			for (var i = 0; i < 1000000; i++) c1.GetClone();
+			Console.WriteLine("Clone Extensions: " + sw.ElapsedMilliseconds);
+			sw.Restart();
+
+			// inaccurate variant, but test should complete in reasonable time
+			for (var i = 0; i < 100000; i++) CloneViaFormatter(c1);
+			Console.WriteLine("Binary Formatter: " + (sw.ElapsedMilliseconds * 10));
+		}
+
+		[Test, Ignore("Manual")]
+		[TestCase(false)]
+		[TestCase(true)]
+		public void Test_Construct_Safe_Class_Variants(bool isSafe)
+		{
+			// we cache cloners for type, so, this only variant with separate run
+			BaseTest.SwitchTo(isSafe);
+			var c1 = new C3 { V1 = 1, V2 = "xxx" };
+			for (var i = 0; i < 1000; i++) c1.GetClone();
+			for (var i = 0; i < 1000; i++) c1.DeepClone();
+
+			// test
+			var sw = new Stopwatch();
+			sw.Start();
 
 			for (var i = 0; i < 10000000; i++) c1.DeepClone();
 			Console.WriteLine("Deep: " + sw.ElapsedMilliseconds);
@@ -88,10 +124,6 @@ namespace Force.DeepCloner.Tests
 			for (var i = 0; i < 10000000; i++) c1.GetClone();
 			Console.WriteLine("Clone Extensions: " + sw.ElapsedMilliseconds);
 			sw.Restart();
-
-			// inaccurate variant, but test should complete in reasonable time
-			for (var i = 0; i < 100000; i++) CloneViaFormatter(c1);
-			Console.WriteLine("Binary Formatter: " + (sw.ElapsedMilliseconds * 10));
 		}
 
 		[Test, Ignore("Manual")]

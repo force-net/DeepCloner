@@ -54,6 +54,7 @@
     <Compile Include="Helpers\DeepClonerCache.cs" />
     <Compile Include="Helpers\DeepClonerGenerator.cs" />
     <Compile Include="Helpers\DeepClonerMsilGenerator.cs" />
+    <Compile Include="Helpers\DeepClonerMsilHelper.cs" />
     <Compile Include="Helpers\DeepClonerSafeTypes.cs" />
     <Compile Include="Helpers\DeepCloneState.cs" />
     <Compile Include="Helpers\ShallowClonerGenerator.cs" />

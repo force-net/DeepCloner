@@ -11,9 +11,9 @@ namespace Force.DeepCloner.Tests
 {
 	[TestFixture(false)]
 	[TestFixture(true)]
-	public class StandardTypesSpec : BaseTest
+	public class SystemTypesSpec : BaseTest
 	{
-		public StandardTypesSpec(bool isSafeInit)
+		public SystemTypesSpec(bool isSafeInit)
 			: base(isSafeInit)
 		{
 		}
@@ -75,6 +75,44 @@ namespace Force.DeepCloner.Tests
 			// we clone delegate together with a closure
 			Assert.That(df(3), Is.EqualTo("1233"));
 			Assert.That(cf(3), Is.EqualTo("xxx3"));
+		}
+
+		public class EventHandlerTest1
+		{
+			public event Action<int> Event;
+
+			public int Call(int x)
+			{
+				if (Event != null)
+				{
+					Event(x);
+					return Event.GetInvocationList().Length;
+				}
+
+				return 0;
+			}
+		}
+
+		[Test(Description = "Some libraries notifies about problems with this types")]
+		public void Events_Should_Be_Cloned()
+		{
+			var eht = new EventHandlerTest1();
+			var summ = new int[1];
+			Action<int> a1 = x => summ[0] += x;
+			Action<int> a2 = x => summ[0] += x;
+			eht.Event += a1;
+			eht.Event += a2;
+			eht.Call(1);
+			Assert.That(summ[0], Is.EqualTo(2));
+			var clone = eht.DeepClone();
+			clone.Call(1);
+			// do not call
+			Assert.That(summ[0], Is.EqualTo(2));
+			eht.Event -= a1;
+			eht.Event -= a2;
+			Assert.That(eht.Call(1), Is.EqualTo(0)); // 0
+			Assert.That(summ[0], Is.EqualTo(2)); // nothing to increment
+			Assert.That(clone.Call(1), Is.EqualTo(2));
 		}
 	}
 }

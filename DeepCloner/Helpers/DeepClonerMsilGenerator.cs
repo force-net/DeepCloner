@@ -21,7 +21,11 @@ namespace Force.DeepCloner.Helpers
 			var dt = new DynamicMethod(
 				"DeepObjectCloner_" + realType.Name + "_" + Interlocked.Increment(ref _methodCounter), methodType, new[] { methodType, typeof(DeepCloneState) }, mb, true);
 
+			dt.InitLocals = false;
+
 			var il = dt.GetILGenerator();
+			/*il.Emit(OpCodes.Ldarg_0);
+			il.Emit(OpCodes.Ret);*/
 
 			GenerateProcessMethod(il, realType, asObject && realType.IsValueType);
 
@@ -41,10 +45,27 @@ namespace Force.DeepCloner.Helpers
 			var typeLocal = il.DeclareLocal(type);
 			LocalBuilder structLoc = null;
 
+			var isGoodConstructor = false;
+
 			if (!type.IsValueType)
 			{
-				il.Emit(OpCodes.Ldarg_0);
-				il.Emit(OpCodes.Call, typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic));
+				var constructor = type.GetConstructor(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null);
+
+				isGoodConstructor = DeepClonerMsilHelper.IsConstructorDoNothing(type, constructor);
+
+				// isGoodConstructor = false;
+
+				// objects are used for locking and they are safe for constructor call
+				if (isGoodConstructor)
+				{
+					il.Emit(OpCodes.Newobj, constructor);
+				}
+				else
+				{
+					il.Emit(OpCodes.Ldarg_0);
+					il.Emit(OpCodes.Call, typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic));
+				}
+				
 				il.Emit(OpCodes.Stloc, typeLocal);
 			}
 			else
@@ -96,11 +117,23 @@ namespace Force.DeepCloner.Helpers
 					il.Emit(OpCodes.Ldfld, fieldInfo);
 					il.Emit(OpCodes.Ldarg_1);
 
-					var methodInfo = fieldInfo.FieldType.IsValueType 
-						? typeof(DeepClonerGenerator).GetMethod("CloneStructInternal", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(fieldInfo.FieldType)
-						: typeof(DeepClonerGenerator).GetMethod("CloneClassInternal", BindingFlags.NonPublic | BindingFlags.Static);
+					var methodInfo = fieldInfo.FieldType.IsValueType
+										? typeof(DeepClonerGenerator).GetMethod("CloneStructInternal", BindingFlags.NonPublic | BindingFlags.Static)
+																	.MakeGenericMethod(fieldInfo.FieldType)
+										: typeof(DeepClonerGenerator).GetMethod("CloneClassInternal", BindingFlags.NonPublic | BindingFlags.Static);
 					il.Emit(OpCodes.Call, methodInfo);
 					il.Emit(OpCodes.Stfld, fieldInfo);
+				}
+				else
+				{
+					// for good consturctor we use direct field copy
+					if (isGoodConstructor)
+					{
+						il.Emit(type.IsClass ? OpCodes.Ldloc : OpCodes.Ldloca_S, typeLocal);
+						il.Emit(OpCodes.Ldarg_0);
+						il.Emit(OpCodes.Ldfld, fieldInfo);
+						il.Emit(OpCodes.Stfld, fieldInfo);
+					}
 				}
 			}
 

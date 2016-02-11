@@ -3,14 +3,14 @@
   <metadata>
     <id>DeepCloner</id>
     <title>DeepCloner</title>
-    <version>0.9.0.1</version>
+    <version>0.9.1</version>
     <authors>force</authors>
     <owners>force</owners>
     <licenseUrl>https://github.com/force-net/DeepCloner/blob/develop/LICENSE</licenseUrl>
     <projectUrl>https://github.com/force-net/DeepCloner</projectUrl>
     <!--iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl-->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Small Library for fast deep or shallow cloning .NET objects</description>
+    <description>Small Library for fast deep or shallow cloning .NET objects. It allows to copy everything and has a lot of performance tricks for fast copying.</description>
     <releaseNotes>
 Fixed an issue with handling references to arrays
 Added support for multidimensional arrays and non-zero-based arrays
@@ -18,7 +18,7 @@ Added fallback for non-fulltrust code through expressions
 Due build issue, release 0.9.0 was invalid, this is fixed variant
     </releaseNotes>
     <copyright>Copyright by Force 2016</copyright>
-    <tags>.NET shallow deep clone</tags>
+    <tags>.NET shallow deep clone DeepClone fast</tags>
   </metadata>
   <files><file src="DeepCloner\bin\Release\DeepCloner.*" target="lib\net40" /></files>
 </package>

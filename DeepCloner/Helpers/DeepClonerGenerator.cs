@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 
 namespace Force.DeepCloner.Helpers
 {
@@ -10,18 +9,23 @@ namespace Force.DeepCloner.Helpers
 		{
 			return obj is ValueType && typeof(T) == obj.GetType()
 						? CloneStructInternal(obj, new DeepCloneState()) 
-						: CloneClassRoot<T>(obj);
+						: (T)CloneClassRoot(obj);
 		}
 
-		private static T CloneClassRoot<T>(object obj)
+		private static object CloneClassRoot(object obj)
 		{
-			if (obj == null) return default(T);
+			if (obj == null) return null;
 
 			// we can receive an poco objects which is faster to copy in shallow way if possible
-			if (DeepClonerSafeTypes.IsClassSafe(obj.GetType())) 
-				return (T)ShallowObjectCloner.CloneObject(obj);
+			var type = obj.GetType();
+			// 200ms
+			if (DeepClonerSafeTypes.IsClassSafe(type)) 
+				return ShallowObjectCloner.CloneObject(obj);
+			// 350ms
+			var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddClass(type, t => GenerateCloner(t, true));
 
-			return (T)CloneClassInternal(obj, new DeepCloneState());
+			// 200ms
+			return cloner(obj, new DeepCloneState());
 		}
 
 		public static T CloneStruct<T>(T obj) where T : struct 

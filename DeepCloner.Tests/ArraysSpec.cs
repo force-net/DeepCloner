@@ -140,13 +140,16 @@ namespace Force.DeepCloner.Tests
 		public void Array_Of_Same_Arrays_Should_Be_Cloned()
 		{
 			var c1 = new[] { 1, 2, 3 };
-			var arr = new[] { c1, c1, c1 };
+			var arr = new[] { c1, c1, c1, c1, c1 };
 			var cloned = arr.DeepClone();
 
-			Assert.That(cloned.Length, Is.EqualTo(3));
+			Assert.That(cloned.Length, Is.EqualTo(5));
+			// lot of objects for checking reference dictionary optimization
 			Assert.That(ReferenceEquals(arr[0], cloned[0]), Is.False);
 			Assert.That(ReferenceEquals(cloned[0], cloned[1]), Is.True);
 			Assert.That(ReferenceEquals(cloned[1], cloned[2]), Is.True);
+			Assert.That(ReferenceEquals(cloned[1], cloned[3]), Is.True);
+			Assert.That(ReferenceEquals(cloned[1], cloned[4]), Is.True);
 		}
 
 		public class AC
