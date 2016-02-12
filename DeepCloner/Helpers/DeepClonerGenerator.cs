@@ -24,6 +24,8 @@ namespace Force.DeepCloner.Helpers
 			// 350ms
 			var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddClass(type, t => GenerateCloner(t, true));
 
+			if (cloner == null) return obj;
+
 			// 200ms
 			return cloner(obj, new DeepCloneState());
 		}

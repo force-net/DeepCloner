@@ -144,6 +144,8 @@ namespace Force.DeepCloner.Tests
 			Assert.That(((object)null).DeepClone(), Is.Null);
 			var obj = new object();
 			Assert.That(obj.DeepClone(), Is.Not.Null);
+			Assert.That(true.DeepClone(), Is.True);
+			Assert.That(((object)true).DeepClone(), Is.True);
 			Assert.That(obj.DeepClone().GetType(), Is.EqualTo(typeof(object)));
 			Assert.That(obj.DeepClone(), Is.Not.EqualTo(obj));
 		}

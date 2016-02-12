@@ -3,7 +3,7 @@
   <metadata>
     <id>DeepCloner</id>
     <title>DeepCloner</title>
-    <version>0.9.1</version>
+    <version>0.9.2</version>
     <authors>force</authors>
     <owners>force</owners>
     <licenseUrl>https://github.com/force-net/DeepCloner/blob/develop/LICENSE</licenseUrl>
@@ -15,6 +15,7 @@
 Seriously improved cloning of simple object (constructor analyzing + reference counting)
 Fixed small issue with possible multiple copying of same fields in object
 Safe variant now correctly clones readonly fields
+Fixed small issue with cloning primitive types casted as an object
     </releaseNotes>
     <copyright>Copyright by Force 2016</copyright>
     <tags>.NET shallow deep clone DeepClone fast</tags>
