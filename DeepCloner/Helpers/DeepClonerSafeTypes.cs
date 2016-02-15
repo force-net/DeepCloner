@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ConstrainedExecution;
 
 namespace Force.DeepCloner.Helpers
 {
@@ -35,6 +36,13 @@ namespace Force.DeepCloner.Helpers
 			// enums are safe
 			// pointers (e.g. int*) are unsafe, but we cannot do anything with it except blind copy
 			if (type.IsEnum || type.IsPointer)
+			{
+				KnownTypes.TryAdd(type, true);
+				return true;
+			}
+
+			// this types are serious native resources, it is better not to clone it
+			if (type.IsSubclassOf(typeof(CriticalFinalizerObject)))
 			{
 				KnownTypes.TryAdd(type, true);
 				return true;

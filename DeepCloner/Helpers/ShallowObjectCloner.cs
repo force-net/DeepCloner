@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.ConstrainedExecution;
 
 namespace Force.DeepCloner.Helpers
 {
@@ -23,6 +24,8 @@ namespace Force.DeepCloner.Helpers
 		{
 			if (obj == null) return null;
 			if (obj is string) return obj;
+			// do not clone such native-resource bounded types!
+			if (obj is CriticalFinalizerObject) return obj;
 			return _instance.DoCloneObject(obj);
 		}
 

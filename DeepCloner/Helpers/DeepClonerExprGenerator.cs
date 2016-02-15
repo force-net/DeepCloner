@@ -9,6 +9,8 @@ namespace Force.DeepCloner.Helpers
 	{
 		internal static object GenerateClonerInternal(Type realType, bool asObject)
 		{
+			if (DeepClonerSafeTypes.IsTypeSafe(realType, null)) return null;
+
 			return GenerateProcessMethod(realType, asObject && realType.IsValueType);
 		}
 

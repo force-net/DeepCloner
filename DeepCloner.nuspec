@@ -3,7 +3,7 @@
   <metadata>
     <id>DeepCloner</id>
     <title>DeepCloner</title>
-    <version>0.9.2</version>
+    <version>0.9.3</version>
     <authors>force</authors>
     <owners>force</owners>
     <licenseUrl>https://github.com/force-net/DeepCloner/blob/develop/LICENSE</licenseUrl>
@@ -12,10 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Small Library for fast deep or shallow cloning .NET objects. It allows to copy everything and has a lot of performance tricks for fast copying.</description>
     <releaseNotes>
-Seriously improved cloning of simple object (constructor analyzing + reference counting)
-Fixed small issue with possible multiple copying of same fields in object
-Safe variant now correctly clones readonly fields
-Fixed small issue with cloning primitive types casted as an object
+Changed behaviour of cloning resources with handles. Now, they don't clone (same object is returned) due unpredictable clone results. 
     </releaseNotes>
     <copyright>Copyright by Force 2016</copyright>
     <tags>.NET shallow deep clone DeepClone fast</tags>
