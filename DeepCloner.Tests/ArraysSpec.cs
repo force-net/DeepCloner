@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 using NUnit.Framework;
 
@@ -29,6 +30,55 @@ namespace Force.DeepCloner.Tests
 			var arr = new[] { "1", "2", "3" };
 			var cloned = arr.DeepClone();
 			Assert.That(cloned.Length, Is.EqualTo(3));
+			CollectionAssert.AreEqual(arr, cloned);
+		}
+
+		[Test]
+		public void StringArray_Should_Be_Cloned_Two_Arrays()
+		{
+			// checking that cached object correctly clones arrays of different length
+			var arr = new[] { "111111111111111111111", "2", "3" };
+			var cloned = arr.DeepClone();
+			Assert.That(cloned.Length, Is.EqualTo(3));
+			CollectionAssert.AreEqual(arr, cloned);
+			// strings should not be copied
+			Assert.That(ReferenceEquals(arr[1], cloned[1]), Is.True);
+
+			arr = new[] { "1", "2", "3", "4" };
+			cloned = arr.DeepClone();
+			Assert.That(cloned.Length, Is.EqualTo(4));
+			CollectionAssert.AreEqual(arr, cloned);
+
+			arr = new string[0];
+			cloned = arr.DeepClone();
+			Assert.That(cloned.Length, Is.EqualTo(0));
+
+			if (1.Equals(1)) arr = null;
+			Assert.That(arr.DeepClone(), Is.Null);
+		}
+
+		[Test]
+		public void StringArray_Casted_As_Object_Should_Be_Cloned()
+		{
+			// checking that cached object correctly clones arrays of different length
+			var arr = (object)new[] { "1", "2", "3" };
+			var cloned = arr.DeepClone() as string[];
+			Assert.That(cloned.Length, Is.EqualTo(3));
+			CollectionAssert.AreEqual((string[])arr, cloned);
+			// strings should not be copied
+			Assert.That(ReferenceEquals(((string[])arr)[1], cloned[1]), Is.True);
+		}
+
+		[Test]
+		public void ByteArray_Should_Be_Cloned()
+		{
+			// checking that cached object correctly clones arrays of different length
+			var arr = Encoding.ASCII.GetBytes("test");
+			var cloned = arr.DeepClone();
+			CollectionAssert.AreEqual(arr, cloned);
+
+			arr = Encoding.ASCII.GetBytes("test testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testte");
+			cloned = arr.DeepClone();
 			CollectionAssert.AreEqual(arr, cloned);
 		}
 
