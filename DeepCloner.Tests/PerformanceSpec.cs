@@ -8,11 +8,13 @@ using CloneBehave;
 
 using CloneExtensions;
 
+using Force.DeepCloner.Tests.Imported;
+
 using NClone;
 
-using NUnit.Framework;
-
 using Nuclex.Cloning;
+
+using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
@@ -92,6 +94,8 @@ namespace Force.DeepCloner.Tests
 			// for (var i = 0; i < 1000; i++) ReflectionCloner.DeepFieldClone(c1);
 			for (var i = 0; i < 1000; i++) GeorgeCloney.CloneExtension.DeepCloneWithoutSerialization(c1);
 
+			for (var i = 0; i < 1000; i++) new FastDeepCloner(c1, FieldType.FieldInfo).Clone();
+
 			// test
 			var sw = new Stopwatch();
 			sw.Start();
@@ -123,6 +127,10 @@ namespace Force.DeepCloner.Tests
 
 			for (var i = 0; i < 1000000; i++) GeorgeCloney.CloneExtension.DeepCloneWithoutSerialization(c1);
 			Console.WriteLine("GeorgeCloney: " + sw.ElapsedMilliseconds);
+			sw.Restart();
+
+			for (var i = 0; i < 1000000; i++) new FastDeepCloner(c1, FieldType.FieldInfo).Clone();
+			Console.WriteLine("FastDeepCloner: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 
 			// inaccurate variant, but test should complete in reasonable time

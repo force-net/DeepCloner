@@ -68,6 +68,7 @@
     <Compile Include="CloneExtensionsSpec.cs" />
     <Compile Include="ConstructorsSpec.cs" />
     <Compile Include="GenericsSpec.cs" />
+    <Compile Include="Imported\FastDeepCloner.cs" />
     <Compile Include="InheritanceSpec.cs" />
     <Compile Include="LoopCheckSpec.cs" />
     <Compile Include="Objects\DoableStruct1.cs" />

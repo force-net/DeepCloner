@@ -25,7 +25,7 @@ Deep cloning any object:
 With a reference to same object:
 ```
   // public class Tree { public Tree ParentTree;  }
-  var t = new Tree();
+    var t = new Tree();
 	t.ParentTree = t;
 	var cloned = t.DeepClone();
 	Console.WriteLine(cloned.ParentTree == cloned); // True
@@ -94,6 +94,7 @@ DeepClone / Safe | 267 | Safe variant based on on expressions
 [Clone.Behave!](https://github.com/kalisohn/CloneBehave) | 8551 | Very slow, also has a dependency to fasterflect
 [GeorgeCloney](https://github.com/laazyj/GeorgeCloney) | 1996 | Has a lot limitations and prefers to clone through BinaryFormatter
 [Nuclex.Cloning](https://github.com/junweilee/Nuclex.Cloning/) | n/a | Crashed with a null reference exception
+[.Net Object FastDeepCloner](https://github.com/Alenah091/FastDeepCloner/) | 1882 | Not analyzed carefully, only for .NET 4.5.1 or higher
 BinaryFormatter | 15000 | Another way of deep object cloning through serializing/deserializing object. Instead of Json serializers - it maintains full graph of serializing objects and also do not call any method for cloning object. But due serious overhead, this variant is very slow
 
 **Shallow cloning** 
