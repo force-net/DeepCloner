@@ -3,19 +3,32 @@
   <metadata>
     <id>DeepCloner</id>
     <title>DeepCloner</title>
-    <version>0.9.3</version>
+    <version>0.9.4</version>
     <authors>force</authors>
     <owners>force</owners>
     <licenseUrl>https://github.com/force-net/DeepCloner/blob/develop/LICENSE</licenseUrl>
     <projectUrl>https://github.com/force-net/DeepCloner</projectUrl>
-    <!--iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl-->
+    <iconUrl>http://files.force-net.com/deepcloner-nuget-ico.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Small Library for fast deep or shallow cloning .NET objects. It allows to copy everything and has a lot of performance tricks for fast copying.</description>
     <releaseNotes>
-Changed behaviour of cloning resources with handles. Now, they don't clone (same object is returned) due unpredictable clone results. 
+Added support for .NET Standard (.NET Core)
     </releaseNotes>
-    <copyright>Copyright by Force 2016</copyright>
+    <copyright>Copyright by Force 2016-2017</copyright>
     <tags>.NET shallow deep clone DeepClone fast</tags>
+    <dependencies>
+      <group targetFramework="net40">
+      </group>
+      <group targetFramework=".NETStandard1.3">
+        <dependency id="NETStandard.Library" version="[1.3.0, )" />
+      </group>
+    </dependencies>
+
   </metadata>
-  <files><file src="DeepCloner\bin\Release\DeepCloner.*" target="lib\net40" /></files>
+  <files>
+  	<file src="DeepCloner\bin\Release\net40\DeepCloner.dll" target="lib\net40" />
+  	<file src="DeepCloner\bin\Release\net40\DeepCloner.xml" target="lib\net40" />
+  	<file src="DeepCloner\bin\Release\netstandard1.3\DeepCloner.dll" target="lib\netstandard1.3" />
+  	<file src="DeepCloner\bin\Release\netstandard1.3\DeepCloner.xml" target="lib\netstandard1.3" />
+  </files>
 </package>

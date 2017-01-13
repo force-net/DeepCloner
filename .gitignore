@@ -6,3 +6,4 @@ packages
 .tools
 .idea
 *.iml
+private.snk

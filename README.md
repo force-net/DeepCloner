@@ -9,6 +9,10 @@ You don't need to mark objects somehow, like Serializable-attribute, or restrict
 
 Also, there is no requirement to specify object type for cloning. Object can be casted to inteface or as an abstract object, you can clone array of ints as abstract Array or IEnumerable, even null can be cloned without any errors.
 
+## Supported Frameworks
+
+DeepCloner works for .NET 4.0 or higher or for .NET Standard 1.3 (.NET Core). .NET Standard version implements only Safe copying variant (slightly slower than standard, see Benchmarks).
+
 ## Limitation
 
 Library requires Full Trust permission set or Reflection permission (MemberAccess). It prefers Full Trust, but if code lacks of this variant, library seamlessly switchs to slighlty slower but safer variant.

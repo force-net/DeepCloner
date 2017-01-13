@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETCORE
+using System;
 using System.Reflection;
 
 namespace Force.DeepCloner.Helpers
@@ -36,3 +37,4 @@ namespace Force.DeepCloner.Helpers
 		}
 	}
 }
+#endif

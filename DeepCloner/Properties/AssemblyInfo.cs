@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Force")]
 [assembly: AssemblyProduct("DeepCloner")]
-[assembly: AssemblyCopyright("Copyright © Force 2016")]
+[assembly: AssemblyCopyright("Copyright © Force 2016-2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,8 +32,8 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("0.8.0.0")] // change this value only when api is changing
-[assembly: AssemblyFileVersion("0.9.3.0")]
-[assembly: AssemblyInformationalVersion("0.9.3.0")]
+[assembly: AssemblyFileVersion("0.9.4.0")]
+[assembly: AssemblyInformationalVersion("0.9.4.0")]
 
 #if !DEBUG
 [assembly: AssemblyKeyFileAttribute("..\\public.snk")]

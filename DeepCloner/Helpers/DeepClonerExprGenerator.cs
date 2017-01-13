@@ -11,13 +11,13 @@ namespace Force.DeepCloner.Helpers
 		{
 			if (DeepClonerSafeTypes.IsTypeSafe(realType, null)) return null;
 
-			return GenerateProcessMethod(realType, asObject && realType.IsValueType);
+			return GenerateProcessMethod(realType, asObject && realType.IsValueType());
 		}
 
 		// slow, but hardcore method to set readonly field
 		internal static void ForceSetField(FieldInfo field, object obj, object value)
 		{
-			var fieldInfo = field.GetType().GetField("m_fieldAttributes", BindingFlags.NonPublic | BindingFlags.Instance);
+			var fieldInfo = field.GetType().GetPrivateField("m_fieldAttributes");
 
 			// TODO: think about it
 			// nothing to do :( we should a throw an exception, but it is no good for user
@@ -40,7 +40,7 @@ namespace Force.DeepCloner.Helpers
 				return	GenerateProcessArrayMethod(type);
 			}
 
-			var methodType = unboxStruct || type.IsClass ? typeof(object) : type;
+			var methodType = unboxStruct || type.IsClass() ? typeof(object) : type;
 
 			var expressionList = new List<Expression>();
 
@@ -49,13 +49,13 @@ namespace Force.DeepCloner.Helpers
 			var toLocal = Expression.Variable(type);
 			var state = Expression.Parameter(typeof(DeepCloneState));
 
-			if (!type.IsValueType)
+			if (!type.IsValueType())
 			{
-				var methodInfo = typeof(object).GetMethod("MemberwiseClone", BindingFlags.NonPublic | BindingFlags.Instance);
-				
+				var methodInfo = typeof(object).GetPrivateMethod("MemberwiseClone");
+
 				// to = (T)from.MemberwiseClone()
 				expressionList.Add(Expression.Assign(toLocal, Expression.Convert(Expression.Call(from, methodInfo), type)));
-				
+
 				fromLocal = Expression.Variable(type);
 				// fromLocal = (T)from
 				expressionList.Add(Expression.Assign(fromLocal, Expression.Convert(from, type)));
@@ -86,10 +86,15 @@ namespace Force.DeepCloner.Helpers
 			var tp = type;
 			do
 			{
+#if !NETCORE
 				// don't do anything with this dark magic!
 				if (tp == typeof(ContextBoundObject)) break;
-				fi.AddRange(tp.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly));
-				tp = tp.BaseType;
+#else
+				if (tp.Name == "ContextBoundObject") break;
+#endif
+
+				fi.AddRange(tp.GetDeclaredFields());
+				tp = tp.BaseType();
 			}
 			while (tp != null);
 
@@ -97,16 +102,16 @@ namespace Force.DeepCloner.Helpers
 			{
 				if (!DeepClonerSafeTypes.IsTypeSafe(fieldInfo.FieldType, null))
 				{
-					var methodInfo = fieldInfo.FieldType.IsValueType
-										? typeof(DeepClonerGenerator).GetMethod("CloneStructInternal", BindingFlags.NonPublic | BindingFlags.Static)
+					var methodInfo = fieldInfo.FieldType.IsValueType()
+										? typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneStructInternal")
 																	.MakeGenericMethod(fieldInfo.FieldType)
-										: typeof(DeepClonerGenerator).GetMethod("CloneClassInternal", BindingFlags.NonPublic | BindingFlags.Static);
+										: typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneClassInternal");
 
 					var get = Expression.Field(fromLocal, fieldInfo);
 
 					// toLocal.Field = Clone...Internal(fromLocal.Field)
 					var call = (Expression)Expression.Call(methodInfo, get, state);
-					if (!fieldInfo.FieldType.IsValueType)
+					if (!fieldInfo.FieldType.IsValueType())
 						call = Expression.Convert(call, fieldInfo.FieldType);
 
 					// should handle specially
@@ -115,7 +120,7 @@ namespace Force.DeepCloner.Helpers
 					{
 						// var setMethod = fieldInfo.GetType().GetMethod("SetValue", new[] { typeof(object), typeof(object) });
 						// expressionList.Add(Expression.Call(Expression.Constant(fieldInfo), setMethod, toLocal, call));
-						var setMethod = typeof(DeepClonerExprGenerator).GetMethod("ForceSetField", BindingFlags.NonPublic | BindingFlags.Static);
+						var setMethod = typeof(DeepClonerExprGenerator).GetPrivateStaticMethod("ForceSetField");
 						expressionList.Add(Expression.Call(setMethod, Expression.Constant(fieldInfo), Expression.Convert(toLocal, typeof(object)), Expression.Convert(call, typeof(object))));
 					}
 					else
@@ -149,19 +154,19 @@ namespace Force.DeepCloner.Helpers
 				if (rank == 2)
 				{
 					// small optimization for 2 dim arrays
-					methodInfo = typeof(DeepClonerGenerator).GetMethod("Clone2DimArrayInternal", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(elementType);
+					methodInfo = typeof(DeepClonerGenerator).GetPrivateStaticMethod("Clone2DimArrayInternal").MakeGenericMethod(elementType);
 				}
 				else
 				{
-					methodInfo = typeof(DeepClonerGenerator).GetMethod("CloneAbstractArrayInternal", BindingFlags.NonPublic | BindingFlags.Static);
+					methodInfo = typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneAbstractArrayInternal");
 				}
 			}
 			else
 			{
 				var methodName = "Clone1DimArrayClassInternal";
 				if (DeepClonerSafeTypes.IsTypeSafe(elementType, null)) methodName = "Clone1DimArraySafeInternal";
-				else if (elementType.IsValueType) methodName = "Clone1DimArrayStructInternal";
-				methodInfo = typeof(DeepClonerGenerator).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(elementType);
+				else if (elementType.IsValueType()) methodName = "Clone1DimArrayStructInternal";
+				methodInfo = typeof(DeepClonerGenerator).GetPrivateStaticMethod(methodName).MakeGenericMethod(elementType);
 			}
 
 			ParameterExpression from = Expression.Parameter(typeof(object));

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETCORE
+using System;
 using System.Security;
 using System.Security.Permissions;
 
@@ -78,3 +79,4 @@ namespace Force.DeepCloner.Tests
 		}
 	}
 }
+#endif

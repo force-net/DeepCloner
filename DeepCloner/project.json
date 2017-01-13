@@ -1,0 +1,24 @@
+﻿{
+  "version": "0.9.4-*",
+  "buildOptions": {
+    "debugType": "portable",
+	"optimize": true,
+    "xmlDoc": true,
+    "keyFile": "../public.snk",
+    "delaySign": true
+  },
+  "dependencies": {
+  },
+  "frameworks": {
+    "net40": {
+    },
+    "netstandard1.3": {
+        "buildOptions": {
+            "define": ["NETCORE"]
+        },
+        "dependencies": {
+            "NETStandard.Library": "1.3.0"
+        }
+    }
+  }
+}

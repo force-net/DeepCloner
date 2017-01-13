@@ -1,4 +1,5 @@
-﻿using CloneExtensions;
+﻿#if !NETCORE
+using CloneExtensions;
 
 using NUnit.Framework;
 
@@ -141,3 +142,4 @@ namespace Force.DeepCloner.Tests
 		}
 	}
 }
+#endif

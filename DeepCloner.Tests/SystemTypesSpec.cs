@@ -5,14 +5,15 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-
 using Microsoft.Win32.SafeHandles;
 
 using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
+#if !NETCORE
 	[TestFixture(false)]
+#endif
 	[TestFixture(true)]
 	public class SystemTypesSpec : BaseTest
 	{
@@ -48,16 +49,19 @@ namespace Force.DeepCloner.Tests
 				var cloned = writer.DeepClone();
 				writer.Write("2");
 				cloned.Write(3);
+#if !NETCORE
 				var f = typeof(FileStream).GetField("_handle", BindingFlags.NonPublic | BindingFlags.Instance);
 				var f2 = typeof(SafeHandle).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
 				Console.WriteLine(f2.GetValue(f.GetValue(writer.BaseStream)));
 				Console.WriteLine(f2.GetValue(f.GetValue(cloned.BaseStream)));
-				writer.Close();
+#endif
+
+				writer.Dispose();
 				// cloned.Close();
 				// not a bug anymore, this is feature: we don't duplicate handles, because it can cause unpredictable results
 				// ~~this was a bug, we should not throw there~~
 
-				Assert.Throws<ObjectDisposedException>(cloned.Close);
+				Assert.Throws<ObjectDisposedException>(cloned.Flush);
 				var res = File.ReadAllText(fileName);
 				Assert.That(res, Is.EqualTo("123"));
 			}
@@ -130,9 +134,12 @@ namespace Force.DeepCloner.Tests
 			cert.DeepClone();
 			cert.DeepClone();
 			GC.Collect();
+#if !NETCORE
 			GC.WaitForFullGCComplete();
+#endif
 		}
 
+#if !NETCORE
 		[Test(Description = "Without special handling it causes exception on destruction due native resources usage")]
 		public void ObjectHandle_Should_Be_Cloned()
 		{
@@ -144,6 +151,7 @@ namespace Force.DeepCloner.Tests
 			GC.Collect();
 			GC.WaitForFullGCComplete();
 		}
+#endif
 
 		[Test(Description = "Without special handling it causes exception on destruction due native resources usage")]
 		public void Certificate_Should_Be_Shallow_Cloned()
@@ -152,7 +160,9 @@ namespace Force.DeepCloner.Tests
 			cert.ShallowClone();
 			cert.ShallowClone();
 			GC.Collect();
+#if !NETCORE
 			GC.WaitForFullGCComplete();
+#endif
 		}
 	}
 }

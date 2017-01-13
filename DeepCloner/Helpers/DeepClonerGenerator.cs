@@ -114,7 +114,7 @@ namespace Force.DeepCloner.Helpers
 				return obj;
 			}
 
-			if (typeof(T).IsValueType)
+			if (typeof(T).IsValueType())
 			{
 				var cloner = GetClonerForValueType<T>();
 				for (var i = 0; i < l1; i++)
@@ -169,8 +169,12 @@ namespace Force.DeepCloner.Helpers
 
 		private static object GenerateCloner(Type t, bool asObject)
 		{
+#if !NETCORE
 			if (ShallowObjectCloner.IsSafeVariant()) return DeepClonerExprGenerator.GenerateClonerInternal(t, asObject);
 			else return DeepClonerMsilGenerator.GenerateClonerInternal(t, asObject);
+#else
+			return DeepClonerExprGenerator.GenerateClonerInternal(t, asObject);
+#endif
 		}
 	}
 }

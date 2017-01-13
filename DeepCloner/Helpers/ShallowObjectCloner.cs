@@ -2,7 +2,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.ConstrainedExecution;
 
 namespace Force.DeepCloner.Helpers
 {
@@ -11,6 +10,9 @@ namespace Force.DeepCloner.Helpers
 	/// </summary>
 	public abstract class ShallowObjectCloner
 	{
+		/// <summary>
+		/// Abstract method for real object cloning
+		/// </summary>
 		protected abstract object DoCloneObject(object obj);
 
 		private static readonly ShallowObjectCloner _unsafeInstance;
@@ -24,8 +26,10 @@ namespace Force.DeepCloner.Helpers
 		{
 			if (obj == null) return null;
 			if (obj is string) return obj;
+#if !NETCORE
 			// do not clone such native-resource bounded types!
-			if (obj is CriticalFinalizerObject) return obj;
+			if (obj is System.Runtime.ConstrainedExecution.CriticalFinalizerObject) return obj;
+#endif
 			return _instance.DoCloneObject(obj);
 		}
 
@@ -36,6 +40,7 @@ namespace Force.DeepCloner.Helpers
 
 		static ShallowObjectCloner()
 		{
+#if !NETCORE
 			_unsafeInstance = GenerateUnsafeCloner();
 			_instance = _unsafeInstance;
 			try
@@ -47,6 +52,11 @@ namespace Force.DeepCloner.Helpers
 				// switching to safe
 				_instance = new ShallowSafeObjectCloner();
 			}
+#else
+			_instance = new ShallowSafeObjectCloner();
+			// no unsafe variant for core
+			_unsafeInstance = _instance;
+#endif
 		}
 
 		/// <summary>
@@ -58,6 +68,7 @@ namespace Force.DeepCloner.Helpers
 			else _instance = _unsafeInstance;
 		}
 
+#if !NETCORE
 		private static ShallowObjectCloner GenerateUnsafeCloner()
 		{
 			var mb = TypeCreationHelper.GetModuleBuilder();
@@ -68,7 +79,7 @@ namespace Force.DeepCloner.Helpers
 			var cil = ctorBuilder.GetILGenerator();
 			cil.Emit(OpCodes.Ldarg_0);
 			// ReSharper disable AssignNullToNotNullAttribute
-			cil.Emit(OpCodes.Call, typeof(ShallowObjectCloner).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance)[0]);
+			cil.Emit(OpCodes.Call, typeof(ShallowObjectCloner).GetPrivateConstructors()[0]);
 			// ReSharper restore AssignNullToNotNullAttribute
 			cil.Emit(OpCodes.Ret);
 
@@ -81,11 +92,12 @@ namespace Force.DeepCloner.Helpers
 
 			var il = methodBuilder.GetILGenerator();
 			il.Emit(OpCodes.Ldarg_1);
-			il.Emit(OpCodes.Call, typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic));
+			il.Emit(OpCodes.Call, typeof(object).GetPrivateMethod("MemberwiseClone"));
 			il.Emit(OpCodes.Ret);
 			var type = builder.CreateType();
 			return (ShallowObjectCloner)Activator.CreateInstance(type);
 		}
+#endif
 
 		private class ShallowSafeObjectCloner : ShallowObjectCloner
 		{
@@ -93,7 +105,7 @@ namespace Force.DeepCloner.Helpers
 
 			static ShallowSafeObjectCloner()
 			{
-				var methodInfo = typeof(object).GetMethod("MemberwiseClone", BindingFlags.NonPublic | BindingFlags.Instance);
+				var methodInfo = typeof(object).GetPrivateMethod("MemberwiseClone");
 				var p = Expression.Parameter(typeof(object));
 				var mce = Expression.Call(p, methodInfo);
 				_cloneFunc = Expression.Lambda<Func<object, object>>(mce, p).Compile();

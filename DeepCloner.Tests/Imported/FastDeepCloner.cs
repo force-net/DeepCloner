@@ -1,4 +1,5 @@
-﻿// copied from https://raw.githubusercontent.com/Alenah091/FastDeepCloner/master/FastDeepCloner.cs because I need .NET 4.0 for tests
+﻿#if !NETCORE
+// copied from https://raw.githubusercontent.com/Alenah091/FastDeepCloner/master/FastDeepCloner.cs because I need .NET 4.0 for tests
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -289,3 +290,4 @@ namespace Force.DeepCloner.Tests.Imported
 		PropertyInfo
 	}
 }
+#endif

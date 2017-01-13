@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.ConstrainedExecution;
 
 namespace Force.DeepCloner.Helpers
 {
@@ -35,21 +34,29 @@ namespace Force.DeepCloner.Helpers
 
 			// enums are safe
 			// pointers (e.g. int*) are unsafe, but we cannot do anything with it except blind copy
-			if (type.IsEnum || type.IsPointer)
+			if (type.IsEnum() || type.IsPointer)
 			{
 				KnownTypes.TryAdd(type, true);
 				return true;
 			}
 
+#if !NETCORE
 			// this types are serious native resources, it is better not to clone it
-			if (type.IsSubclassOf(typeof(CriticalFinalizerObject)))
+			if (type.IsSubclassOf(typeof(System.Runtime.ConstrainedExecution.CriticalFinalizerObject)))
 			{
 				KnownTypes.TryAdd(type, true);
 				return true;
 			}
+#else
+			if (type.IsSubclassOfTypeByName("CriticalFinalizerObject"))
+			{
+				KnownTypes.TryAdd(type, true);
+				return true;
+			}
+#endif
 
 			// classes are always unsafe (we should copy it fully to count references)
-			if (!type.IsValueType)
+			if (!type.IsValueType())
 			{
 				KnownTypes.TryAdd(type, false);
 				return false;
@@ -65,8 +72,8 @@ namespace Force.DeepCloner.Helpers
 			var tp = type;
 			do
 			{
-				fi.AddRange(tp.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public));
-				tp = tp.BaseType;
+				fi.AddRange(tp.GetAllFields());
+				tp = tp.BaseType();
 			}
 			while (tp != null);
 
@@ -99,7 +106,7 @@ namespace Force.DeepCloner.Helpers
 
 			// enums are safe
 			// pointers (e.g. int*) are unsafe, but we cannot do anything with it except blind copy
-			if (!type.IsClass || type.IsArray)
+			if (!type.IsClass() || type.IsArray)
 			{
 				KnownClasses.TryAdd(type, false);
 				return false;
@@ -109,8 +116,8 @@ namespace Force.DeepCloner.Helpers
 			var tp = type;
 			do
 			{
-				fi.AddRange(tp.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public));
-				tp = tp.BaseType;
+				fi.AddRange(tp.GetAllFields());
+				tp = tp.BaseType();
 			}
 			while (tp != null);
 

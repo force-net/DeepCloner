@@ -52,6 +52,7 @@
     <Compile Include="Helpers\DeepClonerMsilHelper.cs" />
     <Compile Include="Helpers\DeepClonerSafeTypes.cs" />
     <Compile Include="Helpers\DeepCloneState.cs" />
+    <Compile Include="Helpers\ReflectionHelper.cs" />
     <Compile Include="Helpers\ShallowClonerGenerator.cs" />
     <Compile Include="Helpers\ShallowObjectCloner.cs" />
     <Compile Include="Helpers\TypeCreationHelper.cs" />
