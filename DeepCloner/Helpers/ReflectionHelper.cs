@@ -118,5 +118,18 @@ namespace Force.DeepCloner.Helpers
 			return false;
 		}
 #endif
+
+#if NETCORE
+		public static bool IsAssignableFrom(this Type from, Type to)
+		{
+			return from.GetTypeInfo().IsAssignableFrom(to.GetTypeInfo());
+		}
+
+		public static bool IsInstanceOfType(this Type from, object to)
+		{
+			return from.IsAssignableFrom(to.GetType());
+		}
+
+#endif
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Force.DeepCloner.Helpers
 {
@@ -35,7 +36,7 @@ namespace Force.DeepCloner.Helpers
 			return CloneStructInternal(obj, new DeepCloneState());
 		}
 
-		private static object CloneClassInternal(object obj, DeepCloneState state)
+		internal static object CloneClassInternal(object obj, DeepCloneState state)
 		{
 			if (obj == null) return null;
 
@@ -111,7 +112,7 @@ namespace Force.DeepCloner.Helpers
 			if (DeepClonerSafeTypes.IsTypeSafe(typeof(T), null))
 			{
 				Array.Copy(obj, outArray, obj.Length);
-				return obj;
+				return outArray;
 			}
 
 			if (typeof(T).IsValueType())
@@ -137,6 +138,7 @@ namespace Force.DeepCloner.Helpers
 			// not null from called method, but will check it anyway
 			if (obj == null) return null;
 			var rank = obj.Rank;
+
 			var lowerBounds = Enumerable.Range(0, rank).Select(obj.GetLowerBound).ToArray();
 			var lengths = Enumerable.Range(0, rank).Select(obj.GetLength).ToArray();
 			var idxes = Enumerable.Range(0, rank).Select(obj.GetLowerBound).ToArray();
@@ -162,7 +164,7 @@ namespace Force.DeepCloner.Helpers
 			}
 		}
 
-		private static Func<T, DeepCloneState, T> GetClonerForValueType<T>()
+		internal static Func<T, DeepCloneState, T> GetClonerForValueType<T>()
 		{
 			return (Func<T, DeepCloneState, T>)DeepClonerCache.GetOrAddStructAsObject(typeof(T), t => GenerateCloner(t, false));
 		}
@@ -175,6 +177,24 @@ namespace Force.DeepCloner.Helpers
 #else
 			return DeepClonerExprGenerator.GenerateClonerInternal(t, asObject);
 #endif
+		}
+
+		public static object CloneObjectTo(object objFrom, object objTo, bool isDeep)
+		{
+			if (objTo == null) return null;
+
+			if (objFrom == null)
+				throw new ArgumentNullException("objFrom", "Cannot copy null object to another");
+			var type = objFrom.GetType();
+			if (!type.IsInstanceOfType(objTo))
+				throw new InvalidOperationException("From object should be derived from From object, but From object has type " + objFrom.GetType().FullName + " and to " + objTo.GetType().FullName);
+			if (objFrom is string)
+				throw new InvalidOperationException("It is forbidden to clone strings");
+			var cloner = (Func<object, object, DeepCloneState, object>)(isDeep
+				? DeepClonerCache.GetOrAddDeepClassTo(type, t => ClonerToExprGenerator.GenerateClonerInternal(t, true))
+				: DeepClonerCache.GetOrAddShallowClassTo(type, t => ClonerToExprGenerator.GenerateClonerInternal(t, false)));
+			if (cloner == null) return objTo;
+			return cloner(objFrom, objTo, new DeepCloneState());
 		}
 	}
 }

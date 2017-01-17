@@ -239,6 +239,7 @@ namespace Force.DeepCloner.Tests
 			arr[1, 0] = 3;
 			arr[1, 1] = 4;
 			var clone = arr.DeepClone();
+			Assert.That(ReferenceEquals(arr, clone), Is.False);
 			Assert.That(clone[0, 0], Is.EqualTo(1));
 			Assert.That(clone[0, 1], Is.EqualTo(2));
 			Assert.That(clone[1, 0], Is.EqualTo(3));
@@ -254,6 +255,7 @@ namespace Force.DeepCloner.Tests
 			arr[1, 0, 0] = 3;
 			arr[1, 1, 0] = 4;
 			var clone = arr.DeepClone();
+			Assert.That(ReferenceEquals(arr, clone), Is.False);
 			Assert.That(clone[0, 0, 0], Is.EqualTo(1));
 			Assert.That(clone[0, 1, 0], Is.EqualTo(2));
 			Assert.That(clone[1, 0, 0], Is.EqualTo(3));

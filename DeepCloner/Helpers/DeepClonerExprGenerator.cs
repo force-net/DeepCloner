@@ -151,7 +151,7 @@ namespace Force.DeepCloner.Helpers
 			// multidim or not zero-based arrays
 			if (rank != 1 || type != elementType.MakeArrayType())
 			{
-				if (rank == 2)
+				if (rank == 2 && type == elementType.MakeArrayType())
 				{
 					// small optimization for 2 dim arrays
 					methodInfo = typeof(DeepClonerGenerator).GetPrivateStaticMethod("Clone2DimArrayInternal").MakeGenericMethod(elementType);

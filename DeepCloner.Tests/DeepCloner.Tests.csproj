@@ -67,6 +67,7 @@
     <Compile Include="BaseTest.cs" />
     <Compile Include="CloneExtensionsSpec.cs" />
     <Compile Include="ConstructorsSpec.cs" />
+    <Compile Include="CopyToObjectSpec.cs" />
     <Compile Include="GenericsSpec.cs" />
     <Compile Include="Imported\FastDeepCloner.cs" />
     <Compile Include="InheritanceSpec.cs" />

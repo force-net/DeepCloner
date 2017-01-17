@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DeepClonerExtensions.cs" />
+    <Compile Include="Helpers\ClonerToExprGenerator.cs" />
     <Compile Include="Helpers\DeepClonerExprGenerator.cs" />
     <Compile Include="Helpers\DeepClonerCache.cs" />
     <Compile Include="Helpers\DeepClonerGenerator.cs" />

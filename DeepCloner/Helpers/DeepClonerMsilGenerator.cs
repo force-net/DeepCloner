@@ -152,7 +152,7 @@ namespace Force.DeepCloner.Helpers
 			if (rank != 1 || type != elementType.MakeArrayType())
 			{
 				MethodInfo methodInfo;
-				if (rank == 2)
+				if (rank == 2 && type == elementType.MakeArrayType())
 				{
 					// small optimization for 2 dim arrays
 					methodInfo = typeof(DeepClonerGenerator).GetMethod("Clone2DimArrayInternal", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(elementType);

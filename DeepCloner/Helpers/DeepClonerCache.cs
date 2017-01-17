@@ -7,6 +7,10 @@ namespace Force.DeepCloner.Helpers
 	{
 		private static readonly ConcurrentDictionary<Type, object> _typeCache = new ConcurrentDictionary<Type, object>();
 
+		private static readonly ConcurrentDictionary<Type, object> _typeCacheDeepTo = new ConcurrentDictionary<Type, object>();
+
+		private static readonly ConcurrentDictionary<Type, object> _typeCacheShallowTo = new ConcurrentDictionary<Type, object>();
+
 		private static readonly ConcurrentDictionary<Type, object> _structAsObjectCache = new ConcurrentDictionary<Type, object>();
 
 		private static readonly ConcurrentDictionary<Tuple<Type, Type>, object> _typeConvertCache = new ConcurrentDictionary<Tuple<Type, Type>, object>();
@@ -20,6 +24,24 @@ namespace Force.DeepCloner.Helpers
 			if (_typeCache.TryGetValue(type, out value)) return value;
 			value = adder(type);
 			_typeCache.TryAdd(type, value);
+			return value;
+		}
+
+		public static object GetOrAddDeepClassTo<T>(Type type, Func<Type, T> adder)
+		{
+			object value;
+			if (_typeCacheDeepTo.TryGetValue(type, out value)) return value;
+			value = adder(type);
+			_typeCacheDeepTo.TryAdd(type, value);
+			return value;
+		}
+
+		public static object GetOrAddShallowClassTo<T>(Type type, Func<Type, T> adder)
+		{
+			object value;
+			if (_typeCacheShallowTo.TryGetValue(type, out value)) return value;
+			value = adder(type);
+			_typeCacheShallowTo.TryAdd(type, value);
 			return value;
 		}
 
