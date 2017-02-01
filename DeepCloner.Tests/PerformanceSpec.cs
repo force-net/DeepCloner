@@ -9,6 +9,8 @@ using CloneBehave;
 
 using CloneExtensions;
 
+using FastDeepCloner;
+
 using Force.DeepCloner.Tests.Imported;
 
 using NClone;
@@ -95,7 +97,8 @@ namespace Force.DeepCloner.Tests
 			// for (var i = 0; i < 1000; i++) ReflectionCloner.DeepFieldClone(c1);
 			for (var i = 0; i < 1000; i++) GeorgeCloney.CloneExtension.DeepCloneWithoutSerialization(c1);
 
-			for (var i = 0; i < 1000; i++) new FastDeepCloner(c1, FieldType.FieldInfo).Clone();
+			for (var i = 0; i < 1000; i++) FastDeepCloner.DeepCloner.Clone(c1, FieldType.FieldInfo);
+			for (var i = 0; i < 1000; i++) DesertOctopus.ObjectCloner.Clone(c1);
 
 			// test
 			var sw = new Stopwatch();
@@ -130,8 +133,12 @@ namespace Force.DeepCloner.Tests
 			Console.WriteLine("GeorgeCloney: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 
-			for (var i = 0; i < 1000000; i++) new FastDeepCloner(c1, FieldType.FieldInfo).Clone();
+			for (var i = 0; i < 1000000; i++) FastDeepCloner.DeepCloner.Clone(c1, FieldType.FieldInfo);
 			Console.WriteLine("FastDeepCloner: " + sw.ElapsedMilliseconds);
+			sw.Restart();
+
+			for (var i = 0; i < 1000000; i++) DesertOctopus.ObjectCloner.Clone(c1);
+			Console.WriteLine("DesertOctopus: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 
 			// inaccurate variant, but test should complete in reasonable time

@@ -91,14 +91,15 @@ Tables below, just for information. Simple object with some fields is cloned mul
   Method   |  Time (in ms)  | Comments
 ---|---|---
 Manual | 13 |  You should manually realize cloning. It requires a lot of work and can cause copy-paste errors, but it is fastest variant
-DeepClone / Unsafe | 167 | This variant is really slower than manual, but clones any object without preparation
-DeepClone / Safe | 267 | Safe variant based on on expressions
-[CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 560 | Implementation of cloning objects on expression trees.
+DeepClone / Unsafe | 180 | This variant is really slower than manual, but clones any object without preparation
+DeepClone / Safe | 280 | Safe variant based on on expressions
+[CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 500 | Implementation of cloning objects on expression trees.
 [NClone](https://github.com/mijay/NClone) | 901 | Not analyzed carefully, but author says that lib has a problem with a cyclic dependencies
 [Clone.Behave!](https://github.com/kalisohn/CloneBehave) | 8551 | Very slow, also has a dependency to fasterflect
 [GeorgeCloney](https://github.com/laazyj/GeorgeCloney) | 1996 | Has a lot limitations and prefers to clone through BinaryFormatter
 [Nuclex.Cloning](https://github.com/junweilee/Nuclex.Cloning/) | n/a | Crashed with a null reference exception
-[.Net Object FastDeepCloner](https://github.com/Alenah091/FastDeepCloner/) | 1882 | Not analyzed carefully, only for .NET 4.5.1 or higher
+[.Net Object FastDeepCloner](https://github.com/Alenah091/FastDeepCloner/) | 1800 | Not analyzed carefully, only for .NET 4.5.1 or higher
+[DesertOctopus](https://github.com/nowol/DesertOctopus) | 600 | Not analyzed. Only for .NET 4.5.2 or higher
 BinaryFormatter | 15000 | Another way of deep object cloning through serializing/deserializing object. Instead of Json serializers - it maintains full graph of serializing objects and also do not call any method for cloning object. But due serious overhead, this variant is very slow
 
 **Shallow cloning** 

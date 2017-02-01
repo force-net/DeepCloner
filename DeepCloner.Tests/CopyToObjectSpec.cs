@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
@@ -360,5 +361,25 @@ namespace Force.DeepCloner.Tests
 	        Assert.That(ReferenceEquals(c1, arrTo2[0, 0, 0]), Is.False);
 	        Assert.That(ReferenceEquals(arrTo2[0, 0, 1], arrTo2[0, 0, 0]), Is.True);
 	    }
+
+		[Test]
+		public void Dictionary_Should_Be_Deeply_Cloned()
+		{
+			var d1 = new Dictionary<string, string>{ { "A", "B" }, { "C", "D" } };
+			var d2 = new Dictionary<string, string>();
+			d1.DeepCloneTo(d2);
+			d1["A"] = "E";
+			Assert.That(d2.Count, Is.EqualTo(2));
+			Assert.That(d2["A"], Is.EqualTo("B"));
+			Assert.That(d2["C"], Is.EqualTo("D"));
+
+			// big dictionary
+			d1.Clear();
+			for (var i = 0; i < 1000; i++)
+				d1[i.ToString()] = i.ToString();
+			d1.DeepCloneTo(d2);
+			Assert.That(d2.Count, Is.EqualTo(1000));
+			Assert.That(d2["557"], Is.EqualTo("557"));
+		}
 	}
 }

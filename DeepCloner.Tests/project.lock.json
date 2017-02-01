@@ -624,13 +624,17 @@
           "lib/netstandard1.0/NuGet.Versioning.dll": {}
         }
       },
-      "NUnit/3.4.1": {
+      "NUnit/3.6.0": {
         "type": "package",
+        "dependencies": {
+          "NETStandard.Library": "1.6.0",
+          "System.Runtime.Loader": "4.0.0"
+        },
         "compile": {
-          "lib/portable-net45+win8+wp8+wpa81+Xamarin.Mac+MonoAndroid10+MonoTouch10+Xamarin.iOS10/nunit.framework.dll": {}
+          "lib/netstandard1.6/nunit.framework.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+win8+wp8+wpa81+Xamarin.Mac+MonoAndroid10+MonoTouch10+Xamarin.iOS10/nunit.framework.dll": {}
+          "lib/netstandard1.6/nunit.framework.dll": {}
         }
       },
       "NUnit.Portable.Agent/3.4.0-beta-3": {
@@ -2480,7 +2484,7 @@
           "lib/netstandard1.3/System.Xml.XPath.XDocument.dll": {}
         }
       },
-      "DeepCloner/0.9.4": {
+      "DeepCloner/0.10.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.3",
         "dependencies": {
@@ -2494,7 +2498,7 @@
         }
       }
     },
-    ".NETFramework,Version=v4.0": {
+    ".NETFramework,Version=v4.6.1": {
       "Clone.Behave/1.0.1": {
         "type": "package",
         "dependencies": {
@@ -2516,6 +2520,30 @@
           "lib/portable-net40+sl50+win+wp80/CloneExtensions.dll": {}
         }
       },
+      "DesertOctopus/0.1.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CSharp": "4.0.1"
+        },
+        "compile": {
+          "lib/net452/DesertOctopus.dll": {}
+        },
+        "runtime": {
+          "lib/net452/DesertOctopus.dll": {}
+        }
+      },
+      "FastDeepCloner/1.0.9": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System"
+        ],
+        "compile": {
+          "lib/portable-net45+sl4+wp8+win8/FastDeepCloner.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+sl4+wp8+win8/FastDeepCloner.dll": {}
+        }
+      },
       "fasterflect/2.1.3": {
         "type": "package",
         "compile": {
@@ -2534,13 +2562,25 @@
           "lib/net40/GeorgeCloney.dll": {}
         }
       },
+      "Microsoft.CSharp/4.0.1": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp"
+        ],
+        "compile": {
+          "ref/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/_._": {}
+        }
+      },
       "NClone/1.1.1": {
         "type": "package",
         "compile": {
-          "lib/net40/NClone.dll": {}
+          "lib/net45/NClone.dll": {}
         },
         "runtime": {
-          "lib/net40/NClone.dll": {}
+          "lib/net45/NClone.dll": {}
         }
       },
       "Nuclex.Cloning/1.0.0": {
@@ -2555,16 +2595,16 @@
           "lib/net40/Nuclex.Cloning.dll": {}
         }
       },
-      "NUnit/3.4.1": {
+      "NUnit/3.6.0": {
         "type": "package",
         "compile": {
-          "lib/net40/nunit.framework.dll": {}
+          "lib/net45/nunit.framework.dll": {}
         },
         "runtime": {
-          "lib/net40/nunit.framework.dll": {}
+          "lib/net45/nunit.framework.dll": {}
         }
       },
-      "DeepCloner/0.9.4": {
+      "DeepCloner/0.10.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.0",
         "compile": {
@@ -2597,6 +2637,16 @@
         "lib/portable-net40+sl50+win+wp80/CloneExtensions.dll"
       ]
     },
+    "DesertOctopus/0.1.1": {
+      "sha512": "Y89uz+Nrq/i8Q6AiXDTiEYH2RnXbhJ2erJDmqfv1usKFvmgAR/B7WwTBugNIBPgpdNxFM+8WMR3yEY9n3YJY5Q==",
+      "type": "package",
+      "path": "DesertOctopus/0.1.1",
+      "files": [
+        "DesertOctopus.0.1.1.nupkg.sha512",
+        "DesertOctopus.nuspec",
+        "lib/net452/DesertOctopus.dll"
+      ]
+    },
     "dotnet-test-nunit/3.4.0-beta-3": {
       "sha512": "TCprFJd60JQrNSygKAinVFBF2zQK3V2BRm1jeBvAGKF/6omeMrjO1tBD3UKlZSGvHFNyiocPn7bgU68cNz94ug==",
       "type": "package",
@@ -2607,6 +2657,17 @@
         "lib/net451/dotnet-test-nunit.exe",
         "lib/netcoreapp1.0/dotnet-test-nunit.dll",
         "lib/netcoreapp1.0/dotnet-test-nunit.runtimeconfig.json"
+      ]
+    },
+    "FastDeepCloner/1.0.9": {
+      "sha512": "R9OMDEV+w98IwhJqBX3ptDLfn/rVQXgK6NhXhdx58AYVEHRHvvHiAz6Jrs4UahDMCX7/xbYOksNze6CLp1b8bA==",
+      "type": "package",
+      "path": "FastDeepCloner/1.0.9",
+      "files": [
+        "FastDeepCloner.1.0.9.nupkg.sha512",
+        "FastDeepCloner.nuspec",
+        "lib/portable-net45+sl4+wp8+win8/FastDeepCloner.dll",
+        "lib/portable-net45+sl4+wp8+win8/FastDeepCloner.pdb"
       ]
     },
     "fasterflect/2.1.3": {
@@ -3216,16 +3277,20 @@
         "lib/netstandard1.0/NuGet.Versioning.xml"
       ]
     },
-    "NUnit/3.4.1": {
-      "sha512": "G/9h/ENn8+GvT5DvBqVNrUhIWuxtAr0/oVGN2ljKVUw50EAZYBzeWSy9s6nqMswaQACpQzljql1sWQ/peE2eJg==",
+    "NUnit/3.6.0": {
+      "sha512": "mqJP3DI3mE9YSx0o7R5loyIm0NnLJLSl2lmXn84gSkOmLWzlbrxS0oW/cCZF25tB+6Anday/mbkRUXmdvEvSCg==",
       "type": "package",
-      "path": "NUnit/3.4.1",
+      "path": "NUnit/3.6.0",
       "files": [
         "CHANGES.txt",
         "LICENSE.txt",
         "NOTICES.txt",
-        "lib/dotnet/nunit.framework.dll",
-        "lib/dotnet/nunit.framework.xml",
+        "NUnit.3.6.0.nupkg.sha512",
+        "NUnit.nuspec",
+        "lib/MonoAndroid/nunit.framework.dll",
+        "lib/MonoAndroid/nunit.framework.xml",
+        "lib/Xamarin.iOS10/nunit.framework.dll",
+        "lib/Xamarin.iOS10/nunit.framework.xml",
         "lib/net20/NUnit.System.Linq.dll",
         "lib/net20/nunit.framework.dll",
         "lib/net20/nunit.framework.xml",
@@ -3235,10 +3300,10 @@
         "lib/net40/nunit.framework.xml",
         "lib/net45/nunit.framework.dll",
         "lib/net45/nunit.framework.xml",
-        "lib/portable-net45+win8+wp8+wpa81+Xamarin.Mac+MonoAndroid10+MonoTouch10+Xamarin.iOS10/nunit.framework.dll",
-        "lib/portable-net45+win8+wp8+wpa81+Xamarin.Mac+MonoAndroid10+MonoTouch10+Xamarin.iOS10/nunit.framework.xml",
-        "nunit.3.4.1.nupkg.sha512",
-        "nunit.nuspec"
+        "lib/netstandard1.6/nunit.framework.dll",
+        "lib/netstandard1.6/nunit.framework.xml",
+        "lib/portable-net45+win8+wp8+wpa81/nunit.framework.dll",
+        "lib/portable-net45+win8+wp8+wpa81/nunit.framework.xml"
       ]
     },
     "NUnit.Portable.Agent/3.4.0-beta-3": {
@@ -7547,7 +7612,7 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "DeepCloner/0.9.4": {
+    "DeepCloner/0.10.0": {
       "type": "project",
       "path": "../DeepCloner/project.json",
       "msbuildProject": "../DeepCloner/DeepCloner.xproj"
@@ -7556,15 +7621,17 @@
   "projectFileDependencyGroups": {
     "": [
       "DeepCloner",
-      "NUnit >= 3.4.1"
+      "NUnit >= 3.6.0"
     ],
     ".NETCoreApp,Version=v1.0": [
       "Microsoft.NETCore.App >= 1.1.0-*",
       "dotnet-test-nunit >= 3.4.0-beta-3"
     ],
-    ".NETFramework,Version=v4.0": [
+    ".NETFramework,Version=v4.6.1": [
       "Clone.Behave >= 1.0.1",
       "CloneExtensions >= 1.2.0",
+      "DesertOctopus >= 0.1.1",
+      "FastDeepCloner >= 1.0.9",
       "GeorgeCloney >= 1.1.2.20",
       "NClone >= 1.1.1",
       "Nuclex.Cloning >= 1.0.0"

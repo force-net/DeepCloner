@@ -13,7 +13,7 @@ namespace Force.DeepCloner.Tests.Imported
 	/// Supports cloning, which creates a new instance of a class with the same value as an existing instance.
 	/// Used to deep clone objects, whether they are serializable or not.
 	/// </summary>
-	public class FastDeepCloner
+	public class FastDeepCloner_Copy
 	{
 		#region Private fields
 		private const BindingFlags Binding = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy;
@@ -28,12 +28,12 @@ namespace Force.DeepCloner.Tests.Imported
 		private Type _ignorePropertiesWithAttribute;
 		private static IDictionary<Type, List<FieldInfo>> _cachedFields;
 		private static IDictionary<Type, List<PropertyInfo>> _cachedPropertyInfo;
-		private FieldType _fieldType;
+		private FieldType_Copy _fieldType;
 		private IDictionary<string, bool> _alreadyCloned;
 		#endregion
 
 		#region Constructors
-		public FastDeepCloner(object desireObjectToBeCloned, FieldType fieldType)
+		public FastDeepCloner_Copy(object desireObjectToBeCloned, FieldType_Copy fieldType)
 		{
 			if (desireObjectToBeCloned == null)
 			{
@@ -43,7 +43,7 @@ namespace Force.DeepCloner.Tests.Imported
 			DataBind(desireObjectToBeCloned, fieldType, null, false);
 		}
 
-		public FastDeepCloner(object desireObjectToBeCloned, FieldType fieldType = FieldType.FieldInfo, Type ignorePropertiesWithAttribute = null, bool? initPublicOnly = null)
+		public FastDeepCloner_Copy(object desireObjectToBeCloned, FieldType_Copy fieldType = FieldType_Copy.FieldInfo, Type ignorePropertiesWithAttribute = null, bool? initPublicOnly = null)
 		{
 			if (desireObjectToBeCloned == null)
 			{
@@ -75,7 +75,7 @@ namespace Force.DeepCloner.Tests.Imported
 		#endregion
 
 		#region Private method deep clone
-		private void DataBind(object desireObjectToBeCloned, FieldType fieldType = FieldType.FieldInfo, Type ignorePropertiesWithAttribute = null, bool? initPublicOnly = null, IDictionary<string, bool> alreadyCloned = null)
+		private void DataBind(object desireObjectToBeCloned, FieldType_Copy fieldType = FieldType_Copy.FieldInfo, Type ignorePropertiesWithAttribute = null, bool? initPublicOnly = null, IDictionary<string, bool> alreadyCloned = null)
 		{
 			if (desireObjectToBeCloned == null)
 				return;
@@ -130,7 +130,7 @@ namespace Force.DeepCloner.Tests.Imported
 						var underlyingSystemType = item.GetType().UnderlyingSystemType;
 						clonedIteam = (item is string || !underlyingSystemType.IsClass || IsInternalType(underlyingSystemType))
 							? item
-							: new FastDeepCloner(item, _fieldType, _ignorePropertiesWithAttribute, _initPublicOnly, _alreadyCloned).DeepClone();
+							: new FastDeepCloner_Copy(item, _fieldType, _ignorePropertiesWithAttribute, _initPublicOnly, _alreadyCloned).DeepClone();
 					}
 					if (!_isArray)
 						((IList)tObject).Add(clonedIteam);
@@ -153,7 +153,7 @@ namespace Force.DeepCloner.Tests.Imported
 						var underlyingSystemType = item.GetType().UnderlyingSystemType;
 						clonedIteam = (item is string || !underlyingSystemType.IsClass || IsInternalType(underlyingSystemType))
 							? item
-							: new FastDeepCloner(item, _fieldType, _ignorePropertiesWithAttribute, _initPublicOnly, _alreadyCloned).DeepClone();
+							: new FastDeepCloner_Copy(item, _fieldType, _ignorePropertiesWithAttribute, _initPublicOnly, _alreadyCloned).DeepClone();
 					}
 					((IDictionary)tObject).Add(key, clonedIteam);
 				}
@@ -163,7 +163,7 @@ namespace Force.DeepCloner.Tests.Imported
 				// Create an empty object and ignore its constructor.
 				tObject = FormatterServices.GetUninitializedObject(_primaryType);
 				var fullPath = _primaryType.Name;
-				if (_fieldType == FieldType.PropertyInfo)
+				if (_fieldType == FieldType_Copy.PropertyInfo)
 				{
 					if (!_cachedPropertyInfo.ContainsKey(_primaryType))
 					{
@@ -197,7 +197,7 @@ namespace Force.DeepCloner.Tests.Imported
 							x => x.GetCustomAttributes(_ignorePropertiesWithAttribute, false).FirstOrDefault() != null);
 				}
 
-				if (_fieldType == FieldType.FieldInfo)
+				if (_fieldType == FieldType_Copy.FieldInfo)
 				{
 					foreach (var property in _cachedFields[_primaryType])
 					{
@@ -218,7 +218,7 @@ namespace Force.DeepCloner.Tests.Imported
 						{
 							_alreadyCloned.Add(fullPath + property.Name, true);
 							property.SetValue(tObject,
-								new FastDeepCloner(value, _fieldType, _ignorePropertiesWithAttribute, _initPublicOnly,
+								new FastDeepCloner_Copy(value, _fieldType, _ignorePropertiesWithAttribute, _initPublicOnly,
 									_alreadyCloned).DeepClone());
 						}
 					}
@@ -242,7 +242,7 @@ namespace Force.DeepCloner.Tests.Imported
 						{
 							_alreadyCloned.Add(fullPath + property.Name, true);
 							property.SetValue(tObject,
-								new FastDeepCloner(value, _fieldType, _ignorePropertiesWithAttribute, _initPublicOnly,
+								new FastDeepCloner_Copy(value, _fieldType, _ignorePropertiesWithAttribute, _initPublicOnly,
 									_alreadyCloned).DeepClone(), null);
 						}
 					}
@@ -253,7 +253,7 @@ namespace Force.DeepCloner.Tests.Imported
 		}
 		#endregion
 
-		private FastDeepCloner(object desireObjectToBeCloned, FieldType fielType = FieldType.FieldInfo, Type ignorePropertiesWithAttribute = null, bool? initPublicOnly = null, IDictionary<string, bool> alreadyCloned = null)
+		private FastDeepCloner_Copy(object desireObjectToBeCloned, FieldType_Copy fielType = FieldType_Copy.FieldInfo, Type ignorePropertiesWithAttribute = null, bool? initPublicOnly = null, IDictionary<string, bool> alreadyCloned = null)
 		{
 			DataBind(desireObjectToBeCloned, fielType, ignorePropertiesWithAttribute, initPublicOnly, alreadyCloned);
 		}
@@ -284,7 +284,7 @@ namespace Force.DeepCloner.Tests.Imported
 		}
 	}
 
-	public enum FieldType
+	public enum FieldType_Copy
 	{
 		FieldInfo,
 		PropertyInfo
