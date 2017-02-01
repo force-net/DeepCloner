@@ -381,5 +381,30 @@ namespace Force.DeepCloner.Tests
 			Assert.That(d2.Count, Is.EqualTo(1000));
 			Assert.That(d2["557"], Is.EqualTo("557"));
 		}
+
+		public class D1
+		{
+			public int A { get; set; }
+		}
+
+		public class D2 : D1
+		{
+			public int B { get; set; }
+
+			public D2(D1 d1)
+			{
+				B = 14;
+				d1.DeepCloneTo(this);
+			}
+		}
+
+		[Test]
+		public void Inner_Implementation_In_Class_Should_Work()
+		{
+			var baseObject = new D1 { A = 12 };
+			var wrapper = new D2(baseObject);
+			Assert.That(wrapper.A, Is.EqualTo(12));
+			Assert.That(wrapper.B, Is.EqualTo(14));
+		}
 	}
 }

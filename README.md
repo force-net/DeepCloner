@@ -47,6 +47,29 @@ Shallow cloning (clone only same object, not objects that object relate to)
   var clone = new { Id = 1, Name = "222" }.ShallowClone();
 ```
 
+Cloning to existing object (can be useful for _copying_ constructors, creating wrappers or for keeping references to same object)
+```
+public class Derived : BaseClass
+{
+	public Derived(BaseClass parent)
+	{
+		parent.DeepCloneTo(this); // now this has every field from parent
+	}
+}
+```
+Please, note, that _DeepCloneTo_ and _ShallowCloneTo_ requre that object should be class (it is useless for structures) and derived class must be real descendant of parent class (or same type). In another words, this code will not work:
+```
+public class Base {}
+public class Derived1 : Base {}
+public class Derived2 : Base {}
+
+var b = (Base)new Derived1(); // casting derived to parent
+var derived2 = new Derived2();
+// will compile, but will throw an exception in runtime, Derived1 is not parent for Derived2
+b.DeepCloneTo(derived2); 
+
+```  
+
 ## Installation
 
 Through nuget: 

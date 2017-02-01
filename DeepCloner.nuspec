@@ -3,7 +3,7 @@
   <metadata>
     <id>DeepCloner</id>
     <title>DeepCloner</title>
-    <version>0.9.4</version>
+    <version>0.10.0</version>
     <authors>force</authors>
     <owners>force</owners>
     <licenseUrl>https://github.com/force-net/DeepCloner/blob/develop/LICENSE</licenseUrl>
@@ -12,7 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Small Library for fast deep or shallow cloning .NET objects. It allows to copy everything and has a lot of performance tricks for fast copying.</description>
     <releaseNotes>
-Added support for .NET Standard (.NET Core)
+Added additional methods for cloning DeepCloneTo/ShallowCloneTo
     </releaseNotes>
     <copyright>Copyright by Force 2016-2017</copyright>
     <tags>.NET shallow deep clone DeepClone fast</tags>
