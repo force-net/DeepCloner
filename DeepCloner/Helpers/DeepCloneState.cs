@@ -28,8 +28,7 @@ namespace Force.DeepCloner.Helpers
 
 		private Dictionary<object, object> _loops;
 
-		private readonly object[] _baseFrom = new object[3];
-		private readonly object[] _baseTo = new object[3];
+		private readonly object[] _baseFromTo = new object[6];
 
 		private int _idx;
 
@@ -37,9 +36,10 @@ namespace Force.DeepCloner.Helpers
 		{
 			// this is faster than call Diectionary from begin
 			// also, small poco objects does not have a lot of references
-			if (ReferenceEquals(from, _baseFrom[0])) return _baseTo[0];
-			if (ReferenceEquals(from, _baseFrom[1])) return _baseTo[1];
-			if (ReferenceEquals(from, _baseFrom[2])) return _baseTo[2];
+			var baseFromTo = _baseFromTo;
+			if (ReferenceEquals(from, baseFromTo[0])) return baseFromTo[3];
+			if (ReferenceEquals(from, baseFromTo[1])) return baseFromTo[4];
+			if (ReferenceEquals(from, baseFromTo[2])) return baseFromTo[5];
 			if (_loops == null) return null;
 			object value;
 			if (_loops.TryGetValue(from, out value)) return value;
@@ -51,11 +51,12 @@ namespace Force.DeepCloner.Helpers
 		{
 			if (_idx < 3)
 			{
-				_baseFrom[_idx] = from;
-				_baseTo[_idx] = to;
+				_baseFromTo[_idx] = from;
+				_baseFromTo[_idx + 3] = to;
 				_idx++;
 				return;
 			}
+
 			if (_loops == null) _loops = new Dictionary<object, object>(Instance);
 			_loops[from] = to;
 		}

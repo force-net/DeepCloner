@@ -109,33 +109,40 @@ Cloning Speed can vary on many factors. This library contains some optimizations
 
 Tables below, just for information. Simple object with some fields is cloned multiple times. Preparation time (only affect first execution) excluded from tests.
 
+Example of object
+```
+var c = new C1 { V1 = 1, O = new object(), V2 = "xxx" };
+var c1 = new C1Complex { C1 = c, Guid = Guid.NewGuid(), O = new object(), V1 = 42, V2 = "some test string", Array = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 } };
+```
+
+
 **Deep cloning** 
 
-  Method   |  Time (in ms)  | Comments
+  Method   |  Time per object (ns)  | Comments
 ---|---|---
-Manual | 13 |  You should manually realize cloning. It requires a lot of work and can cause copy-paste errors, but it is fastest variant
-DeepClone / Unsafe | 180 | This variant is really slower than manual, but clones any object without preparation
-DeepClone / Safe | 280 | Safe variant based on on expressions
-[CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 500 | Implementation of cloning objects on expression trees.
-[NClone](https://github.com/mijay/NClone) | 901 | Not analyzed carefully, but author says that lib has a problem with a cyclic dependencies
-[Clone.Behave!](https://github.com/kalisohn/CloneBehave) | 8551 | Very slow, also has a dependency to fasterflect
-[GeorgeCloney](https://github.com/laazyj/GeorgeCloney) | 1996 | Has a lot limitations and prefers to clone through BinaryFormatter
+Manual | 50 |  You should manually realize cloning. It requires a lot of work and can cause copy-paste errors, but it is fastest variant
+DeepClone / Unsafe | 570 | This variant is really slower than manual, but clones any object without preparation
+DeepClone / Safe | 760 | Safe variant based on on expressions
+[CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 1800 | Implementation of cloning objects on expression trees.
+[NClone](https://github.com/mijay/NClone) | 2890 | Not analyzed carefully, but author says that lib has a problem with a cyclic dependencies
+[Clone.Behave!](https://github.com/kalisohn/CloneBehave) | 41890 | Very slow, also has a dependency to fasterflect
+[GeorgeCloney](https://github.com/laazyj/GeorgeCloney) | 6420 | Has a lot limitations and prefers to clone through BinaryFormatter
 [Nuclex.Cloning](https://github.com/junweilee/Nuclex.Cloning/) | n/a | Crashed with a null reference exception
-[.Net Object FastDeepCloner](https://github.com/Alenah091/FastDeepCloner/) | 1800 | Not analyzed carefully, only for .NET 4.5.1 or higher
-[DesertOctopus](https://github.com/nowol/DesertOctopus) | 600 | Not analyzed. Only for .NET 4.5.2 or higher
-BinaryFormatter | 15000 | Another way of deep object cloning through serializing/deserializing object. Instead of Json serializers - it maintains full graph of serializing objects and also do not call any method for cloning object. But due serious overhead, this variant is very slow
+[.Net Object FastDeepCloner](https://github.com/Alenah091/FastDeepCloner/) | 15030 | Not analyzed carefully, only for .NET 4.5.1 or higher
+[DesertOctopus](https://github.com/nowol/DesertOctopus) | 1700 | Not analyzed. Only for .NET 4.5.2 or higher
+BinaryFormatter | 49100 | Another way of deep object cloning through serializing/deserializing object. Instead of Json serializers - it maintains full graph of serializing objects and also do not call any method for cloning object. But due serious overhead, this variant is very slow
 
 **Shallow cloning** 
 Shallow cloning is usually faster, because we no need to calculate references and clone additional objects.
 
-  Method   |  Time (in ms)  | Comments
+  Method   |  Time per object (ns)  | Comments
 ---|---|---
-Manual | 11 | You should manually realize clone, property by property, field by field. Fastest variant
-Manual / MemberwiseClone | 37 | Fast variant to clone: call MemberwiseClone inside your class. Should be done manually, but does not require a lot of work.
-ShallowClone / Unsafe | 46 | Slightly slower than MemberwiseClone due checks for nulls and object types
-ShallowClone / Safe | 48 | Safe variant based on expressions
-[CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 123 | Implementation of cloning objects on expression trees.
-[Nuclex.Cloning](https://github.com/junweilee/Nuclex.Cloning/) | 1107 | Looks like interesting expression-based implementation with a some caching, but unexpectedly vers slow
+Manual | 16 | You should manually realize clone, property by property, field by field. Fastest variant
+Manual / MemberwiseClone | 46 | Fast variant to clone: call MemberwiseClone inside your class. Should be done manually, but does not require a lot of work.
+ShallowClone / Unsafe | 64 | Slightly slower than MemberwiseClone due checks for nulls and object types
+ShallowClone / Safe | 64 | Safe variant based on expressions
+[CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions) | 125 | Implementation of cloning objects on expression trees.
+[Nuclex.Cloning](https://github.com/junweilee/Nuclex.Cloning/) | 2498 | Looks like interesting expression-based implementation with a some caching, but unexpectedly very slow
 
 ## Performance tricks
 
