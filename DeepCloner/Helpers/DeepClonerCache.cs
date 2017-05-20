@@ -61,5 +61,17 @@ namespace Force.DeepCloner.Helpers
 		{
 			return (T)_typeConvertCache.GetOrAdd(new Tuple<Type, Type>(from, to), (tuple) => adder(tuple.Item1, tuple.Item2));
 		}
+
+		/// <summary>
+		/// This method can be used when we switch between safe / unsafe variants (for testing)
+		/// </summary>
+		public static void ClearCache()
+		{
+			_typeCache.Clear();
+			_typeCacheDeepTo.Clear();
+			_typeCacheShallowTo.Clear();
+			_structAsObjectCache.Clear();
+			_typeConvertCache.Clear();
+		}
 	}
 }

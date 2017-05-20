@@ -143,19 +143,18 @@ namespace Force.DeepCloner.Tests
 		}
 
 		[Test, Ignore("Manual")]
-		[TestCase(false)]
-		[TestCase(true)]
-		public void Test_Construct_Variants(bool isSafe)
+		public void Test_Construct_Variants()
 		{
-			// we cache cloners for type, so, this only variant with separate run
-			BaseTest.SwitchTo(isSafe);
 			var c = new C1 { V1 = 1, O = new object(), V2 = "xxx" };
 			var c1 = new C1Complex { C1 = c, Guid = Guid.NewGuid(), O = new object(), V1 = 42, V2 = "some test string", Array = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 } };
 			const int CountWarm = 1000;
 			const int CountReal = 100000;
 			// warm up
 			DoTest(CountWarm, "Manual", () => ManualDeepClone(c1));
-			DoTest(CountWarm, "Deep", () => c1.DeepClone());
+			BaseTest.SwitchTo(false);
+			DoTest(CountWarm, "Deep Unsafe", () => c1.DeepClone());
+			BaseTest.SwitchTo(true);
+			DoTest(CountWarm, "Deep Safe", () => c1.DeepClone());
 			DoTest(CountWarm, "CloneExtensions", () => c1.GetClone());
 			DoTest(CountWarm, "NClone", () => Clone.ObjectGraph(c1));
 			DoTest(CountWarm, "Clone.Behave", () => new CloneEngine().Clone(c1));
@@ -166,7 +165,10 @@ namespace Force.DeepCloner.Tests
 
 			Console.WriteLine("----------------");
 			DoTest(CountReal, "Manual", () => ManualDeepClone(c1));
-			DoTest(CountReal, "Deep", () => c1.DeepClone());
+			BaseTest.SwitchTo(false);
+			DoTest(CountReal, "Deep Unsafe", () => c1.DeepClone());
+			BaseTest.SwitchTo(true);
+			DoTest(CountReal, "Deep Safe", () => c1.DeepClone());
 			DoTest(CountReal, "CloneExtensions", () => c1.GetClone());
 			DoTest(CountReal, "NClone", () => Clone.ObjectGraph(c1));
 			DoTest(CountReal, "Clone.Behave", () => new CloneEngine().Clone(c1));

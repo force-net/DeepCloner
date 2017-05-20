@@ -64,6 +64,7 @@ namespace Force.DeepCloner.Helpers
 		/// </summary>
 		internal static void SwitchTo(bool isSafe)
 		{
+			DeepClonerCache.ClearCache();
 			if (isSafe) _instance = new ShallowSafeObjectCloner();
 			else _instance = _unsafeInstance;
 		}
