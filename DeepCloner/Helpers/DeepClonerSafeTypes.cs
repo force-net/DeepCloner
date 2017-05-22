@@ -23,7 +23,9 @@ namespace Force.DeepCloner.Helpers
 						{
 							typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint), typeof(long), typeof(ulong),
 							typeof(float), typeof(double), typeof(decimal), typeof(char), typeof(string), typeof(bool), typeof(DateTime),
-							typeof(IntPtr), typeof(UIntPtr)
+							typeof(IntPtr), typeof(UIntPtr),
+							// do not clone such native type
+							Type.GetType("System.RuntimeType")
 						}) KnownTypes.TryAdd(x, true);
 		}
 
@@ -41,8 +43,24 @@ namespace Force.DeepCloner.Helpers
 			}
 
 #if !NETCORE
+			// do not do anything with remoting. it is very dangerous to clone, bcs it relate to deep core of framework
+			if (type.FullName.StartsWith("System.Runtime.Remoting.")
+				&& type.Assembly == typeof(System.Runtime.Remoting.CustomErrorsModes).Assembly)
+			{
+				KnownTypes.TryAdd(type, true);
+				return true;
+			}
+
+
 			// this types are serious native resources, it is better not to clone it
 			if (type.IsSubclassOf(typeof(System.Runtime.ConstrainedExecution.CriticalFinalizerObject)))
+			{
+				KnownTypes.TryAdd(type, true);
+				return true;
+			}
+
+			// Better not to do anything with COM
+			if (type.IsCOMObject)
 			{
 				KnownTypes.TryAdd(type, true);
 				return true;

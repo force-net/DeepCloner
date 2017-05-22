@@ -20,7 +20,11 @@
 	            "NClone": "1.1.1",
 	            "Nuclex.Cloning": "1.0.0",
 	            "FastDeepCloner": "1.0.9",
-	            "DesertOctopus": "0.1.1"
+	            "DesertOctopus": "0.1.1",
+	            "EntityFramework": "6.1.3"
+	        },
+	        "frameworkAssemblies": {
+	            "System.ComponentModel.DataAnnotations": "4.0.0"
 	        }
 	    },
         "netcoreapp1.0": {
@@ -29,6 +33,8 @@
                 "define": ["NETCORE"]
             },
             "dependencies": {
+	            "NETStandard.Library": "1.6.1",
+	            "Microsoft.EntityFrameworkCore.SqlServer": "1.1.2",
                 "dotnet-test-nunit": "3.4.0-beta-3",
                 "Microsoft.NETCore.App": {
                     "version": "1.1.0-*",

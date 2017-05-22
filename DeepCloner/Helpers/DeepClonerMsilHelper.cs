@@ -13,6 +13,9 @@ namespace Force.DeepCloner.Helpers
 			{
 				var methodBody = constructor.GetMethodBody();
 
+				// this situation can be for com
+				if (methodBody == null) return false;
+
 				var ilAsByteArray = methodBody.GetILAsByteArray();
 				if (ilAsByteArray.Length == 7
 					&& ilAsByteArray[0] == 0x02 // Ldarg_0

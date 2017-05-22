@@ -27,6 +27,18 @@ namespace Force.DeepCloner.Tests
 			Assert.That(c.Item2, Is.EqualTo(2));
 		}
 
+		[Test]
+		public void Generic_Should_Be_Cloned()
+		{
+			var c = new Generic<int>();
+			c.Value = 12;
+			Assert.That(c.DeepClone().Value, Is.EqualTo(12));
+
+			var c2 = new Generic<object>();
+			c2.Value = 12;
+			Assert.That(c2.DeepClone().Value, Is.EqualTo(12));
+		}
+
 		public class C1
 		{
 			public int X { get; set; }
@@ -35,6 +47,11 @@ namespace Force.DeepCloner.Tests
 		public class C2 : C1
 		{
 			public int Y { get; set; }
+		}
+
+		public class Generic<T>
+		{
+			public T Value { get; set; }
 		}
 
 		[Test]

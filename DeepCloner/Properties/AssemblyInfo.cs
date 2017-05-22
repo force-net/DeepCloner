@@ -32,8 +32,8 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("0.10.0.0")] // change this value only when api is changing
-[assembly: AssemblyFileVersion("0.10.0.0")]
-[assembly: AssemblyInformationalVersion("0.10.0.0")]
+[assembly: AssemblyFileVersion("0.11.0.0")]
+[assembly: AssemblyInformationalVersion("0.11.0.0")]
 
 #if !DEBUG
 [assembly: AssemblyKeyFileAttribute("..\\public.snk")]
