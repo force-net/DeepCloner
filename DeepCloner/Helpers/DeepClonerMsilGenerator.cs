@@ -13,6 +13,7 @@ namespace Force.DeepCloner.Helpers
 
 		internal static object GenerateClonerInternal(Type realType, bool asObject)
 		{
+			// Console.WriteLine(realType.FullName);
 			// there is no performance penalties to cast objects to concrete type, but we can win in removing other conversions
 			var methodType = asObject ? typeof(object) : realType;
 

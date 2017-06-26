@@ -71,6 +71,19 @@ namespace Force.DeepCloner.Helpers
 				KnownTypes.TryAdd(type, true);
 				return true;
 			}
+			
+			// better not to touch ms dependency injection
+			if (type.FullName.StartsWith("Microsoft.Extensions.DependencyInjection."))
+			{
+				KnownTypes.TryAdd(type, true);
+				return true;
+			}
+
+			if (type.FullName == "Microsoft.EntityFrameworkCore.Internal.ConcurrencyDetector")
+			{
+				KnownTypes.TryAdd(type, true);
+				return true;
+			}
 #endif
 
 			// classes are always unsafe (we should copy it fully to count references)
