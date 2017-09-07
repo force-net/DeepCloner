@@ -1,0 +1,44 @@
+namespace Force.DeepCloner
+{
+    /// <summary>
+    /// 
+    /// Instead of:
+    /// 
+    /// EditPostModel model = new EditPostModel();
+    /// post.ShallowCloneTo<Post, EditPostModel>(model);
+    /// 
+    /// with this helper we could write:
+    /// 
+    /// EditPostModel model = post.Clone().To<EditPostModel>();
+    /// 
+    /// </summary>
+    public static class DeepCloneWrapper
+    {
+        public interface ICloneHelper<TFrom>
+        {
+            TTo To<TTo>() where TTo : class, TFrom, new();
+        }
+
+        public static ICloneHelper<TFrom> Clone<TFrom>(this TFrom source)
+        {
+            return new CloneHelper<TFrom>(source);
+        }
+
+        private class CloneHelper<TFrom> : ICloneHelper<TFrom>
+        {
+            private readonly TFrom _source;
+
+            public CloneHelper(TFrom source)
+            {
+                _source = source;
+            }
+
+            public TTo To<TTo>() where TTo : class, TFrom, new()
+            {
+                TTo result = new TTo();
+                _source.ShallowCloneTo(result);
+                return result;
+            }
+        }
+    }
+}
