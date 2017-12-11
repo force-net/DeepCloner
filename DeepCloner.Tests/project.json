@@ -21,7 +21,9 @@
 				"Nuclex.Cloning": "1.0.0",
 				"FastDeepCloner": "1.0.9",
 				"DesertOctopus": "0.1.1",
-				"EntityFramework": "6.1.3"
+				"EntityFramework": "6.1.3",
+				"ServiceStack": "5.0.0"
+
 			},
 			"frameworkAssemblies": {
 				"System.ComponentModel.DataAnnotations": "4.0.0"

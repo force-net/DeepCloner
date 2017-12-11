@@ -2959,7 +2959,7 @@
           "lib/netstandard1.3/System.Xml.XPath.XDocument.dll": {}
         }
       },
-      "DeepCloner/0.11.0": {
+      "DeepCloner/0.10.1": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.3",
         "dependencies": {
@@ -3093,7 +3093,64 @@
           "lib/net45/nunit.framework.dll": {}
         }
       },
-      "DeepCloner/0.11.0": {
+      "ServiceStack/5.0.0": {
+        "type": "package",
+        "dependencies": {
+          "ServiceStack.Client": "5.0.0",
+          "ServiceStack.Common": "5.0.0"
+        },
+        "compile": {
+          "lib/net45/ServiceStack.dll": {}
+        },
+        "runtime": {
+          "lib/net45/ServiceStack.dll": {}
+        }
+      },
+      "ServiceStack.Client/5.0.0": {
+        "type": "package",
+        "dependencies": {
+          "ServiceStack.Interfaces": "5.0.0",
+          "ServiceStack.Text": "5.0.0"
+        },
+        "compile": {
+          "lib/net45/ServiceStack.Client.dll": {}
+        },
+        "runtime": {
+          "lib/net45/ServiceStack.Client.dll": {}
+        }
+      },
+      "ServiceStack.Common/5.0.0": {
+        "type": "package",
+        "dependencies": {
+          "ServiceStack.Interfaces": "5.0.0",
+          "ServiceStack.Text": "5.0.0"
+        },
+        "compile": {
+          "lib/net45/ServiceStack.Common.dll": {}
+        },
+        "runtime": {
+          "lib/net45/ServiceStack.Common.dll": {}
+        }
+      },
+      "ServiceStack.Interfaces/5.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net45/ServiceStack.Interfaces.dll": {}
+        },
+        "runtime": {
+          "lib/net45/ServiceStack.Interfaces.dll": {}
+        }
+      },
+      "ServiceStack.Text/5.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net45/ServiceStack.Text.dll": {}
+        },
+        "runtime": {
+          "lib/net45/ServiceStack.Text.dll": {}
+        }
+      },
+      "DeepCloner/0.10.1": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.0",
         "compile": {
@@ -4277,6 +4334,75 @@
         "runtime.win7-x86.runtime.native.System.Data.SqlClient.sni.4.3.0.nupkg.sha512",
         "runtime.win7-x86.runtime.native.System.Data.SqlClient.sni.nuspec",
         "runtimes/win7-x86/native/sni.dll"
+      ]
+    },
+    "ServiceStack/5.0.0": {
+      "sha512": "exojE2gXZ+XcxngxYxBBDldMgX/2ScyChRGrBB4bJayyEzWU/1ABR920DLnZgLI6gYExBTsbHYNa5YFHrvDNtw==",
+      "type": "package",
+      "path": "ServiceStack/5.0.0",
+      "files": [
+        "ServiceStack.5.0.0.nupkg.sha512",
+        "ServiceStack.nuspec",
+        "lib/net45/ServiceStack.dll",
+        "lib/net45/ServiceStack.xml",
+        "lib/netstandard2.0/ServiceStack.dll",
+        "lib/netstandard2.0/ServiceStack.xml"
+      ]
+    },
+    "ServiceStack.Client/5.0.0": {
+      "sha512": "8swfDWZNWAc+GoIqivo6yQhYB/jr89lrqsfbspusCZguFZZEzYvfIDVVvcfiBmIqHUvQD2Q4Qma7FqFf1TOeAQ==",
+      "type": "package",
+      "path": "ServiceStack.Client/5.0.0",
+      "files": [
+        "ServiceStack.Client.5.0.0.nupkg.sha512",
+        "ServiceStack.Client.nuspec",
+        "lib/net45/ServiceStack.Client.dll",
+        "lib/net45/ServiceStack.Client.xml",
+        "lib/netstandard2.0/ServiceStack.Client.deps.json",
+        "lib/netstandard2.0/ServiceStack.Client.dll",
+        "lib/netstandard2.0/ServiceStack.Client.xml"
+      ]
+    },
+    "ServiceStack.Common/5.0.0": {
+      "sha512": "yvpN6b5wHivSTIilJuJKYgODPpptJ5Z/UQQwoZARVTK1S9K4g0HxZnPBfIX5E9zPcPM+eOjGsgic30EdWWR6ew==",
+      "type": "package",
+      "path": "ServiceStack.Common/5.0.0",
+      "files": [
+        "ServiceStack.Common.5.0.0.nupkg.sha512",
+        "ServiceStack.Common.nuspec",
+        "lib/net45/ServiceStack.Common.dll",
+        "lib/net45/ServiceStack.Common.xml",
+        "lib/netstandard2.0/ServiceStack.Common.deps.json",
+        "lib/netstandard2.0/ServiceStack.Common.dll",
+        "lib/netstandard2.0/ServiceStack.Common.xml"
+      ]
+    },
+    "ServiceStack.Interfaces/5.0.0": {
+      "sha512": "hQZIqZyPXyHwBhVje6jEz4I4l/Vk2Tqe1+NpEFpDthVwfmxhQ4bX7CRJiB18KkdLyWIwwc18AaDFi8Vvrn/WDA==",
+      "type": "package",
+      "path": "ServiceStack.Interfaces/5.0.0",
+      "files": [
+        "ServiceStack.Interfaces.5.0.0.nupkg.sha512",
+        "ServiceStack.Interfaces.nuspec",
+        "lib/net45/ServiceStack.Interfaces.dll",
+        "lib/net45/ServiceStack.Interfaces.xml",
+        "lib/netstandard2.0/ServiceStack.Interfaces.deps.json",
+        "lib/netstandard2.0/ServiceStack.Interfaces.dll",
+        "lib/netstandard2.0/ServiceStack.Interfaces.xml"
+      ]
+    },
+    "ServiceStack.Text/5.0.0": {
+      "sha512": "/j7NxhuCQrIBnrWYt2drTdY7lJDFAbAd3jYl0DJr5gCIqb4Mka651WlpzwdCUwY4cMpXYgTBesgky33izols+w==",
+      "type": "package",
+      "path": "ServiceStack.Text/5.0.0",
+      "files": [
+        "ServiceStack.Text.5.0.0.nupkg.sha512",
+        "ServiceStack.Text.nuspec",
+        "lib/net45/ServiceStack.Text.dll",
+        "lib/net45/ServiceStack.Text.xml",
+        "lib/netstandard2.0/ServiceStack.Text.deps.json",
+        "lib/netstandard2.0/ServiceStack.Text.dll",
+        "lib/netstandard2.0/ServiceStack.Text.xml"
       ]
     },
     "System.AppContext/4.3.0": {
@@ -8706,7 +8832,7 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "DeepCloner/0.11.0": {
+    "DeepCloner/0.10.1": {
       "type": "project",
       "path": "../DeepCloner/project.json",
       "msbuildProject": "../DeepCloner/DeepCloner.xproj"
@@ -8714,7 +8840,7 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "DeepCloner",
+      "DeepCloner >= 0.10.1",
       "NUnit >= 3.6.0"
     ],
     ".NETCoreApp,Version=v1.0": [
@@ -8732,6 +8858,7 @@
       "GeorgeCloney >= 1.1.2.20",
       "NClone >= 1.1.1",
       "Nuclex.Cloning >= 1.0.0",
+      "ServiceStack >= 5.0.0",
       "System.ComponentModel.DataAnnotations >= 4.0.0"
     ]
   },

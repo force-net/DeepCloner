@@ -64,8 +64,19 @@ namespace Force.DeepCloner.Helpers
 				}
 				else
 				{
-					il.Emit(OpCodes.Ldarg_0);
-					il.Emit(OpCodes.Call, typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic));
+					// if (type.IsContextful)
+					// {
+						il.Emit(OpCodes.Ldarg_0);
+						il.Emit(OpCodes.Call, typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic));
+					// }
+					/*else <-- just for tests
+					{
+						isGoodConstructor = true;
+						il.Emit(OpCodes.Ldarg_0);
+						il.Emit(OpCodes.Call, typeof(object).GetMethod("GetType"));
+						il.Emit(OpCodes.Call, typeof(System.Runtime.Serialization.FormatterServices).GetMethod("GetUninitializedObject"));
+					}*/
+
 				}
 				
 				il.Emit(OpCodes.Stloc, typeLocal);

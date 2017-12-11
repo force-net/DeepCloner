@@ -74,6 +74,26 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.3.6.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.5.0.0\lib\net45\ServiceStack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Client, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Client.5.0.0\lib\net45\ServiceStack.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Common, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Common.5.0.0\lib\net45\ServiceStack.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Interfaces.5.0.0\lib\net45\ServiceStack.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Text, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Text.5.0.0\lib\net45\ServiceStack.Text.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -88,6 +108,7 @@
     <Compile Include="ArraysSpec.cs" />
     <Compile Include="BaseTest.cs" />
     <Compile Include="CloneExtensionsSpec.cs" />
+    <Compile Include="ClrExceptionSpec.cs" />
     <Compile Include="ConstructorsSpec.cs" />
     <Compile Include="CopyToObjectSpec.cs" />
     <Compile Include="GenericsSpec.cs" />

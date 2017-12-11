@@ -11,6 +11,9 @@ namespace Force.DeepCloner.Helpers
 			if (constructor == null) return false;
 			try
 			{
+				// will not try to determine body for this types
+				if (type.IsGenericType || type.IsContextful || type.IsCOMObject || type.Assembly.IsDynamic) return false;
+
 				var methodBody = constructor.GetMethodBody();
 
 				// this situation can be for com

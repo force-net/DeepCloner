@@ -25,7 +25,8 @@ namespace Force.DeepCloner.Helpers
 							typeof(float), typeof(double), typeof(decimal), typeof(char), typeof(string), typeof(bool), typeof(DateTime),
 							typeof(IntPtr), typeof(UIntPtr),
 							// do not clone such native type
-							Type.GetType("System.RuntimeType")
+							Type.GetType("System.RuntimeType"),
+							Type.GetType("System.RuntimeTypeHandle")
 						}) KnownTypes.TryAdd(x, true);
 		}
 
@@ -51,7 +52,12 @@ namespace Force.DeepCloner.Helpers
 				return true;
 			}
 
-
+			if (type.FullName.StartsWith("System.Reflection.Emit") && type.Assembly == typeof(System.Reflection.Emit.OpCode).Assembly)
+			{
+				KnownTypes.TryAdd(type, true);
+				return true;
+			}
+			
 			// this types are serious native resources, it is better not to clone it
 			if (type.IsSubclassOf(typeof(System.Runtime.ConstrainedExecution.CriticalFinalizerObject)))
 			{
