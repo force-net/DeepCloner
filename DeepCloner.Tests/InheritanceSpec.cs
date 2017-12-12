@@ -237,5 +237,74 @@ namespace Force.DeepCloner.Tests
 			var clonedArr = arr.DeepClone();
 			Assert.That(clonedArr[0], Is.EqualTo(clonedArr[1]));
 		}
+
+		public class Safe1
+		{
+		}
+
+		public class Safe2
+		{
+		}
+
+		public class Unsafe1 : Safe1
+		{
+			[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed. Suppression is OK here.")]
+			public object X;
+		}
+
+		public class V1
+		{
+			[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed. Suppression is OK here.")]
+			public Safe1 Safe;
+		}
+
+		public class V2
+		{
+			[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed. Suppression is OK here.")]
+			public Safe1 Safe;
+
+ 			public V2(string x)
+			{
+			}
+		}
+
+		// these tests are overlapped by others, but for future can be helpful
+		[Test]
+		public void Class_With_Safe_Class_Should_Be_Cloned()
+		{
+			var v = new V1();
+			v.Safe = new Safe1();
+			var v2 = v.DeepClone();
+			Assert.That(v.Safe == v2.Safe, Is.False);
+		}
+
+		[Test]
+		public void Class_With_Safe_Class_Should_Be_Cloned_No_Default_Constructor()
+		{
+			var v = new V2("X");
+			v.Safe = new Safe1();
+			var v2 = v.DeepClone();
+			Assert.That(v.Safe == v2.Safe, Is.False);
+		}
+
+		[Test]
+		public void Class_With_UnSafe_Class_Should_Be_Cloned()
+		{
+			var v = new V1();
+			v.Safe = new Unsafe1();
+			var v2 = v.DeepClone();
+			Assert.That(v.Safe == v2.Safe, Is.False);
+			Assert.That(v2.Safe.GetType(), Is.EqualTo(typeof(Unsafe1)));
+		}
+
+		[Test]
+		public void Class_With_UnSafe_Class_Should_Be_Cloned_No_Default_Constructor()
+		{
+			var v = new V2("X");
+			v.Safe = new Unsafe1();
+			var v2 = v.DeepClone();
+			Assert.That(v.Safe == v2.Safe, Is.False);
+			Assert.That(v2.Safe.GetType(), Is.EqualTo(typeof(Unsafe1)));
+		}
 	}
 }

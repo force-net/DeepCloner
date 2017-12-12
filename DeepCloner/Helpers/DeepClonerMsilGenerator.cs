@@ -17,7 +17,7 @@ namespace Force.DeepCloner.Helpers
 			// there is no performance penalties to cast objects to concrete type, but we can win in removing other conversions
 			var methodType = asObject ? typeof(object) : realType;
 
-			if (DeepClonerSafeTypes.IsTypeSafe(realType, null)) return null;
+			if (DeepClonerSafeTypes.CanNotCopyType(realType, null)) return null;
 
 			var mb = TypeCreationHelper.GetModuleBuilder();
 			var dt = new DynamicMethod(
@@ -122,7 +122,18 @@ namespace Force.DeepCloner.Helpers
 
 			foreach (var fieldInfo in fi)
 			{
-				if (!DeepClonerSafeTypes.IsTypeSafe(fieldInfo.FieldType, null))
+				if (DeepClonerSafeTypes.CanNotCopyType(fieldInfo.FieldType, null))
+				{
+					// for good consturctor we use direct field copy anyway
+					if (isGoodConstructor)
+					{
+						il.Emit(type.IsClass ? OpCodes.Ldloc : OpCodes.Ldloca_S, typeLocal);
+						il.Emit(OpCodes.Ldarg_0);
+						il.Emit(OpCodes.Ldfld, fieldInfo);
+						il.Emit(OpCodes.Stfld, fieldInfo);
+					}
+				}
+				else
 				{
 					il.Emit(type.IsClass ? OpCodes.Ldloc : OpCodes.Ldloca_S, typeLocal);
 					if (structLoc == null) il.Emit(OpCodes.Ldarg_0);
@@ -136,17 +147,6 @@ namespace Force.DeepCloner.Helpers
 										: typeof(DeepClonerGenerator).GetMethod("CloneClassInternal", BindingFlags.NonPublic | BindingFlags.Static);
 					il.Emit(OpCodes.Call, methodInfo);
 					il.Emit(OpCodes.Stfld, fieldInfo);
-				}
-				else
-				{
-					// for good consturctor we use direct field copy
-					if (isGoodConstructor)
-					{
-						il.Emit(type.IsClass ? OpCodes.Ldloc : OpCodes.Ldloca_S, typeLocal);
-						il.Emit(OpCodes.Ldarg_0);
-						il.Emit(OpCodes.Ldfld, fieldInfo);
-						il.Emit(OpCodes.Stfld, fieldInfo);
-					}
 				}
 			}
 
@@ -200,7 +200,7 @@ namespace Force.DeepCloner.Helpers
 			il.Emit(OpCodes.Ldloc, typeLocal);
 			il.Emit(OpCodes.Call, typeof(DeepCloneState).GetMethod("AddKnownRef"));
 
-			if (DeepClonerSafeTypes.IsTypeSafe(elementType, null))
+			if (DeepClonerSafeTypes.CanNotCopyType(elementType, null))
 			{
 				// Array.Copy(from, to, from.Length);
 				il.Emit(OpCodes.Ldarg_0);

@@ -1,9 +1,6 @@
 ﻿#if !NETCORE
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-
-using Force.DeepCloner.Helpers;
 
 using NUnit.Framework;
 

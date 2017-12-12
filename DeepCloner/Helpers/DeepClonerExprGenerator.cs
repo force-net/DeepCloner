@@ -9,7 +9,7 @@ namespace Force.DeepCloner.Helpers
 	{
 		internal static object GenerateClonerInternal(Type realType, bool asObject)
 		{
-			if (DeepClonerSafeTypes.IsTypeSafe(realType, null)) return null;
+			if (DeepClonerSafeTypes.CanNotCopyType(realType, null)) return null;
 
 			return GenerateProcessMethod(realType, asObject && realType.IsValueType());
 		}
@@ -100,7 +100,7 @@ namespace Force.DeepCloner.Helpers
 
 			foreach (var fieldInfo in fi)
 			{
-				if (!DeepClonerSafeTypes.IsTypeSafe(fieldInfo.FieldType, null))
+				if (!DeepClonerSafeTypes.CanNotCopyType(fieldInfo.FieldType, null))
 				{
 					var methodInfo = fieldInfo.FieldType.IsValueType()
 										? typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneStructInternal")
@@ -164,7 +164,7 @@ namespace Force.DeepCloner.Helpers
 			else
 			{
 				var methodName = "Clone1DimArrayClassInternal";
-				if (DeepClonerSafeTypes.IsTypeSafe(elementType, null)) methodName = "Clone1DimArraySafeInternal";
+				if (DeepClonerSafeTypes.CanNotCopyType(elementType, null)) methodName = "Clone1DimArraySafeInternal";
 				else if (elementType.IsValueType()) methodName = "Clone1DimArrayStructInternal";
 				methodInfo = typeof(DeepClonerGenerator).GetPrivateStaticMethod(methodName).MakeGenericMethod(elementType);
 			}
