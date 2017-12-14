@@ -21,7 +21,7 @@ More accurate checking for empty constructors.
       <group targetFramework="net40">
       </group>
       <group targetFramework=".NETStandard1.3">
-        <dependency id="NETStandard.Library" version="[1.3.0, )" />
+        <dependency id="NETStandard.Library" version="[1.6.1, )" />
       </group>
     </dependencies>
 
