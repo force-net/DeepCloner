@@ -25,6 +25,20 @@ namespace Force.DeepCloner.Tests
 		{
 		}
 
+		[OneTimeSetUp]
+		public void Init()
+		{
+			var context = new AdventureContext();
+
+			var currencies = context.Currencies.Where(x => x.CurrencyCode == "AUD").ToList();
+			if (currencies.Count > 0)
+				return;
+
+			var currency = new Currency {CurrencyCode = "AUD", Name = "Australian Dollar"};
+			context.Currencies.Add(currency);
+			context.SaveChanges();
+		}
+
 		[Test]
 		public void Test_ExpressionTree_OrderBy1()
 		{
