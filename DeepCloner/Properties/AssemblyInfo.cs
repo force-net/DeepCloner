@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Force")]
 [assembly: AssemblyProduct("DeepCloner")]
-[assembly: AssemblyCopyright("Copyright © Force 2016-2017")]
+[assembly: AssemblyCopyright("Copyright � Force 2016-2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -34,8 +34,3 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("0.10.0.0")] // change this value only when api is changing
 [assembly: AssemblyFileVersion("0.10.2.0")]
 [assembly: AssemblyInformationalVersion("0.10.2.0")]
-
-#if !DEBUG
-[assembly: AssemblyKeyFileAttribute("..\\public.snk")]
-[assembly: AssemblyDelaySign(true)]
-#endif
