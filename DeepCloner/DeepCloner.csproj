@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Force.DeepCloner</RootNamespace>
-    <AssemblyName>DeepCloner</AssemblyName>
+    <AssemblyName>EVRY.DeepCloner</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
