@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("0.10.2.0")]
 [assembly: AssemblyInformationalVersion("0.10.2.0")]
 
-#if !DEBUG
-[assembly: AssemblyKeyFileAttribute("..\\public.snk")]
-[assembly: AssemblyDelaySign(true)]
+#if BUILDCORE
+// [assembly: AssemblyKeyFileAttribute("..\\public.snk")]
+// [assembly: AssemblyDelaySign(true)]
 #endif

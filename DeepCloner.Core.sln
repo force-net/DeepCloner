@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.0.0
 MinimumVisualStudioVersion = 10.0.0.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DeepCloner.Core", "DeepCloner\DeepCloner.xproj", "{CB0E426A-9468-48FA-9679-A782801F1D15}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DeepCloner.Core", "DeepCloner\DeepCloner.Core.csproj", "{CB0E426A-9468-48FA-9679-A782801F1D15}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DeepCloner.Tests", "DeepCloner.Tests\DeepCloner.Tests.xproj", "{4939517A-4872-4CD3-9618-B3C69B68B688}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DeepCloner.Tests", "DeepCloner.Tests\DeepCloner.Tests.Core.csproj", "{4939517A-4872-4CD3-9618-B3C69B68B688}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{61E9C5A9-C238-44DB-B8FC-C9440B1E6E16}"
 ProjectSection(SolutionItems) = preProject
