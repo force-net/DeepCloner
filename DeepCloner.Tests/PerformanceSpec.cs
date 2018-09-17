@@ -142,7 +142,7 @@ namespace Force.DeepCloner.Tests
 			GC.Collect(2, GCCollectionMode.Forced, true, true);
 		}
 
-		[Test, Ignore("Manual")]
+		[Test/*, Ignore("Manual")*/]
 		public void Test_Construct_Variants()
 		{
 			var c = new C1 { V1 = 1, O = new object(), V2 = "xxx" };
@@ -288,6 +288,60 @@ namespace Force.DeepCloner.Tests
 			DoTest(CountReal, "Shallow Safe", () => c1.ShallowClone());
 			DoTest(CountReal / 10, "Nuclex.Cloning", () => ReflectionCloner.ShallowFieldClone(c1));
 			DoTest(CountReal, "Clone.Extensions", () => c1.GetClone(CloningFlags.Shallow));
+		}
+
+		public class TreeNode
+		{
+			public TreeNode Item1 { get; set; }
+
+			public TreeNode Item2 { get; set; }
+		}
+
+		[Test/*, Ignore("Manual")*/]
+		public void Test_Deep_Tree()
+		{
+			// we cache cloners for type, so, this only variant with separate run
+			BaseTest.SwitchTo(false);
+
+			var c1 = new TreeNode();
+			
+			c1.Item1 = new TreeNode();
+			c1.Item2 = new TreeNode();
+			c1.Item1.Item1 = c1;
+			c1.Item1.Item2 = c1.Item2;
+			c1.Item2 = new TreeNode();
+			c1.Item2.Item1 = new TreeNode();
+			c1.Item2.Item2 = new TreeNode();
+			c1.Item2.Item1.Item1 = new TreeNode();
+			c1.Item2.Item1.Item2 = new TreeNode();
+			c1.Item2.Item1.Item1.Item1 = new TreeNode();
+			c1.Item2.Item1.Item1.Item2 = c1;
+
+			var elem = c1.Item2.Item1.Item1.Item1;
+			for (var i = 0; i < 100; i++)
+			{
+				elem.Item1 = new TreeNode();
+				elem.Item2 = new TreeNode();
+				elem.Item1.Item1 = elem.Item2;
+				elem.Item1.Item2 = new TreeNode();
+				elem.Item2.Item2 = new TreeNode();
+				elem = elem.Item2.Item2;
+			}
+
+
+			var clone = c1.DeepClone();
+			Assert.That(ReferenceEquals(clone, clone.Item2.Item1.Item1.Item2), Is.True);
+			//return;
+
+			// warm up
+			for (var i = 0; i < 1000; i++) c1.DeepClone();
+			// test
+			var sw = new Stopwatch();
+			sw.Start();
+
+			for (var i = 0; i < 100000; i++) c1.DeepClone();
+			Console.WriteLine("Deep: " + sw.ElapsedMilliseconds);
+			sw.Restart();
 		}
 	}
 }
