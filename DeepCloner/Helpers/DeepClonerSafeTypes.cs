@@ -13,8 +13,6 @@ namespace Force.DeepCloner.Helpers
 	{
 		internal static readonly ConcurrentDictionary<Type, bool> KnownTypes = new ConcurrentDictionary<Type, bool>();
 
-		internal static readonly ConcurrentDictionary<Type, bool> KnownClasses = new ConcurrentDictionary<Type, bool>();
-
 		static DeepClonerSafeTypes()
 		{
 			foreach (
@@ -26,20 +24,19 @@ namespace Force.DeepCloner.Helpers
 							typeof(IntPtr), typeof(UIntPtr),
 							// do not clone such native type
 							Type.GetType("System.RuntimeType"),
-							Type.GetType("System.RuntimeTypeHandle")
+							Type.GetType("System.RuntimeTypeHandle"),
+#if !NETCORE
+							typeof(DBNull)
+#endif
 						}) KnownTypes.TryAdd(x, true);
 		}
 
-		internal static bool CanNotCopyType(Type type, HashSet<Type> processingTypes)
+		private static bool CanReturnSameType(Type type, HashSet<Type> processingTypes)
 		{
-			bool isSafe;
-			if (KnownTypes.TryGetValue(type, out isSafe)) return isSafe;
-
 			// enums are safe
 			// pointers (e.g. int*) are unsafe, but we cannot do anything with it except blind copy
 			if (type.IsEnum() || type.IsPointer)
 			{
-				KnownTypes.TryAdd(type, true);
 				return true;
 			}
 
@@ -48,13 +45,11 @@ namespace Force.DeepCloner.Helpers
 			if (type.FullName.StartsWith("System.Runtime.Remoting.")
 				&& type.Assembly == typeof(System.Runtime.Remoting.CustomErrorsModes).Assembly)
 			{
-				KnownTypes.TryAdd(type, true);
 				return true;
 			}
 
 			if (type.FullName.StartsWith("System.Reflection.") && type.Assembly == typeof(PropertyInfo).Assembly)
 			{
-				KnownTypes.TryAdd(type, true);
 				return true;
 			}
 
@@ -68,33 +63,44 @@ namespace Force.DeepCloner.Helpers
 			// this types are serious native resources, it is better not to clone it
 			if (type.IsSubclassOf(typeof(System.Runtime.ConstrainedExecution.CriticalFinalizerObject)))
 			{
-				KnownTypes.TryAdd(type, true);
 				return true;
 			}
 
 			// Better not to do anything with COM
 			if (type.IsCOMObject)
 			{
-				KnownTypes.TryAdd(type, true);
 				return true;
 			}
 #else
+			// do not copy db null
+			if (type.FullName.StartsWith("System.DBNull"))
+			{
+				return true;
+			}
+
+			if (type.FullName.StartsWith("System.RuntimeType"))
+			{
+				return true;
+			}
+			
+			if (type.FullName.StartsWith("System.Reflection.") && Equals(type.GetTypeInfo().Assembly, typeof(PropertyInfo).GetTypeInfo().Assembly))
+			{
+				return true;
+			}
+
 			if (type.IsSubclassOfTypeByName("CriticalFinalizerObject"))
 			{
-				KnownTypes.TryAdd(type, true);
 				return true;
 			}
 			
 			// better not to touch ms dependency injection
 			if (type.FullName.StartsWith("Microsoft.Extensions.DependencyInjection."))
 			{
-				KnownTypes.TryAdd(type, true);
 				return true;
 			}
 
 			if (type.FullName == "Microsoft.EntityFrameworkCore.Internal.ConcurrencyDetector")
 			{
-				KnownTypes.TryAdd(type, true);
 				return true;
 			}
 #endif
@@ -102,7 +108,6 @@ namespace Force.DeepCloner.Helpers
 			// classes are always unsafe (we should copy it fully to count references)
 			if (!type.IsValueType())
 			{
-				KnownTypes.TryAdd(type, false);
 				return false;
 			}
 
@@ -129,30 +134,24 @@ namespace Force.DeepCloner.Helpers
 					continue;
 
 				// not safe and not not safe. we need to go deeper
-				if (!CanNotCopyType(fieldType, processingTypes))
+				if (!CanReturnSameType(fieldType, processingTypes))
 				{
-					KnownTypes.TryAdd(type, false);
 					return false;
 				}
 			}
 
-			KnownTypes.TryAdd(type, true);
 			return true;
 		}
 
-		/// <summary>
+		// not used anymore
+		/*/// <summary>
 		/// Classes with only safe fields are safe for ShallowClone (if they root objects for copying)
 		/// </summary>
-		internal static bool CanNotDeepCopyClass(Type type)
+		private static bool CanCopyClassInShallow(Type type)
 		{
-			bool isSafe;
-			if (KnownClasses.TryGetValue(type, out isSafe)) return isSafe;
-
-			// enums are safe
-			// pointers (e.g. int*) are unsafe, but we cannot do anything with it except blind copy
+			// do not do this anything for struct and arrays
 			if (!type.IsClass() || type.IsArray)
 			{
-				KnownClasses.TryAdd(type, false);
 				return false;
 			}
 
@@ -165,14 +164,17 @@ namespace Force.DeepCloner.Helpers
 			}
 			while (tp != null);
 
-			if (fi.Any(fieldInfo => !CanNotCopyType(fieldInfo.FieldType, null)))
+			if (fi.Any(fieldInfo => !CanReturnSameType(fieldInfo.FieldType, null)))
 			{
-				KnownClasses.TryAdd(type, false);
 				return false;
 			}
 
-			KnownClasses.TryAdd(type, true);
 			return true;
+		}*/
+
+		public static bool CanReturnSameObject(Type type)
+		{
+			return KnownTypes.GetOrAdd(type, x => CanReturnSameType(x, null));
 		}
 	}
 }

@@ -3,7 +3,7 @@
   <metadata>
     <id>DeepCloner</id>
     <title>DeepCloner</title>
-    <version>0.10.2</version>
+    <version>0.10.3</version>
     <authors>force</authors>
     <owners>force</owners>
     <licenseUrl>https://github.com/force-net/DeepCloner/blob/develop/LICENSE</licenseUrl>
@@ -12,8 +12,10 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Small Library for fast deep or shallow cloning .NET objects. It allows to copy everything and has a lot of performance tricks for fast copying.</description>
     <releaseNotes>
-Removed System.Reflection namespace (especially System.Reflection.Emit) from cloning.
-More accurate checking for empty constructors. 
+Custom dictionary implementation for faster reference counting (and faster cloning)
+Excluded DBNull from cloning
+Rewrited code for more correct cloning of objects forbidden for cloning (mainly for Shallow cloning)
+Better handling for stucts casted to object
     </releaseNotes>
     <copyright>Copyright by Force 2016-2017</copyright>
     <tags>.NET shallow deep clone DeepClone fast</tags>

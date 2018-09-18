@@ -24,12 +24,6 @@ namespace Force.DeepCloner.Helpers
 		/// </summary>
 		public static object CloneObject(object obj)
 		{
-			if (obj == null) return null;
-			if (obj is string) return obj;
-#if !NETCORE
-			// do not clone such native-resource bounded types!
-			if (obj is System.Runtime.ConstrainedExecution.CriticalFinalizerObject) return obj;
-#endif
 			return _instance.DoCloneObject(obj);
 		}
 

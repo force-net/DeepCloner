@@ -95,7 +95,44 @@ namespace Force.DeepCloner.Tests
 			Assert.That(c1.Do(), Is.EqualTo(3));
 			Assert.That(clone.Do(), Is.EqualTo(3));
 		}
+		
+		[Test]
+		public void Struct_As_Interface_Should_Be_Cloned_For_DeepClone_Too()
+		{
+			var c1 = new DoableStruct1() as IDoable;
+			Assert.That(c1.Do(), Is.EqualTo(1));
+			Assert.That(c1.Do(), Is.EqualTo(2));
+			var clone = c1.DeepClone();
+			Assert.That(c1.Do(), Is.EqualTo(3));
+			Assert.That(clone.Do(), Is.EqualTo(3));
+		}
 
+		[Test]
+		public void Struct_As_Interface_Should_Be_Cloned_In_Object()
+		{
+			var c1 = new DoableStruct1() as IDoable;
+			var t = new Tuple<IDoable>(c1);
+			Assert.That(t.Item1.Do(), Is.EqualTo(1));
+			Assert.That(t.Item1.Do(), Is.EqualTo(2));
+			var clone = t.ShallowClone();
+			Assert.That(t.Item1.Do(), Is.EqualTo(3));
+			// shallow clone do not copy object
+			Assert.That(clone.Item1.Do(), Is.EqualTo(4));
+		}
+		
+		[Test]
+		public void Struct_As_Interface_Should_Be_Cloned_For_DeepClone_Too_In_Object()
+		{
+			var c1 = new DoableStruct1() as IDoable;
+			var t = new Tuple<IDoable>(c1);
+			Assert.That(t.Item1.Do(), Is.EqualTo(1));
+			Assert.That(t.Item1.Do(), Is.EqualTo(2));
+			var clone = t.DeepClone();
+			Assert.That(t.Item1.Do(), Is.EqualTo(3));
+			// deep clone copy object
+			Assert.That(clone.Item1.Do(), Is.EqualTo(3));
+		}
+		
 		[Test]
 		public void Primitive_Should_Be_Cloned()
 		{

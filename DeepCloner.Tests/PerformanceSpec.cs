@@ -142,7 +142,7 @@ namespace Force.DeepCloner.Tests
 			GC.Collect(2, GCCollectionMode.Forced, true, true);
 		}
 
-		[Test/*, Ignore("Manual")*/]
+		[Test, Ignore("Manual")]
 		public void Test_Construct_Variants()
 		{
 			var c = new C1 { V1 = 1, O = new object(), V2 = "xxx" };
@@ -297,7 +297,7 @@ namespace Force.DeepCloner.Tests
 			public TreeNode Item2 { get; set; }
 		}
 
-		[Test/*, Ignore("Manual")*/]
+		[Test, Ignore("Manual")]
 		public void Test_Deep_Tree()
 		{
 			// we cache cloners for type, so, this only variant with separate run

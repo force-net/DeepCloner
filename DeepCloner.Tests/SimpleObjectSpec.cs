@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-
+using System.Reflection;
+using System.Runtime.InteropServices;
 using Force.DeepCloner.Tests.Objects;
 
 using NUnit.Framework;
@@ -249,6 +250,37 @@ namespace Force.DeepCloner.Tests
 			v2.A = 0;
 			Assert.That(clone.B, Is.EqualTo(2));
 			Assert.That(clone.A, Is.EqualTo(3));
+		}
+
+		[Test(Description = "DBNull is compared by value, so, we don't need to clone it")]
+		public void DbNull_Should_Not_Be_Cloned()
+		{
+			var v = DBNull.Value;
+			Assert.That(v == v.DeepClone(), Is.True);
+			Assert.That(v == v.ShallowClone(), Is.True);
+		}
+		
+		public class EmptyClass {}
+		
+		[Test(Description = "Empty class does not have any mutable properties, so, it safe to use same class in cloning"),
+		 Ignore("Think about logic, which is better to clone or not to clone, I do not know, but it changes current logic seriously")]
+		public void Empty_Should_Not_Be_Cloned()
+		{
+			var v = new EmptyClass();
+			Assert.That(ReferenceEquals(v, v.DeepClone()), Is.True);
+			Assert.That(ReferenceEquals(v, v.ShallowClone()), Is.True);
+		}
+		
+		[Test(Description = "Reflection classes should not be cloned")]
+		public void MethodInfo_Should_Not_Be_Cloned()
+		{
+#if NETCORE13
+			var v = GetType().GetTypeInfo().GetMethod("MethodInfo_Should_Not_Be_Cloned");
+#else
+			var v = GetType().GetMethod("MethodInfo_Should_Not_Be_Cloned");
+#endif
+			Assert.That(ReferenceEquals(v, v.DeepClone()), Is.True);
+			Assert.That(ReferenceEquals(v, v.ShallowClone()), Is.True);
 		}
 	}
 }
