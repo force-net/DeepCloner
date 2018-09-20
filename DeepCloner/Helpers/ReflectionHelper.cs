@@ -50,6 +50,15 @@ namespace Force.DeepCloner.Helpers
 			return t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
 #endif
 		}
+		
+		public static PropertyInfo[] GetPublicProperties(this Type t)
+		{
+#if NETCORE
+			return t.GetTypeInfo().DeclaredProperties.ToArray();
+#else
+			return t.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+#endif
+		}
 
 		public static FieldInfo[] GetDeclaredFields(this Type t)
 		{
@@ -66,6 +75,15 @@ namespace Force.DeepCloner.Helpers
 			return t.GetTypeInfo().DeclaredConstructors.ToArray();
 #else
 			return t.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
+#endif
+		}
+
+		public static ConstructorInfo[] GetPublicConstructors(this Type t)
+		{
+#if NETCORE
+			return t.GetTypeInfo().DeclaredConstructors.ToArray();
+#else
+			return t.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
 #endif
 		}
 
@@ -129,7 +147,15 @@ namespace Force.DeepCloner.Helpers
 		{
 			return from.IsAssignableFrom(to.GetType());
 		}
-
 #endif
+		
+		public static Type[] GenericArguments(this Type t)
+		{
+#if NETCORE
+			return t.GetTypeInfo().GenericTypeArguments;
+#else
+			return t.GetGenericArguments();
+#endif
+		}
 	}
 }

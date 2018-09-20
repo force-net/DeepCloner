@@ -1,6 +1,7 @@
 ﻿#if !NETCORE
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
@@ -39,6 +40,22 @@ namespace Force.DeepCloner.Helpers
 			{
 				GenerateProcessArrayMethod(il, type);
 				return;
+			}
+			
+			if (type.FullName != null && type.FullName.StartsWith("System.Tuple`"))
+			{
+				// if not safe type it is no guarantee that some type will contain reference to
+				// this tuple. In usual way, we're creating new object, setting reference for it
+				// and filling data. For tuple, we will fill data before creating object
+				// (in constructor arguments)
+				var genericArguments = type.GenericArguments();
+				// current tuples contain only 8 arguments, but may be in future...
+				// we'll write code that works with it
+				if (genericArguments.Length < 10 && genericArguments.All(DeepClonerSafeTypes.CanReturnSameObject))
+				{
+					GenerateProcessTupleMethod(il, type);
+					return;
+				}
 			}
 
 			var typeLocal = il.DeclareLocal(type);
@@ -266,7 +283,7 @@ namespace Force.DeepCloner.Helpers
 			il.Emit(OpCodes.Ret);
 		}
 
-		internal static object GenerateConvertor(Type from, Type to)
+		/*internal static object GenerateConvertor(Type from, Type to)
 		{
 			var mb = TypeCreationHelper.GetModuleBuilder();
 
@@ -289,9 +306,9 @@ namespace Force.DeepCloner.Helpers
 			var funcType = typeof(Func<,,>).MakeGenericType(to, typeof(DeepCloneState), to);
 
 			return dt.CreateDelegate(funcType);
-		}
+		}*/
 
-		internal static Func<object, object> GenerateMemberwiseCloner()
+		/*internal static Func<object, object> GenerateMemberwiseCloner()
 		{
 			// only non-null classes. it is ok such simple implementation
 			var dt = new DynamicMethod(
@@ -303,6 +320,32 @@ namespace Force.DeepCloner.Helpers
 			il.Emit(OpCodes.Ret);
 
 			return (Func<object, object>)dt.CreateDelegate(typeof(Func<object, object>));
+		}*/
+		
+		private static void GenerateProcessTupleMethod(ILGenerator il, Type type)
+		{
+			var tupleLength = type.GenericArguments().Length;
+			var constructor = type.GetPublicConstructors().First(x => x.GetParameters().Length == tupleLength);
+			var properties = type.GetPublicProperties().OrderBy(x => x.Name)
+				.Where(x => x.CanRead && x.Name.StartsWith("Item") && char.IsDigit(x.Name[4]));
+
+			foreach (var propertyInfo in properties)
+			{
+				il.Emit(OpCodes.Ldarg_0);
+				il.Emit(OpCodes.Callvirt, propertyInfo.GetGetMethod());
+			}
+			
+			il.Emit(OpCodes.Newobj, constructor);
+			var typeLocal = il.DeclareLocal(type);
+			il.Emit(OpCodes.Stloc, typeLocal);
+			
+			// add ref
+			il.Emit(OpCodes.Ldarg_1);
+			il.Emit(OpCodes.Ldarg_0);
+			il.Emit(OpCodes.Ldloc, typeLocal);
+			il.Emit(OpCodes.Call, typeof(DeepCloneState).GetMethod("AddKnownRef"));
+			il.Emit(OpCodes.Ldloc, typeLocal);
+			il.Emit(OpCodes.Ret);
 		}
 	}
 }

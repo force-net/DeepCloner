@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -35,7 +36,22 @@ namespace Force.DeepCloner.Helpers
 		{
 			if (type.IsArray)
 			{
-				return	GenerateProcessArrayMethod(type);
+				return GenerateProcessArrayMethod(type);
+			}
+
+			if (type.FullName != null && type.FullName.StartsWith("System.Tuple`"))
+			{
+				// if not safe type it is no guarantee that some type will contain reference to
+				// this tuple. In usual way, we're creating new object, setting reference for it
+				// and filling data. For tuple, we will fill data before creating object
+				// (in constructor arguments)
+				var genericArguments = type.GenericArguments();
+				// current tuples contain only 8 arguments, but may be in future...
+				// we'll write code that works with it
+				if (genericArguments.Length < 10 && genericArguments.All(DeepClonerSafeTypes.CanReturnSameObject))
+				{
+					return GenerateProcessTupleMethod(type);
+				}
 			}
 
 			var methodType = unboxStruct || type.IsClass() ? typeof(object) : type;
@@ -175,5 +191,29 @@ namespace Force.DeepCloner.Helpers
 
 			return Expression.Lambda(funcType, call, from, state).Compile();
 		}
+
+		private static object GenerateProcessTupleMethod(Type type)
+		{
+			ParameterExpression from = Expression.Parameter(typeof(object));
+			var state = Expression.Parameter(typeof(DeepCloneState));
+			
+			var local = Expression.Variable(type);
+			var assign = Expression.Assign(local, Expression.Convert(from, type));
+
+			var funcType = typeof(Func<object, DeepCloneState, object>);
+
+			var tupleLength = type.GenericArguments().Length;
+			
+			var constructor = Expression.Assign(local, Expression.New(type.GetPublicConstructors().First(x => x.GetParameters().Length == tupleLength),
+				type.GetPublicProperties().OrderBy(x => x.Name)
+					.Where(x => x.CanRead && x.Name.StartsWith("Item") && char.IsDigit(x.Name[4]))
+					.Select(x => Expression.Property(local, x.Name))));
+			
+			return Expression.Lambda(funcType, Expression.Block(new[] { local },
+				assign, constructor, Expression.Call(state, typeof(DeepCloneState).GetMethod("AddKnownRef"), from, local),
+					from),
+				from, state).Compile();
+		}
+		
 	}
 }

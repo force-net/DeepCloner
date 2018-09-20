@@ -153,6 +153,13 @@ namespace Force.DeepCloner.Tests
 			Assert.That(obj.DeepClone(), Is.Not.EqualTo(obj));
 		}
 
+		[Test]
+		public void Guid_Should_Be_Cloned()
+		{
+			var g = Guid.NewGuid();
+			Assert.That(g.DeepClone(), Is.EqualTo(g));
+		}
+
 		private class UnsafeObject
 		{
 			[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed. Suppression is OK here.")]

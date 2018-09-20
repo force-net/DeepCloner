@@ -25,6 +25,14 @@ namespace Force.DeepCloner.Tests
 			c = new Tuple<int, int>(1, 2).ShallowClone();
 			Assert.That(c.Item1, Is.EqualTo(1));
 			Assert.That(c.Item2, Is.EqualTo(2));
+			
+			var cc = new Tuple<int, int, int, int, int, int, int>(1, 2, 3, 4, 5, 6, 7).DeepClone();
+			Assert.That(cc.Item7, Is.EqualTo(7));
+
+			var tuple = new Tuple<int, Generic<object>>(1, new Generic<object>());
+			tuple.Item2.Value = tuple;
+			var ccc = tuple.DeepClone();
+			Assert.That(ccc, Is.EqualTo(ccc.Item2.Value));
 		}
 
 		[Test]

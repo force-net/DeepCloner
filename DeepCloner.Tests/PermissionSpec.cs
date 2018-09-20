@@ -65,6 +65,10 @@ namespace Force.DeepCloner.Tests
 				 var clone = test.DeepClone();
 				 if (clone.GetY() == test.GetY())
 					 throw new Exception("Deep Clone fail");
+				 
+				 var clone2 = new Tuple<int>(12).DeepClone();
+				 if (clone2.Item1 != 12)
+					 throw new Exception("Deep Clone fail");
 			 }
 
 			public void DoShallowClone()

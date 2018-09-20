@@ -343,6 +343,27 @@ namespace Force.DeepCloner.Tests
 			Console.WriteLine("Deep: " + sw.ElapsedMilliseconds);
 			sw.Restart();
 		}
+
+		[Test]
+		public void Test_Tuples()
+		{
+			var c = new Tuple<int, string, bool>(42, "test", false);
+			const int CountWarm = 1000;
+			const int CountReal = 500000;
+			// warm up
+			DoTest(CountWarm, "Manual", () => new Tuple<int, string, bool>(c.Item1, c.Item2, c.Item3));
+			BaseTest.SwitchTo(false);
+			DoTest(CountWarm, "Deep Unsafe", () => c.DeepClone());
+			BaseTest.SwitchTo(true);
+			DoTest(CountWarm, "Deep Safe", () => c.DeepClone());
+
+			Console.WriteLine("----------------");
+			DoTest(CountReal, "Manual", () => new Tuple<int, string, bool>(c.Item1, c.Item2, c.Item3));
+			BaseTest.SwitchTo(false);
+			DoTest(CountReal, "Deep Unsafe", () => c.DeepClone());
+			BaseTest.SwitchTo(true);
+			DoTest(CountReal, "Deep Safe", () => c.DeepClone());
+		}
 	}
 }
 #endif

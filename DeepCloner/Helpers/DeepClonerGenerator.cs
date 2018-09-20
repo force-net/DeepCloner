@@ -17,8 +17,6 @@ namespace Force.DeepCloner.Helpers
 
 					return CloneStructInternal(obj, new DeepCloneState());
 				}
-
-				return (T)CloneClassRoot(obj);
 			}
 
 			return (T)CloneClassRoot(obj);
@@ -177,13 +175,8 @@ namespace Force.DeepCloner.Helpers
 
 		private static object GenerateCloner(Type t, bool asObject)
 		{
-#if NETCORE13
 			if (DeepClonerSafeTypes.CanReturnSameObject(t) && (asObject && !t.IsValueType())) 
 				return null;
-#else
-			if (DeepClonerSafeTypes.CanReturnSameObject(t) && (asObject && !t.IsValueType)) 
-				return null;
-#endif
 
 #if !NETCORE
 			if (ShallowObjectCloner.IsSafeVariant()) return DeepClonerExprGenerator.GenerateClonerInternal(t, asObject);
