@@ -44,8 +44,6 @@ namespace Force.DeepCloner.Tests
 
 			private readonly object y = new object();
 
-			private readonly UnsafeStructTest z;
-
 			public object GetY()
 			{
 				return y;

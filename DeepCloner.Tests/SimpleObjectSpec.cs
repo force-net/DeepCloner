@@ -205,8 +205,6 @@ namespace Force.DeepCloner.Tests
 
 			private readonly object y = new object();
 
-			private readonly StructWithObject z;
-
 			public object GetY()
 			{
 				return y;
