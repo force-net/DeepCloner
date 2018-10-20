@@ -3,14 +3,19 @@
 namespace Force.DeepCloner
 {
 	/// <summary>
-	/// Extensions for object cloning
+	/// Performs copy of object
 	/// </summary>
-	public static class DeepClonerExtensions
+	public class Cloner
 	{
+		public Cloner()
+		{
+			PermissionChecker.ThrowIfNoPermission();
+		}
+
 		/// <summary>
 		/// Performs deep (full) copy of object and related graph
 		/// </summary>
-		public static T DeepClone<T>(this T obj)
+		public T DeepClone<T>(T obj)
 		{
 			return DeepClonerGenerator.CloneObject(obj);
 		}
@@ -20,7 +25,7 @@ namespace Force.DeepCloner
 		/// </summary>
 		/// <returns>existing filled object</returns>
 		/// <remarks>Method is valid only for classes, classes should be descendants in reality, not in declaration</remarks>
-		public static TTo DeepCloneTo<TFrom, TTo>(this TFrom objFrom, TTo objTo) where TTo : class, TFrom
+		public TTo DeepCloneTo<TFrom, TTo>(TFrom objFrom, TTo objTo) where TTo : class, TFrom
 		{
 			return (TTo)DeepClonerGenerator.CloneObjectTo(objFrom, objTo, true);
 		}
@@ -30,7 +35,7 @@ namespace Force.DeepCloner
 		/// </summary>
 		/// <returns>existing filled object</returns>
 		/// <remarks>Method is valid only for classes, classes should be descendants in reality, not in declaration</remarks>
-		public static TTo ShallowCloneTo<TFrom, TTo>(this TFrom objFrom, TTo objTo) where TTo : class, TFrom
+		public TTo ShallowCloneTo<TFrom, TTo>(TFrom objFrom, TTo objTo) where TTo : class, TFrom
 		{
 			return (TTo)DeepClonerGenerator.CloneObjectTo(objFrom, objTo, false);
 		}
@@ -38,14 +43,9 @@ namespace Force.DeepCloner
 		/// <summary>
 		/// Performs shallow (only new object returned, without cloning of dependencies) copy of object
 		/// </summary>
-		public static T ShallowClone<T>(this T obj)
+		public static T ShallowClone<T>(T obj)
 		{
 			return ShallowClonerGenerator.CloneObject(obj);
-		}
-
-		static DeepClonerExtensions()
-		{
-			PermissionChecker.ThrowIfNoPermission();
 		}
 	}
 }
