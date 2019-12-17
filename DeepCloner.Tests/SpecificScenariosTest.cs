@@ -7,9 +7,11 @@ using System.Data.Entity;
 #else
 using Microsoft.EntityFrameworkCore;
 #endif
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
+
 using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
@@ -175,6 +177,23 @@ namespace Force.DeepCloner.Tests
 			Assert.That(fCopy(), Is.EqualTo(1));
 			Assert.That(a, Is.EqualTo(1));
 		}
+
+#if !NETCORE
+		[Test]
+		public void Windows_Forms_Clone()
+		{
+			var form = new System.Windows.Forms.Form();
+			form.Controls.Add(new System.Windows.Forms.ComboBox());
+			form.Controls.Add(new System.Windows.Forms.Button());
+			form.Controls.Add(new System.Windows.Forms.CheckBox());
+			for (var i = 0; i < 100; i++)
+			{
+				var sw = Stopwatch.StartNew();
+				form.DeepClone();
+				Console.WriteLine(sw.ElapsedMilliseconds);
+			}
+		}
+#endif
 
 		private class TestComparer : Comparer<int>
 		{

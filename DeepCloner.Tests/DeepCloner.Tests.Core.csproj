@@ -33,6 +33,7 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.2" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461'">
+      <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
     <DefineConstants>$(DefineConstants);NETCORE;;NETCORE13</DefineConstants>
