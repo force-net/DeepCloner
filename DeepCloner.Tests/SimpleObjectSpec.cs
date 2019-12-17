@@ -9,9 +9,7 @@ using NUnit.Framework;
 namespace Force.DeepCloner.Tests
 {
 	[TestFixture(true)]
-#if !NETCORE
 	[TestFixture(false)]
-#endif
 	public class SimpleObjectSpec : BaseTest
 	{
 		public SimpleObjectSpec(bool isSafeInit)
@@ -288,6 +286,26 @@ namespace Force.DeepCloner.Tests
 #endif
 			Assert.That(ReferenceEquals(v, v.DeepClone()), Is.True);
 			Assert.That(ReferenceEquals(v, v.ShallowClone()), Is.True);
+		}
+
+		public class Readonly1
+		{
+			public readonly object X;
+			
+			public object Z = new object();
+
+			public Readonly1(string x)
+			{
+				X = x;
+			}
+		}
+
+		[Test]
+		public void Readonly_Field_Should_Remain_ReadOnly()
+		{
+			var c = new Readonly1("Z").DeepClone();
+			Assert.That(c.X, Is.EqualTo("Z"));
+			Assert.That(typeof(Readonly1).GetField("X").IsInitOnly, Is.True);
 		}
 	}
 }

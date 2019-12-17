@@ -17,6 +17,7 @@ Excluded DBNull from cloning
 Rewrited code for more correct cloning of objects forbidden for cloning (mainly for Shallow cloning)
 Better handling for stucts casted to object
 Increased speed for cloning simple tuples
+Added some protection for parallel cloning objects with readonly fields
     </releaseNotes>
     <copyright>Copyright by Force 2016-2017</copyright>
     <tags>.NET shallow deep clone DeepClone fast</tags>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -8,11 +9,15 @@ namespace Force.DeepCloner.Helpers
 {
 	internal static class DeepClonerExprGenerator
 	{
+		private static readonly ConcurrentDictionary<FieldInfo, bool> _readonlyFields = new ConcurrentDictionary<FieldInfo, bool>();
+		
 		internal static object GenerateClonerInternal(Type realType, bool asObject)
 		{
 			return GenerateProcessMethod(realType, asObject && realType.IsValueType());
 		}
 
+		private static FieldInfo _attributesFieldInfo = typeof(FieldInfo).GetPrivateField("m_fieldAttributes");
+		
 		// slow, but hardcore method to set readonly field
 		internal static void ForceSetField(FieldInfo field, object obj, object value)
 		{
@@ -27,9 +32,13 @@ namespace Force.DeepCloner.Helpers
 				return;
 			var v = (FieldAttributes)ov;
 
-			fieldInfo.SetValue(field, v & ~FieldAttributes.InitOnly);
-			field.SetValue(obj, value);
-			fieldInfo.SetValue(field, v);
+			// protect from parallel execution, when first thread set field readonly back, and second set it to write value
+			lock (fieldInfo)
+			{
+				fieldInfo.SetValue(field, v & ~FieldAttributes.InitOnly);
+				field.SetValue(obj, value);
+				fieldInfo.SetValue(field, v | FieldAttributes.InitOnly);
+			}
 		}
 
 		private static object GenerateProcessMethod(Type type, bool unboxStruct)
@@ -130,7 +139,8 @@ namespace Force.DeepCloner.Helpers
 
 					// should handle specially
 					// todo: think about optimization, but it rare case
-					if (fieldInfo.IsInitOnly)
+					var isReadonly = _readonlyFields.GetOrAdd(fieldInfo, f => f.IsInitOnly);
+					if (isReadonly)
 					{
 						// var setMethod = fieldInfo.GetType().GetMethod("SetValue", new[] { typeof(object), typeof(object) });
 						// expressionList.Add(Expression.Call(Expression.Constant(fieldInfo), setMethod, toLocal, call));

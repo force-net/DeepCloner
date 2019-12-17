@@ -45,6 +45,7 @@ namespace Force.DeepCloner.Tests
 		}
 
 		[Test(Description = "Tests works on local SQL Server with AdventureWorks database")]
+		[Ignore("Test on MS Server")]
 		public void Clone_EfQuery1()
 		{
 			var at = new AdventureContext();
@@ -72,6 +73,7 @@ namespace Force.DeepCloner.Tests
 		}
 
 		[Test(Description = "Tests works on local SQL Server with AdventureWorks database")]
+		[Ignore("Test on MS Server")]
 		public void Clone_EfQuery2()
 		{
 			var q = new AdventureContext().Currencies.OrderBy(x => x.Name);
