@@ -44,7 +44,10 @@ namespace Force.DeepCloner.Tests
 
 			private readonly object y = new object();
 
+			// this field to make class unsafe and readonly
+#pragma warning disable 169
 			private readonly UnsafeStructTest z;
+#pragma warning restore 169
 
 			public object GetY()
 			{

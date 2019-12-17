@@ -203,7 +203,11 @@ namespace Force.DeepCloner.Tests
 
 			private readonly object y = new object();
 
+			// it is struct - and it can't be null, but it's readonly and should be copied
+			// also it private to ensure it copied correctly
+#pragma warning disable 169
 			private readonly StructWithObject z;
+#pragma warning restore 169
 
 			public object GetY()
 			{
@@ -224,6 +228,7 @@ namespace Force.DeepCloner.Tests
 			Assert.That(clone, Is.Not.EqualTo(c));
 			Assert.That(clone.X, Is.EqualTo(1));
 			Assert.That(clone.GetY(), Is.Not.Null);
+			Assert.That(clone.GetY(), Is.Not.EqualTo(c.GetY()));
 			Assert.That(clone.GetY(), Is.Not.EqualTo(c.GetY()));
 		}
 
