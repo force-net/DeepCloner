@@ -1,25 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
-		<TargetFrameworks>net40;net45</TargetFrameworks>
+		<TargetFramework>net472</TargetFramework>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<IncludeSource>true</IncludeSource>
 		<IncludeSymbols>true</IncludeSymbols>
-		<LangVersion>latest</LangVersion>
-
+		
 		<AssemblyTitle>EVRY.DeepCloner</AssemblyTitle>
 		<Description>Library for cloning objects</Description>
-		<AssemblyVersion>0.10.0.0</AssemblyVersion>
-		<FileVersion>0.10.2.0</FileVersion>
-		<Version>$(FileVersion)</Version>
+		<Version>0.10.2.0</Version>
 		<Product>Elements®</Product>
 		<Company>EVRY AS</Company>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<Reference Include="System" />
-		<Reference Include="System.Core" />
-	</ItemGroup>
 
 	<PropertyGroup>
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\DeepCloner.xml</DocumentationFile>
