@@ -8,7 +8,7 @@ namespace Force.DeepCloner.Helpers
 	{
 		public static bool IsEnum(this Type t)
 		{
-#if NETCORE
+#if NETSTANDARD
 			return t.GetTypeInfo().IsEnum;
 #else
 			return t.IsEnum;
@@ -17,7 +17,7 @@ namespace Force.DeepCloner.Helpers
 
 		public static bool IsValueType(this Type t)
 		{
-#if NETCORE
+#if NETSTANDARD
 			return t.GetTypeInfo().IsValueType;
 #else
 			return t.IsValueType;
@@ -26,7 +26,7 @@ namespace Force.DeepCloner.Helpers
 
 		public static bool IsClass(this Type t)
 		{
-#if NETCORE
+#if NETSTANDARD
 			return t.GetTypeInfo().IsClass;
 #else
 			return t.IsClass;
@@ -35,7 +35,7 @@ namespace Force.DeepCloner.Helpers
 
 		public static Type BaseType(this Type t)
 		{
-#if NETCORE
+#if NETSTANDARD
 			return t.GetTypeInfo().BaseType;
 #else
 			return t.BaseType;
@@ -44,7 +44,7 @@ namespace Force.DeepCloner.Helpers
 
 		public static FieldInfo[] GetAllFields(this Type t)
 		{
-#if NETCORE
+#if NETSTANDARD
 			return t.GetTypeInfo().DeclaredFields.Where(x => !x.IsStatic).ToArray();
 #else
 			return t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
@@ -53,7 +53,7 @@ namespace Force.DeepCloner.Helpers
 
 		public static FieldInfo[] GetDeclaredFields(this Type t)
 		{
-#if NETCORE
+#if NETSTANDARD
 			return t.GetTypeInfo().DeclaredFields.Where(x => !x.IsStatic).ToArray();
 #else
 			return t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly);
@@ -62,7 +62,7 @@ namespace Force.DeepCloner.Helpers
 
 		public static ConstructorInfo[] GetPrivateConstructors(this Type t)
 		{
-#if NETCORE
+#if NETSTANDARD
 			return t.GetTypeInfo().DeclaredConstructors.ToArray();
 #else
 			return t.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
@@ -71,7 +71,7 @@ namespace Force.DeepCloner.Helpers
 
 		public static MethodInfo GetPrivateMethod(this Type t, string methodName)
 		{
-#if NETCORE
+#if NETSTANDARD
 			return t.GetTypeInfo().GetDeclaredMethod(methodName);
 #else
 			return t.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
@@ -80,7 +80,7 @@ namespace Force.DeepCloner.Helpers
 
 		public static MethodInfo GetMethod(this Type t, string methodName)
 		{
-#if NETCORE
+#if NETSTANDARD
 			return t.GetTypeInfo().GetDeclaredMethod(methodName);
 #else
 			return t.GetMethod(methodName);
@@ -89,7 +89,7 @@ namespace Force.DeepCloner.Helpers
 
 		public static MethodInfo GetPrivateStaticMethod(this Type t, string methodName)
 		{
-#if NETCORE
+#if NETSTANDARD
 			return t.GetTypeInfo().GetDeclaredMethod(methodName);
 #else
 			return t.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
@@ -98,14 +98,14 @@ namespace Force.DeepCloner.Helpers
 
 		public static FieldInfo GetPrivateField(this Type t, string fieldName)
 		{
-#if NETCORE
+#if NETSTANDARD
 			return t.GetTypeInfo().GetDeclaredField(fieldName);
 #else
 			return t.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
 #endif
 		}
 
-#if NETCORE
+#if NETSTANDARD
 		public static bool IsSubclassOfTypeByName(this Type t, string typeName)
 		{
 			while (t != null)
@@ -119,7 +119,7 @@ namespace Force.DeepCloner.Helpers
 		}
 #endif
 
-#if NETCORE
+#if NETSTANDARD
 		public static bool IsAssignableFrom(this Type from, Type to)
 		{
 			return from.GetTypeInfo().IsAssignableFrom(to.GetTypeInfo());

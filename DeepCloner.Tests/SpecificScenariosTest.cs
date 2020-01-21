@@ -1,20 +1,19 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-#if !NETCORE
+#if !NETSTANDARD
 using System.Data.Entity;
 #else
 using Microsoft.EntityFrameworkCore;
 #endif
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
 using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
-#if !NETCORE
+#if !NETSTANDARD
 	[TestFixture(false)]
 #endif
 	[TestFixture(true)]
@@ -67,7 +66,7 @@ namespace Force.DeepCloner.Tests
 			// Console.WriteLine(at.ChangeTracker);
 			var q = at.Currencies.Where(x => x.CurrencyCode == "AUD");
 			var q2 = q.DeepClone();
-#if NETCORE
+#if NETSTANDARD
 			// Console.WriteLine(Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions
 			//	.GetRequiredService<Microsoft.EntityFrameworkCore.ChangeTracking.Internal.IChangeTrackerFactory>(
 			//		((Microsoft.EntityFrameworkCore.Infrastructure.IInfrastructure<IServiceProvider>) at).Instance));
@@ -97,7 +96,7 @@ namespace Force.DeepCloner.Tests
 		[Test]
 		public void Clone_ComObject1()
 		{
-#if !NETCORE
+#if !NETSTANDARD
 // ReSharper disable SuspiciousTypeConversion.Global
 			var manager = (KnownFolders.IKnownFolderManager)new KnownFolders.KnownFolderManager();
 // ReSharper restore SuspiciousTypeConversion.Global
@@ -112,7 +111,7 @@ namespace Force.DeepCloner.Tests
 		[Test]
 		public void Clone_ComObject2()
 		{
-#if !NETCORE
+#if !NETSTANDARD
 			Type t = Type.GetTypeFromProgID("SAPI.SpVoice");
 			var obj = Activator.CreateInstance(t);
 			obj.DeepClone();
@@ -154,7 +153,7 @@ namespace Force.DeepCloner.Tests
 		public class AdventureContext : DbContext
 		{
 			public AdventureContext()
-#if !NETCORE
+#if !NETSTANDARD
 			: base("Server=.;Integrated Security=SSPI;Database=AdventureWorks")
 #endif
 			{
@@ -162,7 +161,7 @@ namespace Force.DeepCloner.Tests
 
 			public DbSet<Currency> Currencies { get; set; }
 
-#if NETCORE
+#if NETSTANDARD
 			protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 			{
 				optionsBuilder.UseSqlServer(@"Server=.;Database=AdventureWorks;Trusted_Connection=true;MultipleActiveResultSets=true");
@@ -199,7 +198,7 @@ namespace Force.DeepCloner.Tests
 			}
 		}
 
-#if !NETCORE
+#if !NETSTANDARD
 		public class KnownFolders
 		{
 			[Guid("8BE2D872-86AA-4d47-B776-32CCA40C7018"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

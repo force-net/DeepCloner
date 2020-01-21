@@ -171,7 +171,7 @@ namespace Force.DeepCloner.Helpers
 
 		private static object GenerateCloner(Type t, bool asObject)
 		{
-#if !NETCORE
+#if !NETSTANDARD
 			if (ShallowObjectCloner.IsSafeVariant()) return DeepClonerExprGenerator.GenerateClonerInternal(t, asObject);
 			else return DeepClonerMsilGenerator.GenerateClonerInternal(t, asObject);
 #else

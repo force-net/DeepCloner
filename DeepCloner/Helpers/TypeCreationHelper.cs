@@ -1,4 +1,4 @@
-﻿#if !NETCORE
+#if !NETSTANDARD
 using System;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -15,7 +15,7 @@ namespace Force.DeepCloner.Helpers
 			if (_moduleBuilder == null)
 			{
 				AssemblyName aName = new AssemblyName("DeepClonerCode");
-				var ab = AppDomain.CurrentDomain.DefineDynamicAssembly(aName, AssemblyBuilderAccess.Run);
+				var ab = AssemblyBuilder.DefineDynamicAssembly(aName, AssemblyBuilderAccess.Run);
 				var mb = ab.DefineDynamicModule(aName.Name);
 				_moduleBuilder = mb;
 			}

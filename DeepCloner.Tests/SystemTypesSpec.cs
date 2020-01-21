@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -11,7 +11,7 @@ using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
-#if !NETCORE
+#if !NETSTANDARD
 	[TestFixture(false)]
 #endif
 	[TestFixture(true)]
@@ -49,7 +49,7 @@ namespace Force.DeepCloner.Tests
 				var cloned = writer.DeepClone();
 				writer.Write("2");
 				cloned.Write(3);
-#if !NETCORE
+#if !NETSTANDARD
 				var f = typeof(FileStream).GetField("_handle", BindingFlags.NonPublic | BindingFlags.Instance);
 				var f2 = typeof(SafeHandle).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
 				Console.WriteLine(f2.GetValue(f.GetValue(writer.BaseStream)));
@@ -134,12 +134,12 @@ namespace Force.DeepCloner.Tests
 			cert.DeepClone();
 			cert.DeepClone();
 			GC.Collect();
-#if !NETCORE
+#if !NETSTANDARD
 			GC.WaitForFullGCComplete();
 #endif
 		}
 
-#if !NETCORE
+#if !NETSTANDARD
 		[Test(Description = "Without special handling it causes exception on destruction due native resources usage")]
 		public void ObjectHandle_Should_Be_Cloned()
 		{
@@ -160,7 +160,7 @@ namespace Force.DeepCloner.Tests
 			cert.ShallowClone();
 			cert.ShallowClone();
 			GC.Collect();
-#if !NETCORE
+#if !NETSTANDARD
 			GC.WaitForFullGCComplete();
 #endif
 		}

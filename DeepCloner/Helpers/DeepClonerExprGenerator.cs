@@ -86,7 +86,7 @@ namespace Force.DeepCloner.Helpers
 			var tp = type;
 			do
 			{
-#if !NETCORE
+#if !NETSTANDARD
 				// don't do anything with this dark magic!
 				if (tp == typeof(ContextBoundObject)) break;
 #else

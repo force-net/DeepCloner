@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
-#if !NETCORE
+#if !NETSTANDARD
 	[TestFixture(false)]
 #endif
 	[TestFixture(true)]
