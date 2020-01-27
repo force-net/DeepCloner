@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +43,7 @@ namespace Force.DeepCloner.Helpers
 				return true;
 			}
 
-#if !NETCORE
+#if !NETSTANDARD
 			// do not do anything with remoting. it is very dangerous to clone, bcs it relate to deep core of framework
 			if (type.FullName.StartsWith("System.Runtime.Remoting.")
 				&& type.Assembly == typeof(System.Runtime.Remoting.CustomErrorsModes).Assembly)

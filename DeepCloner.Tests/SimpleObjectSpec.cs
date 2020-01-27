@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace Force.DeepCloner.Tests
 {
 	[TestFixture(true)]
-#if !NETCORE
+#if !NETSTANDARD
 	[TestFixture(false)]
 #endif
 	public class SimpleObjectSpec : BaseTest

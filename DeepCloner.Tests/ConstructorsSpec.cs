@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
-#if !NETCORE
+#if !NETSTANDARD
 	[TestFixture(false)]
 #endif
 	[TestFixture(true)]
@@ -66,7 +66,7 @@ namespace Force.DeepCloner.Tests
 			}
 		}
 
-#if !NETCORE
+#if !NETSTANDARD
 		public class ClonableClass : ICloneable
 		{
 			public object X { get; set; }
@@ -115,7 +115,7 @@ namespace Force.DeepCloner.Tests
 			Assert.That(cloned.B, Is.EqualTo("x"));
 		}
 
-#if !NETCORE
+#if !NETSTANDARD
 		private class C3 : ContextBoundObject
 		{
 		}

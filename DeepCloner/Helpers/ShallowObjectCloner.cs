@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -26,7 +26,7 @@ namespace Force.DeepCloner.Helpers
 		{
 			if (obj == null) return null;
 			if (obj is string) return obj;
-#if !NETCORE
+#if !NETSTANDARD
 			// do not clone such native-resource bounded types!
 			if (obj is System.Runtime.ConstrainedExecution.CriticalFinalizerObject) return obj;
 #endif
@@ -40,7 +40,7 @@ namespace Force.DeepCloner.Helpers
 
 		static ShallowObjectCloner()
 		{
-#if !NETCORE
+#if !NETSTANDARD
 			_unsafeInstance = GenerateUnsafeCloner();
 			_instance = _unsafeInstance;
 			try
@@ -69,7 +69,7 @@ namespace Force.DeepCloner.Helpers
 			else _instance = _unsafeInstance;
 		}
 
-#if !NETCORE
+#if !NETSTANDARD
 		private static ShallowObjectCloner GenerateUnsafeCloner()
 		{
 			var mb = TypeCreationHelper.GetModuleBuilder();
@@ -95,7 +95,7 @@ namespace Force.DeepCloner.Helpers
 			il.Emit(OpCodes.Ldarg_1);
 			il.Emit(OpCodes.Call, typeof(object).GetPrivateMethod("MemberwiseClone"));
 			il.Emit(OpCodes.Ret);
-			var type = builder.CreateType();
+			var type = builder.CreateTypeInfo();
 			return (ShallowObjectCloner)Activator.CreateInstance(type);
 		}
 #endif
