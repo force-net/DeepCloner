@@ -164,7 +164,7 @@ namespace Force.DeepCloner.Tests
 #if NETSTANDARD
 			protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 			{
-				optionsBuilder.UseSqlServer(@"Server=.;Database=AdventureWorks;Trusted_Connection=true;MultipleActiveResultSets=true");
+				optionsBuilder.UseSqlServer(@"Server=.;Database=AdventureWorks;User Id=elements_test; password=k6Sjw3v2bj; Trusted_Connection=true;MultipleActiveResultSets=true");
 			}
 #endif
 		}
