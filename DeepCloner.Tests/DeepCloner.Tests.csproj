@@ -1,15 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net472</TargetFramework>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<IncludeSource>true</IncludeSource>
-		<IncludeSymbols>true</IncludeSymbols>
-
-		<AssemblyTitle>DeepCloner.Tests</AssemblyTitle>
-		<Description>Library for cloning objects</Description>
-		<Version>0.10.2.0</Version>
-		<Product>Elements®</Product>
-		<Company>EVRY AS</Company>
+		<TargetFramework>net48</TargetFramework>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
