@@ -123,6 +123,15 @@ namespace Force.DeepCloner.Helpers
 #endif
 		}
 
+		public static FieldInfo GetPrivateStaticField(this Type t, string fieldName)
+		{
+#if NETCORE
+			return t.GetTypeInfo().GetDeclaredField(fieldName);
+#else
+			return t.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static);
+#endif
+		}
+
 #if NETCORE
 		public static bool IsSubclassOfTypeByName(this Type t, string typeName)
 		{

@@ -12,7 +12,7 @@ namespace Force.DeepCloner.Tests
 	[TestFixture]
 	public class PermissionSpec
 	{
-		[Test, Ignore("Just manual check")]
+		[Test/*, Ignore("Just manual check")*/]
 		public void EnsurePermission()
 		{
 			var setup = new AppDomainSetup
