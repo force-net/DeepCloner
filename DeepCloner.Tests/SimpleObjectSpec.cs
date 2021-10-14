@@ -274,6 +274,8 @@ namespace Force.DeepCloner.Tests
 		
 		[Test(Description = "Empty class does not have any mutable properties, so, it safe to use same class in cloning"),
 		 Ignore("Think about logic, which is better to clone or not to clone, I do not know, but it changes current logic seriously")]
+		// e.g. new object() frequently use for locks - if we leave same object - we'll receive same lock in different classes
+		// todo: think about another reasons
 		public void Empty_Should_Not_Be_Cloned()
 		{
 			var v = new EmptyClass();
@@ -311,6 +313,15 @@ namespace Force.DeepCloner.Tests
 			var c = new Readonly1("Z").DeepClone();
 			Assert.That(c.X, Is.EqualTo("Z"));
 			Assert.That(typeof(Readonly1).GetField("X").IsInitOnly, Is.True);
+		}
+
+		[Test]
+		public void System_Type_Should_Not_Be_Cloned()
+		{
+			// it used for dictionaries as key. there are no sense to copy it
+			var t = GetType(); // RuntimeType
+			var clone = t.DeepClone();
+			Assert.That(ReferenceEquals(t, clone));
 		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <VersionPrefix>0.10.2</VersionPrefix>
+    <VersionPrefix>0.10.3</VersionPrefix>
     <TargetFrameworks>netstandard1.3;net40</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>DeepCloner</AssemblyName>

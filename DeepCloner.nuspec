@@ -20,7 +20,7 @@ Increased speed for cloning simple tuples
 Added some protection for parallel cloning objects with readonly fields
 Optimized copying readonly fields for .net core
     </releaseNotes>
-    <copyright>Copyright by Force 2016-2017</copyright>
+    <copyright>Copyright by Force 2016-2021</copyright>
     <tags>.NET shallow deep clone DeepClone fast</tags>
     <dependencies>
       <group targetFramework="net40">
@@ -32,9 +32,9 @@ Optimized copying readonly fields for .net core
 
   </metadata>
   <files>
-  	<file src="DeepCloner\bin\Release\net40\DeepCloner.dll" target="lib\net40" />
-  	<file src="DeepCloner\bin\Release\net40\DeepCloner.xml" target="lib\net40" />
-  	<file src="DeepCloner\bin\Release\netstandard1.3\DeepCloner.dll" target="lib\netstandard1.3" />
-  	<file src="DeepCloner\bin\Release\netstandard1.3\DeepCloner.xml" target="lib\netstandard1.3" />
+  	<file src="DeepCloner\bin\BuildCore\net40\DeepCloner.dll" target="lib\net40" />
+  	<file src="DeepCloner\bin\BuildCore\net40\DeepCloner.xml" target="lib\net40" />
+  	<file src="DeepCloner\bin\BuildCore\netstandard1.3\DeepCloner.dll" target="lib\netstandard1.3" />
+  	<file src="DeepCloner\bin\BuildCore\netstandard1.3\DeepCloner.xml" target="lib\netstandard1.3" />
   </files>
 </package>

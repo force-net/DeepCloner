@@ -43,7 +43,7 @@ namespace Force.DeepCloner.Helpers
 
 			var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddClass(obj.GetType(), t => GenerateCloner(t, true));
 
-			// safe ojbect
+			// safe object
 			if (cloner == null) 
 				return obj;
 
