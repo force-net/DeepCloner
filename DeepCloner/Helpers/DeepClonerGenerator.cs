@@ -156,13 +156,20 @@ namespace Force.DeepCloner.Helpers
 			var lowerBounds = Enumerable.Range(0, rank).Select(obj.GetLowerBound).ToArray();
 			var idxes = Enumerable.Range(0, rank).Select(obj.GetLowerBound).ToArray();
 
-			var outArray = Array.CreateInstance(obj.GetType().GetElementType(), lengths, lowerBounds);
+			var elementType = obj.GetType().GetElementType();
+			var outArray = Array.CreateInstance(elementType, lengths, lowerBounds);
 
 			state.AddKnownRef(obj, outArray);
 
 			// we're unable to set any value to this array, so, just return it
 			if (lengths.Any(x => x == 0))
 				return outArray;
+
+			if (DeepClonerSafeTypes.CanReturnSameObject(elementType))
+			{
+				Array.Copy(obj, outArray, obj.Length);
+				return outArray;
+			}
 
 			var ofs = rank - 1;
 			while (true)
