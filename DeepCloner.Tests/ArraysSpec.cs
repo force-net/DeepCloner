@@ -261,6 +261,25 @@ namespace Force.DeepCloner.Tests
 			Assert.That(clone[1, 0, 0], Is.EqualTo(3));
 			Assert.That(clone[1, 1, 0], Is.EqualTo(4));
 		}
+		
+		[Test]
+		public void MultiDim_Array_Should_Be_Cloned3()
+		{
+			const int cnt1 = 4;
+			const int cnt2 = 5;
+			const int cnt3 = 6;
+			var arr = new int[cnt1, cnt2, cnt3];
+			for (var i1 = 0; i1 < cnt1; i1++)
+			for (var i2 = 0; i2 < cnt2; i2++)
+			for (var i3 = 0; i3 < cnt3; i3++)
+				arr[i1, i2, i3] = i1 * 100 + i2 * 10 + i3;
+			var clone = arr.DeepClone();
+			Assert.That(ReferenceEquals(arr, clone), Is.False);
+			for (var i1 = 0; i1 < cnt1; i1++)
+			for (var i2 = 0; i2 < cnt2; i2++)
+			for (var i3 = 0; i3 < cnt3; i3++)
+				Assert.That(arr[i1, i2, i3], Is.EqualTo(i1 * 100 + i2 * 10 + i3));
+		}
 
 		[Test]
 		public void MultiDim_Array_Of_Classes_Should_Be_Cloned()
@@ -322,6 +341,22 @@ namespace Force.DeepCloner.Tests
 			Assert.That(clone[1], Is.EqualTo(2));
 			Assert.That(clone[2], Is.EqualTo(3));
 			// ReSharper restore PossibleMultipleEnumeration
+		}
+
+		[Test]
+		public void MultiDimensional_Array_Should_Be_Cloned()
+		{
+			// Issue #25
+			Array.CreateInstance(typeof(int), new[] { 0, 0 }).DeepClone();
+			Array.CreateInstance(typeof(int), new[] { 1, 0 }).DeepClone();
+			Array.CreateInstance(typeof(int), new[] { 0, 1 }).DeepClone();
+			Array.CreateInstance(typeof(int), new[] { 1, 1 }).DeepClone();
+			
+			Array.CreateInstance(typeof(int), new[] { 0, 0, 0 }).DeepClone();
+			Array.CreateInstance(typeof(int), new[] { 1, 0, 0 }).DeepClone();
+			Array.CreateInstance(typeof(int), new[] { 0, 1, 0 }).DeepClone();
+			Array.CreateInstance(typeof(int), new[] { 0, 0, 1 }).DeepClone();
+			Array.CreateInstance(typeof(int), new[] { 1, 1, 1 }).DeepClone();
 		}
 	}
 }

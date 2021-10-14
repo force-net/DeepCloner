@@ -19,6 +19,8 @@ Better handling for stucts casted to object
 Increased speed for cloning simple tuples
 Added some protection for parallel cloning objects with readonly fields
 Optimized copying readonly fields for .net core
+Fixed copying multi-dim arrays with 0-length of some dimension
+2-dim arrays were processed by generic (non-optimized) way
     </releaseNotes>
     <copyright>Copyright by Force 2016-2021</copyright>
     <tags>.NET shallow deep clone DeepClone fast</tags>

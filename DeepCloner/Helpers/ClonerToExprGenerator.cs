@@ -146,10 +146,12 @@ namespace Force.DeepCloner.Helpers
 			else
 			{
 				// multidim or not zero-based arrays
-				var methodInfo = typeof(ClonerToExprGenerator).GetPrivateStaticMethod(
-					rank == 2 && type == elementType.MakeArrayType()
-						? "Clone2DimArrayInternal"
-						: "CloneAbstractArrayInternal");
+				MethodInfo methodInfo;
+				if (rank == 2 && type == elementType.MakeArrayType(2))
+					methodInfo = typeof(ClonerToExprGenerator).GetPrivateStaticMethod("Clone2DimArrayInternal").MakeGenericMethod(elementType);
+				else
+					methodInfo = typeof(ClonerToExprGenerator).GetPrivateStaticMethod("CloneAbstractArrayInternal");
+				
 				var callS = Expression.Call(methodInfo, Expression.Convert(from, type), Expression.Convert(to, type), state, Expression.Constant(isDeep));
 				return Expression.Lambda(funcType, callS, from, to, state).Compile();
 			}
@@ -201,6 +203,10 @@ namespace Force.DeepCloner.Helpers
 		{
 			// not null from called method, but will check it anyway
 			if (objFrom == null || objTo == null) return null;
+			if (objFrom.GetLowerBound(0) != 0 || objFrom.GetLowerBound(1) != 0
+				|| objTo.GetLowerBound(0) != 0 || objTo.GetLowerBound(1) != 0)
+				return (T[,]) CloneAbstractArrayInternal(objFrom, objTo, state, isDeep);
+			
 			var l1 = Math.Min(objFrom.GetLength(0), objTo.GetLength(0));
 			var l2 = Math.Min(objFrom.GetLength(1), objTo.GetLength(1));
 			state.AddKnownRef(objFrom, objTo);
@@ -212,13 +218,13 @@ namespace Force.DeepCloner.Helpers
 				return objTo;
 			}
 
-		    if (!isDeep)
-		    {
-		        for (var i = 0; i < l1; i++)
-		        for (var k = 0; k < l2; k++)
-		            objTo[i, k] = objFrom[i, k];
-		        return objTo;
-		    }
+			if (!isDeep)
+			{
+				for (var i = 0; i < l1; i++)
+				for (var k = 0; k < l2; k++)
+					objTo[i, k] = objFrom[i, k];
+				return objTo;
+			}
 
 			if (typeof(T).IsValueType())
 			{
@@ -253,6 +259,11 @@ namespace Force.DeepCloner.Helpers
 			var idxesTo = Enumerable.Range(0, rank).Select(objTo.GetLowerBound).ToArray();
 
 			state.AddKnownRef(objFrom, objTo);
+
+			// unable to copy any element
+			if (lengths.Any(x => x == 0))
+				return objTo;
+
 			while (true)
 			{
 				if (isDeep)
