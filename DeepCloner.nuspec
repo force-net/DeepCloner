@@ -6,11 +6,14 @@
     <version>0.10.3</version>
     <authors>force</authors>
     <owners>force</owners>
-    <licenseUrl>https://github.com/force-net/DeepCloner/blob/develop/LICENSE</licenseUrl>
+    <license type="expression">MIT</license>
     <projectUrl>https://github.com/force-net/DeepCloner</projectUrl>
+    <repository type="git" url="https://github.com/force-net/DeepCloner" />
     <iconUrl>http://files.force-net.com/deepcloner-nuget-ico.png</iconUrl>
+    <icon>images\deepcloner-nuget-ico.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Small Library for fast deep or shallow cloning .NET objects. It allows to copy everything and has a lot of performance tricks for fast copying.</description>
+    <summary>Small Library for fast deep or shallow cloning .NET objects.</summary>
     <releaseNotes>
 Custom dictionary implementation for faster reference counting (and faster cloning)
 Excluded DBNull from cloning
@@ -34,6 +37,7 @@ Fixed copying multi-dim arrays with 0-length of some dimension
 
   </metadata>
   <files>
+   	<file src="deepcloner-nuget-ico.png" target="images" />
   	<file src="DeepCloner\bin\BuildCore\net40\DeepCloner.dll" target="lib\net40" />
   	<file src="DeepCloner\bin\BuildCore\net40\DeepCloner.xml" target="lib\net40" />
   	<file src="DeepCloner\bin\BuildCore\netstandard1.3\DeepCloner.dll" target="lib\netstandard1.3" />
