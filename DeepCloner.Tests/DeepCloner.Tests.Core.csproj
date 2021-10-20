@@ -24,7 +24,7 @@
     <PackageReference Include="FastDeepCloner" Version="1.0.9" />
     <PackageReference Include="DesertOctopus" Version="0.1.1" />
     <PackageReference Include="EntityFramework" Version="6.1.3" />
-    <PackageReference Include="ServiceStack" Version="5.0.0" />
+    <PackageReference Include="ServiceStack" Version="5.9.2" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0'">
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.2" />
