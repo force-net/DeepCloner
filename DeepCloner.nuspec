@@ -3,7 +3,7 @@
   <metadata>
     <id>DeepCloner</id>
     <title>DeepCloner</title>
-    <version>0.10.3</version>
+    <version>0.10.4</version>
     <authors>force</authors>
     <owners>force</owners>
     <license type="expression">MIT</license>
@@ -15,17 +15,9 @@
     <description>Small Library for fast deep or shallow cloning .NET objects. It allows to copy everything and has a lot of performance tricks for fast copying.</description>
     <summary>Small Library for fast deep or shallow cloning .NET objects.</summary>
     <releaseNotes>
-Custom dictionary implementation for faster reference counting (and faster cloning)
-Excluded DBNull from cloning
-Rewrited code for more correct cloning of objects forbidden for cloning (mainly for Shallow cloning)
-Better handling for stucts casted to object
-Increased speed for cloning simple tuples
-Added some protection for parallel cloning objects with readonly fields
-Optimized copying readonly fields for .net core
-Fixed copying multi-dim arrays with 0-length of some dimension
-2-dim arrays were processed by generic (non-optimized) way
+Excluded default comparers from cloning. Main fix for .NET6 and HashSet&lt;string&gt; but some other cases can be fixed too.
     </releaseNotes>
-    <copyright>Copyright by Force 2016-2021</copyright>
+    <copyright>Copyright by Force 2016-2022</copyright>
     <tags>.NET shallow deep clone DeepClone fast</tags>
     <dependencies>
       <group targetFramework="net40">

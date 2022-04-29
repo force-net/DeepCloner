@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 
 using NUnit.Framework;
@@ -357,6 +359,52 @@ namespace Force.DeepCloner.Tests
 			Array.CreateInstance(typeof(int), new[] { 0, 1, 0 }).DeepClone();
 			Array.CreateInstance(typeof(int), new[] { 0, 0, 1 }).DeepClone();
 			Array.CreateInstance(typeof(int), new[] { 1, 1, 1 }).DeepClone();
+		}
+
+		[Test]
+		public void Issue_17_Spec()
+		{
+			var set = new HashSet<string> { "value" };
+			Assert.That(set.Contains("value"), Is.True);
+
+			var cloned = set.DeepClone();
+			Assert.That(cloned.Contains("value"), Is.True);
+
+			var copyOfSet = new HashSet<string>(set, set.Comparer);
+			Assert.That(copyOfSet.Contains("value"), Is.True);
+
+			var copyOfCloned = new HashSet<string>(cloned, cloned.Comparer);
+			Assert.That(copyOfCloned.ToArray()[0] == "value", Is.True);
+
+			Assert.That(copyOfCloned.Contains("value"), Is.True);
+		}
+		
+		[Test]
+		public void Check_Comparer_does_not_Clone()
+		{
+			Check_Comparer_does_not_Clone_Internal<string>();
+			Check_Comparer_does_not_Clone_Internal<int>();
+			Check_Comparer_does_not_Clone_Internal<object>();
+			Check_Comparer_does_not_Clone_Internal<FileShare>();
+			Check_Comparer_does_not_Clone_Internal<byte[]>();
+			Check_Comparer_does_not_Clone_Internal<byte>();
+			Check_Comparer_does_not_Clone_Internal<int?>();
+			Check_Comparer_does_not_Clone_Internal<HashSet<int>>();
+			Assert.That(StringComparer.Ordinal == StringComparer.Ordinal.DeepClone(), Is.True);
+			Assert.That(StringComparer.OrdinalIgnoreCase == StringComparer.OrdinalIgnoreCase.DeepClone(), Is.True);
+			Assert.That(StringComparer.InvariantCulture == StringComparer.InvariantCulture.DeepClone(), Is.True);
+			Assert.That(StringComparer.InvariantCultureIgnoreCase == StringComparer.InvariantCultureIgnoreCase.DeepClone(), Is.True);
+			Assert.That(StringComparer.CurrentCulture == StringComparer.CurrentCulture.DeepClone(), Is.True);
+			Assert.That(StringComparer.CurrentCultureIgnoreCase == StringComparer.CurrentCultureIgnoreCase.DeepClone(), Is.True);
+		}
+
+		private void Check_Comparer_does_not_Clone_Internal<T>()
+		{
+			var comparer = EqualityComparer<T>.Default;
+			var cloned = comparer.DeepClone();
+			
+			// checking by reference
+			Assert.That(comparer == cloned, Is.True);
 		}
 	}
 }

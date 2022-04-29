@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp1.0;netcoreapp2.0;net461</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp3.1;netcoreapp6.0;net461</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>DeepCloner.NET.Tests</AssemblyName>
     <OutputType>Library</OutputType>
@@ -26,6 +26,12 @@
     <PackageReference Include="EntityFramework" Version="6.1.3" />
     <PackageReference Include="ServiceStack" Version="5.9.2" />
   </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp6.0'">
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.2" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.2" />
+  </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0'">
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.2" />
   </ItemGroup>
@@ -36,10 +42,16 @@
       <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
-    <DefineConstants>$(DefineConstants);NETCORE;;NETCORE13</DefineConstants>
+    <DefineConstants>$(DefineConstants);NETCORE;NETCORE13</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
     <DefineConstants>$(DefineConstants);NETCORE;NETCORE20</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
+    <DefineConstants>$(DefineConstants);NETCORE;NETCORE31</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp6.0' ">
+    <DefineConstants>$(DefineConstants);NETCORE;NETCORE60</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);COREVERSION</DefineConstants>

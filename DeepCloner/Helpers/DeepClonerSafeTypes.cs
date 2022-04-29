@@ -25,6 +25,8 @@ namespace Force.DeepCloner.Helpers
 							// do not clone such native type
 							Type.GetType("System.RuntimeType"),
 							Type.GetType("System.RuntimeTypeHandle"),
+							StringComparer.Ordinal.GetType(),
+							StringComparer.CurrentCulture.GetType(), // CultureAwareComparer - can be same
 #if !NETCORE
 							typeof(DBNull)
 #endif
@@ -119,6 +121,19 @@ namespace Force.DeepCloner.Helpers
 				return true;
 			}
 #endif
+			// default comparers should not be cloned due possible comparison EqualityComparer<T>.Default == comparer
+			if (type.FullName.Contains("EqualityComparer"))
+			{
+				if (type.FullName.StartsWith("System.Collections.Generic.GenericEqualityComparer`")
+				    || type.FullName.StartsWith("System.Collections.Generic.ObjectEqualityComparer`")
+				    || type.FullName.StartsWith("System.Collections.Generic.EnumEqualityComparer`")
+				    || type.FullName.StartsWith("System.Collections.Generic.NullableEqualityComparer`")
+				    || type.FullName == "System.Collections.Generic.ByteEqualityComparer")
+				{
+					KnownTypes.TryAdd(type, true);
+					return true;
+				}
+			}
 
 			// classes are always unsafe (we should copy it fully to count references)
 			if (!type.IsValueType())

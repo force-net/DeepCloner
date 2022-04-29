@@ -44,11 +44,11 @@ namespace Force.DeepCloner.Tests
 			try
 			{
 				var writer = File.CreateText(fileName);
-				writer.AutoFlush = true;
+				 writer.AutoFlush = true;
 				writer.Write("1");
 				var cloned = writer.DeepClone();
 				writer.Write("2");
-				cloned.Write(3);
+				cloned.Write("3");
 #if !NETCORE
 				var f = typeof(FileStream).GetField("_handle", BindingFlags.NonPublic | BindingFlags.Instance);
 				var f2 = typeof(SafeHandle).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -63,7 +63,13 @@ namespace Force.DeepCloner.Tests
 
 				Assert.Throws<ObjectDisposedException>(cloned.Flush);
 				var res = File.ReadAllText(fileName);
+#if NETCORE60
+				// it uses RandomAccess.WriteAtOffset(this._fileHandle, buffer, this._filePosition); - and offset of cloned file
+				// is preserved, so, 2 will disappear
+				Assert.That(res, Is.EqualTo("13"));
+#else
 				Assert.That(res, Is.EqualTo("123"));
+#endif
 			}
 			finally
 			{
