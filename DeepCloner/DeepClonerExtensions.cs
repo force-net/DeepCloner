@@ -1,7 +1,4 @@
-﻿using System;
-using System.Security;
-
-using Force.DeepCloner.Helpers;
+﻿using Force.DeepCloner.Helpers;
 
 namespace Force.DeepCloner
 {
@@ -48,30 +45,7 @@ namespace Force.DeepCloner
 
 		static DeepClonerExtensions()
 		{
-			if (!PermissionCheck())
-			{
-				throw new SecurityException("DeepCloner should have enough permissions to run. Grant FullTrust or Reflection permission.");
-			}
-		}
-
-		private static bool PermissionCheck()
-		{
-			// best way to check required permission: execute something and receive exception
-			// .net security policy is weird for normal usage
-			try
-			{
-				new object().ShallowClone();
-			}
-			catch (VerificationException)
-			{
-				return false;
-			}
-			catch (MemberAccessException)
-			{
-				return false;
-			}
-			
-			return true;
+			PermissionChecker.ThrowIfNoPermission();
 		}
 	}
 }
