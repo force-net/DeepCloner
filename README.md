@@ -44,8 +44,8 @@ With a reference to same object:
 Or as object:
 ```
   var date = DateTime.Now;
-  var object = (object)date;
-  object.DeepClone().GetType(); // DateTime
+  var obj = (object)date;
+  obj.DeepClone().GetType(); // DateTime
 ```
 
 Shallow cloning (clone only same object, not objects that object relate to) 
